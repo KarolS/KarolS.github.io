@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Karol Stasiak's Blog]]></title>
+  <link href="http://KarolS.github.io/atom.xml" rel="self"/>
+  <link href="http://KarolS.github.io/"/>
+  <updated>2013-10-21T17:57:04+02:00</updated>
+  <id>http://KarolS.github.io/</id>
+  <author>
+    <name><![CDATA[Karol Stasiak]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Test post please ignore]]></title>
+    <link href="http://KarolS.github.io/blog/2013/10/21/test-post-please-ignore/"/>
+    <updated>2013-10-21T17:03:00+02:00</updated>
+    <id>http://KarolS.github.io/blog/2013/10/21/test-post-please-ignore</id>
+    <content type="html"><![CDATA[<p>I&rsquo;m figuring out how to use Octopress. Looks good so far.</p>
+]]></content>
+  </entry>
+  
+</feed>
