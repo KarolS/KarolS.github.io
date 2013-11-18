@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: keyboard | Karol Stasiak's Blog]]></title>
+  <link href="http://KarolS.github.io/blog/categories/keyboard/atom.xml" rel="self"/>
+  <link href="http://KarolS.github.io/"/>
+  <updated>2013-11-18T22:17:54+01:00</updated>
+  <id>http://KarolS.github.io/</id>
+  <author>
+    <name><![CDATA[Karol Stasiak]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Creating custom keyboard layouts for Linux]]></title>
+    <link href="http://KarolS.github.io/blog/2013/11/18/creating-custom-keyboard-layouts-for-linux/"/>
+    <updated>2013-11-18T21:05:00+01:00</updated>
+    <id>http://KarolS.github.io/blog/2013/11/18/creating-custom-keyboard-layouts-for-linux</id>
+    <content type="html"><![CDATA[<p>I think almost every one of you has some beef with your keyboard layout. There are characters you&rsquo;re never going to use, there are characters you&rsquo;d love to use but they&rsquo;re missing (and you don&rsquo;t like/can&rsquo;t use the compose key for them), and so on.</p>
+
+<p>For example, this is the default Polish layout in Linux:</p>
+
+<p><img src="/images/layout-pl.png"></p>
+
+<p>A keen eye can notice several things that could be improved:</p>
+
+<ul>
+<li><p>many characters can be input in multiple ways: <code>[</code> (as <code>[</code> or as <code>AltGr-9</code>), <code>ł</code> (as <code>AltGr-w</code> or <code>AltGr-l</code>), <code>&amp;</code> (as <code>Shift-7</code> or <code>AltGr-Shift-k</code>), <code>@</code> (as <code>Shift-2</code> or <code>AltGr-q</code>),</p></li>
+<li><p>the layout has some unassigned combinations (for example <code>AltGr-Shift-4</code>),</p></li>
+<li><p>some important characters are missing: <code>€</code> (the euro sign) and <code>„</code> (Polish opening quote),</p></li>
+<li><p>since I can use the compose key, I don&rsquo;t need all those arbitrarily assigned dead keys on the right.</p></li>
+</ul>
+
+
+<p>Of course your keyboard layout may have different problems.</p>
+
+<p><strong>Disclaimer:</strong> The following was done on Ubuntu 12.04 with Unity DE, I don&rsquo;t guarantee it will work on other distros. In particular, the file paths can differ.</p>
+
+<p>How to create a new one, you ask? That&rsquo;s actually pretty simple.</p>
+
+<ul>
+<li><p>layout definitions are in the <code>/usr/share/X11/xkb/symbols</code> directory,</p></li>
+<li><p>layout metadata are in the <code>/usr/share/X11/xkb/rules/evdev.xml</code> file.</p></li>
+</ul>
+
+
+<p>Let&rsquo;s first define our layout. The <code>/usr/share/X11/xkb/symbols</code> contains files, each corresponding to a language. Some layouts can belong to several languages, but they&rsquo;re defined in only one of the files. If your layout is supposed to be listed under one language in the keyboard setting anyway, you&rsquo;ll have to add it to the correct file. Since my keyboard layout was to be mostly an improvement on top of the Polish language layout, I decided to add it to <code>/usr/share/X11/xkb/symbols/pl</code>.</p>
+
+<!-- more -->
+
+
+<p>The format of this file is pretty simple. I&rsquo;m going to analyse the default Polish layout line by line.</p>
+
+<p><code>
+partial default alphanumeric_keys
+xkb_symbols "basic" {
+</code></p>
+
+<p><code>default</code> means that this is the default layout in this file (other layouts don&rsquo;t have this tag).</p>
+
+<p><code>"basic"</code> is the indentifier of this layout within the file.</p>
+
+<p>```</p>
+
+<pre><code>include "latin"
+</code></pre>
+
+<p>```</p>
+
+<p>Since most layouts are similar, the <code>include</code> directive simply inserts all key definitions from one layout to another. This one includes the (default) <code>"basic"</code> layout from the <code>/usr/share/X11/xkb/symbols/latin</code> file.</p>
+
+<p>```</p>
+
+<pre><code>name[Group1]="Polish";
+</code></pre>
+
+<p>```</p>
+
+<p>No clue what it does. It&rsquo;s recommended to set it to a full English name for the layout.</p>
+
+<p>```</p>
+
+<pre><code>key &lt;AD01&gt;  { [         q,          Q ] };
+key &lt;AD02&gt;  { [         w,          W ] };
+key &lt;AD03&gt;  { [         e,          E,      eogonek,      Eogonek ] };
+key &lt;AD09&gt;  { [         o,          O,       oacute,       Oacute ] };
+
+key &lt;AC01&gt;  { [         a,          A,      aogonek,      Aogonek ] };
+key &lt;AC02&gt;  { [         s,          S,       sacute,       Sacute ] };
+key &lt;AC04&gt;  { [         f,          F ] };
+
+key &lt;AB01&gt;  { [         z,          Z,    zabovedot,    Zabovedot ] };
+key &lt;AB02&gt;  { [         x,          X,       zacute,       Zacute ] };
+key &lt;AB03&gt;  { [         c,          C,       cacute,       Cacute ] };
+key &lt;AB06&gt;  { [         n,          N,       nacute,       Nacute ] };
+</code></pre>
+
+<p>```</p>
+
+<p>Those are the definitions that make the Polish layout different from the default Latin one.Each line contains:</p>
+
+<ul>
+<li><p>the <code>key</code> keyword,</p></li>
+<li><p>a symbol defining the physical key,</p></li>
+<li><p>a list of characters associated with that key, from left to right: the default one, with Shift key, with AltGr key, with both Shift and AltGr keys.</p></li>
+</ul>
+
+
+<p>The names of the physical keys are as follows (I&rsquo;m referring to keys by their American/Polish usage):</p>
+
+<ul>
+<li><p><code>&lt;TLDE&gt;</code> for the grave accent/tilde key</p></li>
+<li><p><code>&lt;BKSL&gt;</code> for the backslash/bar key</p></li>
+<li><p><code>&lt;AB01&gt;</code>, <code>&lt;AB02&gt;</code> and so on for <code>Z</code>, <code>X</code> &hellip; keys</p></li>
+<li><p><code>&lt;AC01&gt;</code>, <code>&lt;AC02&gt;</code> and so on for <code>A</code>, <code>S</code> &hellip; keys</p></li>
+<li><p><code>&lt;AD01&gt;</code>, <code>&lt;AD02&gt;</code> and so on for <code>Q</code>, <code>W</code> &hellip; keys</p></li>
+<li><p><code>&lt;AE01&gt;</code>, <code>&lt;AE02&gt;</code> and so on for <code>1</code>, <code>2</code> &hellip; keys</p></li>
+</ul>
+
+
+<p>Note: this refers to their <em>physical</em> layout, so I could also say that <code>AB</code> is the row above the spacebar, <code>AC</code> is the row with caps lock key, <code>AD</code> is the row with tab key, and <code>AE</code> is the row with digits, and the numbering goes from left to right. For example, <code>&lt;AD11&gt;</code> is labelled <code>[</code> on the American keyboard and <code>Ü</code> on the German one; <code>&lt;AB01&gt;</code> is <code>Z</code> on the American keyboard, <code>W</code> on the French keyboard, and <code>Y</code> on the German keyboard. <code>&lt;TLDE&gt;</code> is always in the top left, just under the <code>Esc</code> key, and <code>&lt;BKSL&gt;</code> is in either <code>AC</code>, <code>AD</code> or <code>AE</code> row (depending on the keyboard).</p>
+
+<p>Also, for some reason trying to override a key with a shorter definition doesn&rsquo;t work.</p>
+
+<p>As for the character codes, you can look around the files to learn them, or just use Unicode codepoints in hexadecimal, for example <code>U0041</code> and <code>A</code> are synonymous.</p>
+
+<p>```</p>
+
+<pre><code>include "kpdl(comma)"
+</code></pre>
+
+<p>```</p>
+
+<p>This defines the behaviour of the decimal point key on the numpad. (More accurately, imports such behaviour override from <code>/usr/share/X11/xkb/symbols/kpdl</code>.)</p>
+
+<p>```</p>
+
+<pre><code>include "level3(ralt_switch)"
+</code></pre>
+
+<p>};
+```</p>
+
+<p>And finally, this defines how the 3rd level (the one with accented characters, the one I referred to as “AltGr”) is accessed. In this case, it&rsquo;s with the right Alt key.</p>
+
+<p>So I created my own layout by copying the existing one and modifying it:</p>
+
+<p>```
+partial alphanumeric_keys
+xkb_symbols &ldquo;custom3&rdquo; {</p>
+
+<pre><code>include "latin"
+</code></pre>
+
+<p>```</p>
+
+<p><code>"custom3"</code> is the identifier of my new layout (why 3, I&rsquo;ll explain later). My new layout is not defined as the default one.</p>
+
+<p>```</p>
+
+<pre><code>name[Group1]="Polish (custom)";
+</code></pre>
+
+<p>```</p>
+
+<p>No clue why I did this, but it looks consistent with the rest of the file, so I guess it&rsquo;s correct.</p>
+
+<p>```</p>
+
+<pre><code>key &lt;AE07&gt;  { [ 7, ampersand, copyright, seveneighths ] };
+key &lt;AE08&gt;  { [ 8, asterisk, U221E, trademark ] };
+key &lt;AE09&gt;  { [ 9, parenleft, guillemotleft, plusminus ] };
+key &lt;AE10&gt;  { [ 0, parenright, guillemotright, degree ] };
+
+key &lt;AD03&gt;  { [         e,          E,      eogonek,      Eogonek ] };
+key &lt;AD09&gt;  { [         o,          O,       oacute,       Oacute ] };
+
+key &lt;AC01&gt;  { [         a,          A,      aogonek,      Aogonek ] };
+key &lt;AC02&gt;  { [         s,          S,       sacute,       Sacute ] };
+key &lt;AC04&gt;  { [         f,          F ] };
+
+key &lt;AB01&gt;  { [         z,          Z,    zabovedot,    Zabovedot ] };
+key &lt;AB02&gt;  { [         x,          X,       zacute,       Zacute ] };
+key &lt;AB03&gt;  { [         c,          C,       cacute,       Cacute ] };
+key &lt;AB06&gt;  { [         n,          N,       nacute,       Nacute ] };
+
+include "kpdl(comma)"
+
+include "level3(ralt_switch)"
+
+
+key &lt;TLDE&gt;  { [ grave, asciitilde, notsign, section ] };
+
+key &lt;AE04&gt;  { [ 4, dollar, onequarter, EuroSign ] };
+key &lt;AE07&gt;  { [ 7, ampersand, copyright, seveneighths ] };
+key &lt;AE08&gt;  { [ 8, asterisk, U221E, trademark ] };
+key &lt;AE09&gt;  { [ 9, parenleft, guillemotleft, plusminus ] };
+key &lt;AE10&gt;  { [ 0, parenright, guillemotright, degree ] };
+key &lt;AE11&gt;  { [ minus, underscore, U2013, questiondown ] };
+key &lt;AE12&gt;  { [ equal, plus, U2260, Greek_SIGMA ] };
+
+key &lt;AD01&gt;  { [ q, Q, Greek_pi, Greek_OMEGA ] };
+key &lt;AD02&gt;  { [ w, W, cent, U20A9 ] };
+key &lt;AD11&gt;  { [bracketleft,  braceleft, udiaeresis, Udiaeresis ] };
+key &lt;AD12&gt;  { [bracketright, braceright, ssharp,  ediaeresis ] };
+
+key &lt;BKSL&gt;  { [backslash, bar, eacute, egrave] };
+
+key &lt;AC07&gt;  { [ j, J, doublelowquotemark, singlelowquotemark] };
+key &lt;AC08&gt;  { [ k, K, kra, U2030] };
+key &lt;AC10&gt;  { [ semicolon,    colon, odiaeresis, Odiaeresis ] };
+key &lt;AC11&gt;  { [apostrophe, quotedbl, adiaeresis,  Adiaeresis ] };
+
+key &lt;AB08&gt;  { [ comma,  less, ellipsis, multiply ]  };
+key &lt;AB10&gt;  { [ slash, question, agrave, idiaeresis ] };
+</code></pre>
+
+<p>};
+```</p>
+
+<p>As you can see, I added an euro sign to <code>Shift-AltGr-4</code>, opening quotes to the <code>J</code> key, and so on.</p>
+
+<p>Okay, my layout is ready. Time to hook it in.</p>
+
+<p>Now we&rsquo;re editing the <code>/usr/share/X11/xkb/rules/evdev.xml</code> file. The interesting fragment looks like this:</p>
+
+<p>```xml</p>
+
+<pre><code>&lt;layout&gt;
+  &lt;configItem&gt;
+    &lt;name&gt;pl&lt;/name&gt;
+    &lt;shortDescription&gt;pl&lt;/shortDescription&gt;
+    &lt;description&gt;Polish&lt;/description&gt;
+    &lt;languageList&gt;
+      &lt;iso639Id&gt;pol&lt;/iso639Id&gt;
+    &lt;/languageList&gt;
+  &lt;/configItem&gt;
+  &lt;variantList&gt;
+    &lt;variant&gt;
+      &lt;configItem&gt;
+        &lt;name&gt;qwertz&lt;/name&gt;
+        &lt;description&gt;Polish (qwertz)&lt;/description&gt;
+      &lt;/configItem&gt;
+    &lt;/variant&gt;
+</code></pre>
+
+<p>```</p>
+
+<p>What does it mean? <code>configItem/name</code> is the name of the file in <code>/usr/share/X11/xkb/symbols</code> that contains layout definitions. <code>languageList</code> is a list of languages which that file supports. <code>variantList</code> is a list of alternative layouts that are defined in that file and their user-friendly names (which will be translated if there&rsquo;s translation for them).</p>
+
+<p>Since I didn&rsquo;t want to add the translation for the name of my layout, I simply added an entry with the name hardcoded in Polish:</p>
+
+<p>```xml</p>
+
+<pre><code>    &lt;variant&gt;
+      &lt;configItem&gt;
+        &lt;name&gt;custom3&lt;/name&gt;
+        &lt;description&gt;Polski (własny)&lt;/description&gt;
+      &lt;/configItem&gt;
+    &lt;/variant&gt;
+</code></pre>
+
+<p>```</p>
+
+<p>And that&rsquo;s all!</p>
+
+<p>Also, it&rsquo;s time to explain why it&rsquo;s <code>custom3</code>, not <code>custom</code>. Since those files are cached in memory by the DE, if you change the layout in the <code>/usr/share/X11/xkb/symbols/*</code> file, those changes won&rsquo;t be reloaded. Since I didn&rsquo;t want to restart everything just to test the layout, I solved that problem by adding 2 (and later 3) to the identifier.</p>
+
+<p>And this is the result:</p>
+
+<p><img src="/images/layout-pl-custom.png"></p>
+
+<p>Still not perfect, but way better.</p>
+]]></content>
+  </entry>
+  
+</feed>
