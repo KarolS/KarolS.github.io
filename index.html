@@ -9,7 +9,7 @@
   <meta name="author" content="Karol Stasiak">
 
   
-  <meta name="description" content="I think almost every one of you has some beef with your keyboard layout. There are characters you&rsquo;re never going to use, there are characters &hellip;">
+  <meta name="description" content="After several months of not-so-intensive work, I present the version 0.1 of the Units library: https://github.com/KarolS/units. Units is a library &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,68 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/01/02/units-0-1-released/">Units 0.1 Released</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-02T20:26:00+01:00" pubdate data-updated="true">Jan 2<span>nd</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>After several months of not-so-intensive work, I present the version 0.1 of the <em>Units</em> library: <a href="https://github.com/KarolS/units">https://github.com/KarolS/units</a>.</p>
+
+<p><em>Units</em> is a library for providing type-level units of measurements checked on compile time. The goal of the library was to provide as seamless as possible way to check if the units used in arithmetic expressions are correct.</p>
+
+<p><em>If you have tried to compile it: Yes it does compile that long. A clean build takes 100 seconds on my i7.</em></p>
+
+<p>Compile-time unit checking has multiple applications:</p>
+
+<ul>
+<li><p>scientists will be able to distinguish values in metres per second, metres, metres per second squared <a href="http://en.wikipedia.org/wiki/Mars_Climate_Orbiter">instead of crashing expensive space exploration equipment</a> or <a href="https://www.ismp.org/newsletters/acutecare/articles/A3Q99Action.asp">drugging a patient</a></p></li>
+<li><p>engineers will be able to distinguish values in metres, centimetres, feet, inches, litres, gallons <a href="http://en.wikipedia.org/wiki/Air_Canada_Flight_143">instead of running out of fuel in the middle of a flight</a> or <a href="http://spectrum.ieee.org/tech-talk/at-work/test-and-measurement/columbuss-geographical-miscalculations">thinking the distance to travel is many times shorter</a></p></li>
+<li><p>designers will be able to distinguish values in millimetres, inches, pixels, points</p></li>
+<li><p>economists will be able to distinguish values in euros, dollars, dollars per hour, ounces of gold</p></li>
+<li><p>game developers will be able to distinguish values in pixels, tiles, damage points, minerals, barrels of vespen gas</p></li>
+<li><p>network software developers will be able to distinguish values in kilobytes, kibibytes, kilobits, kilobits per second</p></li>
+<li><p>and so on and on</p></li>
+</ul>
+
+
+<p>There are not many languages with units of measurement support, the first that comes to mind is <a href="http://msdn.microsoft.com/en-us/library/dd233243.aspx">F#</a>. I must admit that it is great at this. There also other languages that support units as a first-class language feature, and many that support units with a library. Those libraries vary in their expressibility and versatility, some of them only allow SI units, some of them require you to explicitly express relations between multiplied values, and some of them only support a limited subset of units. <em>Units</em> library tries to be both expressive and versatile. While it&rsquo;s not as powerful as F# built-in unit support, it definitely allows for quite a bit.</p>
+
+<p>Enough of that, time for some examples that will showcase the main features.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/01/02/units-0-1-released/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -196,6 +258,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/01/02/units-0-1-released/">Units 0.1 Released</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/11/18/creating-custom-keyboard-layouts-for-linux/">Creating Custom Keyboard Layouts for Linux</a>
       </li>
     
@@ -207,7 +273,7 @@
 </section>
 <section>
   <h1>Category Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/keyboard' style='font-size: 160.0%'>keyboard(1)</a> <a href='/blog/categories/linux' style='font-size: 160.0%'>Linux(1)</a> <a href='/blog/categories/unicode' style='font-size: 160.0%'>Unicode(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/keyboard' style='font-size: 160.0%'>keyboard(1)</a> <a href='/blog/categories/linux' style='font-size: 160.0%'>Linux(1)</a> <a href='/blog/categories/personal-project' style='font-size: 160.0%'>personal project(1)</a> <a href='/blog/categories/programming' style='font-size: 160.0%'>programming(1)</a> <a href='/blog/categories/scala' style='font-size: 160.0%'>scala(1)</a> <a href='/blog/categories/unicode' style='font-size: 160.0%'>Unicode(1)</a> <a href='/blog/categories/units' style='font-size: 160.0%'>units(1)</a> <a href='/blog/categories/units-of-measurement' style='font-size: 160.0%'>units of measurement(1)</a> </span>
 </section>
 
   
@@ -216,7 +282,7 @@
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Karol Stasiak -
+  Copyright &copy; 2014 - Karol Stasiak -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 
