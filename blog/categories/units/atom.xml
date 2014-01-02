@@ -4,7 +4,7 @@
   <title><![CDATA[Category: units | Karol Stasiak's Blog]]></title>
   <link href="http://KarolS.github.io/blog/categories/units/atom.xml" rel="self"/>
   <link href="http://KarolS.github.io/"/>
-  <updated>2014-01-02T20:14:05+01:00</updated>
+  <updated>2014-01-02T23:22:15+01:00</updated>
   <id>http://KarolS.github.io/</id>
   <author>
     <name><![CDATA[Karol Stasiak]]></name>
@@ -20,7 +20,7 @@
     <id>http://KarolS.github.io/blog/2014/01/02/units-0-1-released</id>
     <content type="html"><![CDATA[<p>After several months of not-so-intensive work, I present the version 0.1 of the <em>Units</em> library: <a href="https://github.com/KarolS/units">https://github.com/KarolS/units</a>.</p>
 
-<p><em>Units</em> is a library for providing type-level units of measurements checked on compile time. The goal of the library was to provide as seamless as possible way to check if the units used in arithmetic expressions are correct.</p>
+<p><em>Units</em> is a Scala library for providing type-level units of measurements checked on compile time. The goal of the library was to provide as seamless as possible way to check if the units used in arithmetic expressions are correct.</p>
 
 <p><em>If you have tried to compile it: Yes it does compile that long. A clean build takes 100 seconds on my i7.</em></p>
 
@@ -37,7 +37,7 @@
 </ul>
 
 
-<p>There are not many languages with units of measurement support, the first that comes to mind is <a href="http://msdn.microsoft.com/en-us/library/dd233243.aspx">F#</a>. I must admit that it is great at this. There also other languages that support units as a first-class language feature, and many that support units with a library. Those libraries vary in their expressibility and versatility, some of them only allow SI units, some of them require you to explicitly express relations between multiplied values, and some of them only support a limited subset of units. <em>Units</em> library tries to be both expressive and versatile. While it&rsquo;s not as powerful as F# built-in unit support, it definitely allows for quite a bit.</p>
+<p>There are not many languages with units of measurement support, the first that comes to mind is <a href="http://msdn.microsoft.com/en-us/library/dd233243.aspx">F#</a>. I must admit that it is great at this. There also other languages that support units as a first-class language feature, and many that support units with a library. Those libraries vary in their expressibility and versatility, some of them only allow SI units, some of them require you to explicitly express relations between multiplied values, and some of them only support a limited subset of units. There have been earlier Scala libraries with units of measurements, but they all had severe limitations. <em>Units</em> library tries to be both expressive and versatile. While it&rsquo;s not as powerful as F# built-in unit support, it definitely allows for quite a bit.</p>
 
 <p>Enough of that, time for some examples that will showcase the main features.</p>
 
