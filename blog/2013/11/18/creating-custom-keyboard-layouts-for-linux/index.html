@@ -9,7 +9,7 @@
   <meta name="author" content="Karol Stasiak">
 
   
-  <meta name="description" content="I think almost every one of you has some beef with your keyboard layout. There are characters you&rsquo;re never going to use, there are characters &hellip;">
+  <meta name="description" content="I think almost every one of you has some beef with your keyboard layout. There are characters you’re never going to use, there are characters you’d &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -29,6 +29,22 @@
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
 
   
   <script type="text/javascript">
@@ -103,315 +119,329 @@
   </header>
 
 
-<div class="entry-content"><p>I think almost every one of you has some beef with your keyboard layout. There are characters you&rsquo;re never going to use, there are characters you&rsquo;d love to use but they&rsquo;re missing (and you don&rsquo;t like/can&rsquo;t use the compose key for them), and so on.</p>
+<div class="entry-content"><p>I think almost every one of you has some beef with your keyboard layout. There are characters you’re never going to use, there are characters you’d love to use but they’re missing (and you don’t like/can’t use the compose key for them), and so on.</p>
 
 <p>For example, this is the default Polish layout in Linux:</p>
 
-<p><img src="/images/layout-pl.png"></p>
+<p><img src="/images/layout-pl.png" /></p>
 
 <p>A keen eye can notice several things that could be improved:</p>
 
 <ul>
-<li><p>many characters can be input in multiple ways: <code>[</code> (as <code>[</code> or as <code>AltGr-9</code>), <code>ł</code> (as <code>AltGr-w</code> or <code>AltGr-l</code>), <code>&amp;</code> (as <code>Shift-7</code> or <code>AltGr-Shift-k</code>), <code>@</code> (as <code>Shift-2</code> or <code>AltGr-q</code>),</p></li>
-<li><p>the layout has some unassigned combinations (for example <code>AltGr-Shift-4</code>),</p></li>
-<li><p>some important characters are missing: <code>€</code> (the euro sign) and <code>„</code> (Polish opening quote),</p></li>
-<li><p>since I can use the compose key, I don&rsquo;t need all those arbitrarily assigned dead keys on the right.</p></li>
+  <li>
+    <p>many characters can be input in multiple ways: <code>[</code> (as <code>[</code> or as <code>AltGr-9</code>), <code>ł</code> (as <code>AltGr-w</code> or <code>AltGr-l</code>), <code>&amp;</code> (as <code>Shift-7</code> or <code>AltGr-Shift-k</code>), <code>@</code> (as <code>Shift-2</code> or <code>AltGr-q</code>),</p>
+  </li>
+  <li>
+    <p>the layout has some unassigned combinations (for example <code>AltGr-Shift-4</code>),</p>
+  </li>
+  <li>
+    <p>some important characters are missing: <code>€</code> (the euro sign) and <code>„</code> (Polish opening quote),</p>
+  </li>
+  <li>
+    <p>since I can use the compose key, I don’t need all those arbitrarily assigned dead keys on the right.</p>
+  </li>
 </ul>
-
 
 <p>Of course your keyboard layout may have different problems.</p>
 
-<p><strong>Disclaimer:</strong> The following was done on Ubuntu 12.04 with Unity DE, I don&rsquo;t guarantee it will work on other distros. In particular, the file paths can differ.</p>
+<p><strong>Disclaimer:</strong> The following was done on Ubuntu 12.04 with Unity DE, I don’t guarantee it will work on other distros. In particular, the file paths can differ.</p>
 
-<p>How to create a new one, you ask? That&rsquo;s actually pretty simple.</p>
+<p>How to create a new one, you ask? That’s actually pretty simple.</p>
 
 <ul>
-<li><p>layout definitions are in the <code>/usr/share/X11/xkb/symbols</code> directory,</p></li>
-<li><p>layout metadata are in the <code>/usr/share/X11/xkb/rules/evdev.xml</code> file.</p></li>
+  <li>
+    <p>layout definitions are in the <code>/usr/share/X11/xkb/symbols</code> directory,</p>
+  </li>
+  <li>
+    <p>layout metadata are in the <code>/usr/share/X11/xkb/rules/evdev.xml</code> file.</p>
+  </li>
 </ul>
 
-
-<p>Let&rsquo;s first define our layout. The <code>/usr/share/X11/xkb/symbols</code> contains files, each corresponding to a language. Some layouts can belong to several languages, but they&rsquo;re defined in only one of the files. If your layout is supposed to be listed under one language in the keyboard setting anyway, you&rsquo;ll have to add it to the correct file. Since my keyboard layout was to be mostly an improvement on top of the Polish language layout, I decided to add it to <code>/usr/share/X11/xkb/symbols/pl</code>.</p>
+<p>Let’s first define our layout. The <code>/usr/share/X11/xkb/symbols</code> contains files, each corresponding to a language. Some layouts can belong to several languages, but they’re defined in only one of the files. If your layout is supposed to be listed under one language in the keyboard setting anyway, you’ll have to add it to the correct file. Since my keyboard layout was to be mostly an improvement on top of the Polish language layout, I decided to add it to <code>/usr/share/X11/xkb/symbols/pl</code>.</p>
 
 <!-- more -->
 
+<p>The format of this file is pretty simple. I’m going to analyse the default Polish layout line by line.</p>
 
-<p>The format of this file is pretty simple. I&rsquo;m going to analyse the default Polish layout line by line.</p>
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">partial default alphanumeric_keys
+</span><span class="line">xkb_symbols "basic" {</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>partial default alphanumeric_keys
-</span><span class='line'>xkb_symbols "basic" {</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>default</code> means that this is the default layout in this file (other layouts don&rsquo;t have this tag).</p>
+<p><code>default</code> means that this is the default layout in this file (other layouts don’t have this tag).</p>
 
 <p><code>"basic"</code> is the indentifier of this layout within the file.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>include "latin"</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">include "latin"</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>Since most layouts are similar, the <code>include</code> directive simply inserts all key definitions from one layout to another. This one includes the (default) <code>"basic"</code> layout from the <code>/usr/share/X11/xkb/symbols/latin</code> file.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>name[Group1]="Polish";</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">name[Group1]="Polish";</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<p>No clue what it does. It’s recommended to set it to a full English name for the layout.</p>
 
-<p>No clue what it does. It&rsquo;s recommended to set it to a full English name for the layout.</p>
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">key &lt;AD01&gt;  { [         q,          Q ] };
+</span><span class="line">key &lt;AD02&gt;  { [         w,          W ] };
+</span><span class="line">key &lt;AD03&gt;  { [         e,          E,      eogonek,      Eogonek ] };
+</span><span class="line">key &lt;AD09&gt;  { [         o,          O,       oacute,       Oacute ] };
+</span><span class="line">
+</span><span class="line">key &lt;AC01&gt;  { [         a,          A,      aogonek,      Aogonek ] };
+</span><span class="line">key &lt;AC02&gt;  { [         s,          S,       sacute,       Sacute ] };
+</span><span class="line">key &lt;AC04&gt;  { [         f,          F ] };
+</span><span class="line">
+</span><span class="line">key &lt;AB01&gt;  { [         z,          Z,    zabovedot,    Zabovedot ] };
+</span><span class="line">key &lt;AB02&gt;  { [         x,          X,       zacute,       Zacute ] };
+</span><span class="line">key &lt;AB03&gt;  { [         c,          C,       cacute,       Cacute ] };
+</span><span class="line">key &lt;AB06&gt;  { [         n,          N,       nacute,       Nacute ] };</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>key &lt;AD01&gt;  { [         q,          Q ] };
-</span><span class='line'>key &lt;AD02&gt;  { [         w,          W ] };
-</span><span class='line'>key &lt;AD03&gt;  { [         e,          E,      eogonek,      Eogonek ] };
-</span><span class='line'>key &lt;AD09&gt;  { [         o,          O,       oacute,       Oacute ] };
-</span><span class='line'>
-</span><span class='line'>key &lt;AC01&gt;  { [         a,          A,      aogonek,      Aogonek ] };
-</span><span class='line'>key &lt;AC02&gt;  { [         s,          S,       sacute,       Sacute ] };
-</span><span class='line'>key &lt;AC04&gt;  { [         f,          F ] };
-</span><span class='line'>
-</span><span class='line'>key &lt;AB01&gt;  { [         z,          Z,    zabovedot,    Zabovedot ] };
-</span><span class='line'>key &lt;AB02&gt;  { [         x,          X,       zacute,       Zacute ] };
-</span><span class='line'>key &lt;AB03&gt;  { [         c,          C,       cacute,       Cacute ] };
-</span><span class='line'>key &lt;AB06&gt;  { [         n,          N,       nacute,       Nacute ] };</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Those are the definitions that make the Polish layout different from the default Latin one.Each line contains:</p>
+<p>Those are the definitions that make the Polish layout different from the default Latin one.Each line contains: </p>
 
 <ul>
-<li><p>the <code>key</code> keyword,</p></li>
-<li><p>a symbol defining the physical key,</p></li>
-<li><p>a list of characters associated with that key, from left to right: the default one, with Shift key, with AltGr key, with both Shift and AltGr keys.</p></li>
+  <li>
+    <p>the <code>key</code> keyword,</p>
+  </li>
+  <li>
+    <p>a symbol defining the physical key,</p>
+  </li>
+  <li>
+    <p>a list of characters associated with that key, from left to right: the default one, with Shift key, with AltGr key, with both Shift and AltGr keys.</p>
+  </li>
 </ul>
 
-
-<p>The names of the physical keys are as follows (I&rsquo;m referring to keys by their American/Polish usage):</p>
+<p>The names of the physical keys are as follows (I’m referring to keys by their American/Polish usage):</p>
 
 <ul>
-<li><p><code>&lt;TLDE&gt;</code> for the grave accent/tilde key</p></li>
-<li><p><code>&lt;BKSL&gt;</code> for the backslash/bar key</p></li>
-<li><p><code>&lt;AB01&gt;</code>, <code>&lt;AB02&gt;</code> and so on for <code>Z</code>, <code>X</code> &hellip; keys</p></li>
-<li><p><code>&lt;AC01&gt;</code>, <code>&lt;AC02&gt;</code> and so on for <code>A</code>, <code>S</code> &hellip; keys</p></li>
-<li><p><code>&lt;AD01&gt;</code>, <code>&lt;AD02&gt;</code> and so on for <code>Q</code>, <code>W</code> &hellip; keys</p></li>
-<li><p><code>&lt;AE01&gt;</code>, <code>&lt;AE02&gt;</code> and so on for <code>1</code>, <code>2</code> &hellip; keys</p></li>
+  <li>
+    <p><code>&lt;TLDE&gt;</code> for the grave accent/tilde key</p>
+  </li>
+  <li>
+    <p><code>&lt;BKSL&gt;</code> for the backslash/bar key</p>
+  </li>
+  <li>
+    <p><code>&lt;AB01&gt;</code>, <code>&lt;AB02&gt;</code> and so on for <code>Z</code>, <code>X</code> … keys</p>
+  </li>
+  <li>
+    <p><code>&lt;AC01&gt;</code>, <code>&lt;AC02&gt;</code> and so on for <code>A</code>, <code>S</code> … keys</p>
+  </li>
+  <li>
+    <p><code>&lt;AD01&gt;</code>, <code>&lt;AD02&gt;</code> and so on for <code>Q</code>, <code>W</code> … keys</p>
+  </li>
+  <li>
+    <p><code>&lt;AE01&gt;</code>, <code>&lt;AE02&gt;</code> and so on for <code>1</code>, <code>2</code> … keys</p>
+  </li>
 </ul>
-
 
 <p>Note: this refers to their <em>physical</em> layout, so I could also say that <code>AB</code> is the row above the spacebar, <code>AC</code> is the row with caps lock key, <code>AD</code> is the row with tab key, and <code>AE</code> is the row with digits, and the numbering goes from left to right. For example, <code>&lt;AD11&gt;</code> is labelled <code>[</code> on the American keyboard and <code>Ü</code> on the German one; <code>&lt;AB01&gt;</code> is <code>Z</code> on the American keyboard, <code>W</code> on the French keyboard, and <code>Y</code> on the German keyboard. <code>&lt;TLDE&gt;</code> is always in the top left, just under the <code>Esc</code> key, and <code>&lt;BKSL&gt;</code> is in either <code>AC</code>, <code>AD</code> or <code>AE</code> row (depending on the keyboard).</p>
 
-<p>Also, for some reason trying to override a key with a shorter definition doesn&rsquo;t work.</p>
+<p>Also, for some reason trying to override a key with a shorter definition doesn’t work.</p>
 
 <p>As for the character codes, you can look around the files to learn them, or just use Unicode codepoints in hexadecimal, for example <code>U0041</code> and <code>A</code> are synonymous.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>include "kpdl(comma)"</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">include "kpdl(comma)"</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>This defines the behaviour of the decimal point key on the numpad. (More accurately, imports such behaviour override from <code>/usr/share/X11/xkb/symbols/kpdl</code>.)</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>include "level3(ralt_switch)"
-</span><span class='line'>};</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">include "level3(ralt_switch)"
+</span><span class="line">};</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-
-<p>And finally, this defines how the 3rd level (the one with accented characters, the one I referred to as “AltGr”) is accessed. In this case, it&rsquo;s with the right Alt key.</p>
+<p>And finally, this defines how the 3rd level (the one with accented characters, the one I referred to as “AltGr”) is accessed. In this case, it’s with the right Alt key.</p>
 
 <p>So I created my own layout by copying the existing one and modifying it:</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>partial alphanumeric_keys
-</span><span class='line'>xkb_symbols "custom3" {
-</span><span class='line'>    include "latin"</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">partial alphanumeric_keys
+</span><span class="line">xkb_symbols "custom3" {
+</span><span class="line">    include "latin"</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<p><code>"custom3"</code> is the identifier of my new layout (why 3, I’ll explain later). My new layout is not defined as the default one.</p>
 
-<p><code>"custom3"</code> is the identifier of my new layout (why 3, I&rsquo;ll explain later). My new layout is not defined as the default one.</p>
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">name[Group1]="Polish (custom)";</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>name[Group1]="Polish (custom)";</span></code></pre></td></tr></table></div></figure>
+<p>No clue why I did this, but it looks consistent with the rest of the file, so I guess it’s correct.</p>
 
-
-<p>No clue why I did this, but it looks consistent with the rest of the file, so I guess it&rsquo;s correct.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>key &lt;AE07&gt;  { [ 7, ampersand, copyright, seveneighths ] };
-</span><span class='line'>key &lt;AE08&gt;  { [ 8, asterisk, U221E, trademark ] };
-</span><span class='line'>key &lt;AE09&gt;  { [ 9, parenleft, guillemotleft, plusminus ] };
-</span><span class='line'>key &lt;AE10&gt;  { [ 0, parenright, guillemotright, degree ] };
-</span><span class='line'>
-</span><span class='line'>key &lt;AD03&gt;  { [         e,          E,      eogonek,      Eogonek ] };
-</span><span class='line'>key &lt;AD09&gt;  { [         o,          O,       oacute,       Oacute ] };
-</span><span class='line'>
-</span><span class='line'>key &lt;AC01&gt;  { [         a,          A,      aogonek,      Aogonek ] };
-</span><span class='line'>key &lt;AC02&gt;  { [         s,          S,       sacute,       Sacute ] };
-</span><span class='line'>key &lt;AC04&gt;  { [         f,          F ] };
-</span><span class='line'>
-</span><span class='line'>key &lt;AB01&gt;  { [         z,          Z,    zabovedot,    Zabovedot ] };
-</span><span class='line'>key &lt;AB02&gt;  { [         x,          X,       zacute,       Zacute ] };
-</span><span class='line'>key &lt;AB03&gt;  { [         c,          C,       cacute,       Cacute ] };
-</span><span class='line'>key &lt;AB06&gt;  { [         n,          N,       nacute,       Nacute ] };
-</span><span class='line'>
-</span><span class='line'>include "kpdl(comma)"
-</span><span class='line'>
-</span><span class='line'>include "level3(ralt_switch)"
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>key &lt;TLDE&gt;  { [ grave, asciitilde, notsign, section ] };
-</span><span class='line'>
-</span><span class='line'>key &lt;AE04&gt;  { [ 4, dollar, onequarter, EuroSign ] };
-</span><span class='line'>key &lt;AE07&gt;  { [ 7, ampersand, copyright, seveneighths ] };
-</span><span class='line'>key &lt;AE08&gt;  { [ 8, asterisk, U221E, trademark ] };
-</span><span class='line'>key &lt;AE09&gt;  { [ 9, parenleft, guillemotleft, plusminus ] };
-</span><span class='line'>key &lt;AE10&gt;  { [ 0, parenright, guillemotright, degree ] };
-</span><span class='line'>key &lt;AE11&gt;  { [ minus, underscore, U2013, questiondown ] };
-</span><span class='line'>key &lt;AE12&gt;  { [ equal, plus, U2260, Greek_SIGMA ] };
-</span><span class='line'>
-</span><span class='line'>key &lt;AD01&gt;  { [ q, Q, Greek_pi, Greek_OMEGA ] };
-</span><span class='line'>key &lt;AD02&gt;  { [ w, W, cent, U20A9 ] };
-</span><span class='line'>key &lt;AD11&gt;  { [bracketleft,  braceleft, udiaeresis, Udiaeresis ] };
-</span><span class='line'>key &lt;AD12&gt;  { [bracketright, braceright, ssharp,  ediaeresis ] };
-</span><span class='line'>
-</span><span class='line'>key &lt;BKSL&gt;  { [backslash, bar, eacute, egrave] };
-</span><span class='line'>
-</span><span class='line'>key &lt;AC07&gt;  { [ j, J, doublelowquotemark, singlelowquotemark] };
-</span><span class='line'>key &lt;AC08&gt;  { [ k, K, kra, U2030] };
-</span><span class='line'>key &lt;AC10&gt;  { [ semicolon,    colon, odiaeresis, Odiaeresis ] };
-</span><span class='line'>key &lt;AC11&gt;  { [apostrophe, quotedbl, adiaeresis,  Adiaeresis ] };
-</span><span class='line'>
-</span><span class='line'>key &lt;AB08&gt;  { [ comma,  less, ellipsis, multiply ]  };
-</span><span class='line'>key &lt;AB10&gt;  { [ slash, question, agrave, idiaeresis ] };
-</span><span class='line'>
-</span><span class='line'>};</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">key &lt;AE07&gt;  { [ 7, ampersand, copyright, seveneighths ] };
+</span><span class="line">key &lt;AE08&gt;  { [ 8, asterisk, U221E, trademark ] };
+</span><span class="line">key &lt;AE09&gt;  { [ 9, parenleft, guillemotleft, plusminus ] };
+</span><span class="line">key &lt;AE10&gt;  { [ 0, parenright, guillemotright, degree ] };
+</span><span class="line">
+</span><span class="line">key &lt;AD03&gt;  { [         e,          E,      eogonek,      Eogonek ] };
+</span><span class="line">key &lt;AD09&gt;  { [         o,          O,       oacute,       Oacute ] };
+</span><span class="line">
+</span><span class="line">key &lt;AC01&gt;  { [         a,          A,      aogonek,      Aogonek ] };
+</span><span class="line">key &lt;AC02&gt;  { [         s,          S,       sacute,       Sacute ] };
+</span><span class="line">key &lt;AC04&gt;  { [         f,          F ] };
+</span><span class="line">
+</span><span class="line">key &lt;AB01&gt;  { [         z,          Z,    zabovedot,    Zabovedot ] };
+</span><span class="line">key &lt;AB02&gt;  { [         x,          X,       zacute,       Zacute ] };
+</span><span class="line">key &lt;AB03&gt;  { [         c,          C,       cacute,       Cacute ] };
+</span><span class="line">key &lt;AB06&gt;  { [         n,          N,       nacute,       Nacute ] };
+</span><span class="line">
+</span><span class="line">include "kpdl(comma)"
+</span><span class="line">
+</span><span class="line">include "level3(ralt_switch)"
+</span><span class="line">
+</span><span class="line">
+</span><span class="line">key &lt;TLDE&gt;  { [ grave, asciitilde, notsign, section ] };
+</span><span class="line">
+</span><span class="line">key &lt;AE04&gt;  { [ 4, dollar, onequarter, EuroSign ] };
+</span><span class="line">key &lt;AE07&gt;  { [ 7, ampersand, copyright, seveneighths ] };
+</span><span class="line">key &lt;AE08&gt;  { [ 8, asterisk, U221E, trademark ] };
+</span><span class="line">key &lt;AE09&gt;  { [ 9, parenleft, guillemotleft, plusminus ] };
+</span><span class="line">key &lt;AE10&gt;  { [ 0, parenright, guillemotright, degree ] };
+</span><span class="line">key &lt;AE11&gt;  { [ minus, underscore, U2013, questiondown ] };
+</span><span class="line">key &lt;AE12&gt;  { [ equal, plus, U2260, Greek_SIGMA ] };
+</span><span class="line">
+</span><span class="line">key &lt;AD01&gt;  { [ q, Q, Greek_pi, Greek_OMEGA ] };
+</span><span class="line">key &lt;AD02&gt;  { [ w, W, cent, U20A9 ] };
+</span><span class="line">key &lt;AD11&gt;  { [bracketleft,  braceleft, udiaeresis, Udiaeresis ] };
+</span><span class="line">key &lt;AD12&gt;  { [bracketright, braceright, ssharp,  ediaeresis ] };
+</span><span class="line">
+</span><span class="line">key &lt;BKSL&gt;  { [backslash, bar, eacute, egrave] };
+</span><span class="line">
+</span><span class="line">key &lt;AC07&gt;  { [ j, J, doublelowquotemark, singlelowquotemark] };
+</span><span class="line">key &lt;AC08&gt;  { [ k, K, kra, U2030] };
+</span><span class="line">key &lt;AC10&gt;  { [ semicolon,    colon, odiaeresis, Odiaeresis ] };
+</span><span class="line">key &lt;AC11&gt;  { [apostrophe, quotedbl, adiaeresis,  Adiaeresis ] };
+</span><span class="line">
+</span><span class="line">key &lt;AB08&gt;  { [ comma,  less, ellipsis, multiply ]  };
+</span><span class="line">key &lt;AB10&gt;  { [ slash, question, agrave, idiaeresis ] };
+</span><span class="line">
+</span><span class="line">};</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>As you can see, I added an euro sign to <code>Shift-AltGr-4</code>, opening quotes to the <code>J</code> key, and so on.</p>
 
 <p>Okay, my layout is ready. Time to hook it in.</p>
 
-<p>Now we&rsquo;re editing the <code>/usr/share/X11/xkb/rules/evdev.xml</code> file. The interesting fragment looks like this:</p>
+<p>Now we’re editing the <code>/usr/share/X11/xkb/rules/evdev.xml</code> file. The interesting fragment looks like this:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;layout&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;configItem&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;name&gt;</span>pl<span class="nt">&lt;/name&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;shortDescription&gt;</span>pl<span class="nt">&lt;/shortDescription&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;description&gt;</span>Polish<span class="nt">&lt;/description&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;languageList&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;iso639Id&gt;</span>pol<span class="nt">&lt;/iso639Id&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/languageList&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/configItem&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;variantList&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;variant&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;configItem&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;name&gt;</span>qwertz<span class="nt">&lt;/name&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;description&gt;</span>Polish (qwertz)<span class="nt">&lt;/description&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;/configItem&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/variant&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+</pre></td><td class="code"><pre><code class="xml"><span class="line"><span class="nt">&lt;layout&gt;</span>
+</span><span class="line">  <span class="nt">&lt;configItem&gt;</span>
+</span><span class="line">    <span class="nt">&lt;name&gt;</span>pl<span class="nt">&lt;/name&gt;</span>
+</span><span class="line">    <span class="nt">&lt;shortDescription&gt;</span>pl<span class="nt">&lt;/shortDescription&gt;</span>
+</span><span class="line">    <span class="nt">&lt;description&gt;</span>Polish<span class="nt">&lt;/description&gt;</span>
+</span><span class="line">    <span class="nt">&lt;languageList&gt;</span>
+</span><span class="line">      <span class="nt">&lt;iso639Id&gt;</span>pol<span class="nt">&lt;/iso639Id&gt;</span>
+</span><span class="line">    <span class="nt">&lt;/languageList&gt;</span>
+</span><span class="line">  <span class="nt">&lt;/configItem&gt;</span>
+</span><span class="line">  <span class="nt">&lt;variantList&gt;</span>
+</span><span class="line">    <span class="nt">&lt;variant&gt;</span>
+</span><span class="line">      <span class="nt">&lt;configItem&gt;</span>
+</span><span class="line">        <span class="nt">&lt;name&gt;</span>qwertz<span class="nt">&lt;/name&gt;</span>
+</span><span class="line">        <span class="nt">&lt;description&gt;</span>Polish (qwertz)<span class="nt">&lt;/description&gt;</span>
+</span><span class="line">      <span class="nt">&lt;/configItem&gt;</span>
+</span><span class="line">    <span class="nt">&lt;/variant&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<p>What does it mean? <code>configItem/name</code> is the name of the file in <code>/usr/share/X11/xkb/symbols</code> that contains layout definitions. <code>languageList</code> is a list of languages which that file supports. <code>variantList</code> is a list of alternative layouts that are defined in that file and their user-friendly names (which will be translated if there’s translation for them).</p>
 
-<p>What does it mean? <code>configItem/name</code> is the name of the file in <code>/usr/share/X11/xkb/symbols</code> that contains layout definitions. <code>languageList</code> is a list of languages which that file supports. <code>variantList</code> is a list of alternative layouts that are defined in that file and their user-friendly names (which will be translated if there&rsquo;s translation for them).</p>
+<p>Since I didn’t want to add the translation for the name of my layout, I simply added an entry with the name hardcoded in Polish:</p>
 
-<p>Since I didn&rsquo;t want to add the translation for the name of my layout, I simply added an entry with the name hardcoded in Polish:</p>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="xml"><span class="line">    <span class="nt">&lt;variant&gt;</span>
+</span><span class="line">      <span class="nt">&lt;configItem&gt;</span>
+</span><span class="line">        <span class="nt">&lt;name&gt;</span>custom3<span class="nt">&lt;/name&gt;</span>
+</span><span class="line">        <span class="nt">&lt;description&gt;</span>Polski (własny)<span class="nt">&lt;/description&gt;</span>
+</span><span class="line">      <span class="nt">&lt;/configItem&gt;</span>
+</span><span class="line">    <span class="nt">&lt;/variant&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'>    <span class="nt">&lt;variant&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;configItem&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;name&gt;</span>custom3<span class="nt">&lt;/name&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;description&gt;</span>Polski (własny)<span class="nt">&lt;/description&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;/configItem&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/variant&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
+<p>And that’s all!</p>
 
-
-<p>And that&rsquo;s all!</p>
-
-<p>Also, it&rsquo;s time to explain why it&rsquo;s <code>custom3</code>, not <code>custom</code>. Since those files are cached in memory by the DE, if you change the layout in the <code>/usr/share/X11/xkb/symbols/*</code> file, those changes won&rsquo;t be reloaded. Since I didn&rsquo;t want to restart everything just to test the layout, I solved that problem by adding 2 (and later 3) to the identifier.</p>
+<p>Also, it’s time to explain why it’s <code>custom3</code>, not <code>custom</code>. Since those files are cached in memory by the DE, if you change the layout in the <code>/usr/share/X11/xkb/symbols/*</code> file, those changes won’t be reloaded. Since I didn’t want to restart everything just to test the layout, I solved that problem by adding 2 (and later 3) to the identifier.</p>
 
 <p>And this is the result:</p>
 
-<p><img src="/images/layout-pl-custom.png"></p>
+<p><img src="/images/layout-pl-custom.png" /></p>
 
 <p>Still not perfect, but way better.</p>
 </div>
@@ -485,6 +515,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/01/03/hocr4j-0-1-released/">hOCR4J 0.1 Released</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/01/02/units-0-1-released/">Units 0.1 Released</a>
       </li>
     
@@ -500,7 +534,7 @@
 </section>
 <section>
   <h1>Category Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/keyboard' style='font-size: 160.0%'>keyboard(1)</a> <a href='/blog/categories/linux' style='font-size: 160.0%'>Linux(1)</a> <a href='/blog/categories/personal-project' style='font-size: 160.0%'>personal project(1)</a> <a href='/blog/categories/programming' style='font-size: 160.0%'>programming(1)</a> <a href='/blog/categories/scala' style='font-size: 160.0%'>scala(1)</a> <a href='/blog/categories/unicode' style='font-size: 160.0%'>Unicode(1)</a> <a href='/blog/categories/units' style='font-size: 160.0%'>units(1)</a> <a href='/blog/categories/units-of-measurement' style='font-size: 160.0%'>units of measurement(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/hocr4j' style='font-size: 130.0%'>hOCR4J(1)</a> <a href='/blog/categories/java' style='font-size: 130.0%'>Java(1)</a> <a href='/blog/categories/keyboard' style='font-size: 130.0%'>keyboard(1)</a> <a href='/blog/categories/linux' style='font-size: 130.0%'>Linux(1)</a> <a href='/blog/categories/ocr' style='font-size: 130.0%'>OCR(1)</a> <a href='/blog/categories/personal-project' style='font-size: 160.0%'>personal project(2)</a> <a href='/blog/categories/programming' style='font-size: 160.0%'>programming(2)</a> <a href='/blog/categories/scala' style='font-size: 130.0%'>scala(1)</a> <a href='/blog/categories/unicode' style='font-size: 130.0%'>Unicode(1)</a> <a href='/blog/categories/units' style='font-size: 130.0%'>units(1)</a> <a href='/blog/categories/units-of-measurement' style='font-size: 130.0%'>units of measurement(1)</a> </span>
 </section>
 
   

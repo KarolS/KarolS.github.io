@@ -4,7 +4,7 @@
   <title><![CDATA[Karol Stasiak's Blog]]></title>
   <link href="http://KarolS.github.io/atom.xml" rel="self"/>
   <link href="http://KarolS.github.io/"/>
-  <updated>2014-01-02T23:22:15+01:00</updated>
+  <updated>2014-01-03T10:35:23+01:00</updated>
   <id>http://KarolS.github.io/</id>
   <author>
     <name><![CDATA[Karol Stasiak]]></name>
@@ -12,6 +12,145 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[hOCR4J 0.1 released]]></title>
+    <link href="http://KarolS.github.io/blog/2014/01/03/hocr4j-0-1-released/"/>
+    <updated>2014-01-03T00:11:00+01:00</updated>
+    <id>http://KarolS.github.io/blog/2014/01/03/hocr4j-0-1-released</id>
+    <content type="html"><![CDATA[<p>I would like to announce the release of a Java library for parsing hOCR documents: <strong>hOCR4J</strong>. You can <a href="https://github.com/KarolS/hOCR4J">download it from here</a>. I’m planning to get it to Sonatype too, so you may be able to get it from there in the near future.</p>
+
+<p>hOCR is an output format used by OCR programs, including <a href="http://code.google.com/p/tesseract-ocr">Tesseract</a>. It contains information about all the OCR’d words, their position, and their assumed organisation into lines and paragraphs. Currently, hOCR4J was tested to work with Tesseract-generated hOCR’s, I plan to test other OCR programs in the future.</p>
+
+<p>hOCR4J parses hOCR documents, creates an immutable model for them (nice when using functional programming style), and provides various tools to manipulate and modify them.</p>
+
+<p>hOCR4J makes a good starting point when developing an application which extracts data from OCR’d documents that have non-trivial layouts.</p>
+
+<!-- more -->
+
+<p>The model of an hOCR document is simple: a page contains areas, an area contains paragraphs, a paragraph contains lines, a line contains words. Each of these objects has a bounding box, which defines its position on the scanned page. hOCR4J provides various operations on bounding boxes in the <code>Bounds</code> class, including scaling, resizing, translating, unions, intersections, and more.</p>
+
+<p>Using hOCR4J is also simple. First, we need to get our hOCR file and read the hOCR into a string. Then we can parse it:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="n">String</span> <span class="n">hocr</span> <span class="o">=</span> <span class="o">...</span> <span class="o">;</span> <span class="c1">// load hOCR here</span>
+</span><span class="line">
+</span><span class="line"><span class="n">List</span><span class="o">&lt;</span><span class="n">Page</span><span class="o">&gt;</span> <span class="n">pages</span> <span class="o">=</span> <span class="n">HocrParser</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">hocr</span><span class="o">);</span>
+</span><span class="line">
+</span><span class="line"><span class="n">Page</span> <span class="n">page0</span> <span class="o">=</span> <span class="n">pages</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>We can now extract some text:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">textLines</span> <span class="o">=</span> <span class="n">page0</span><span class="o">.</span><span class="na">getAllLinesAsStrings</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>We can only extract lines that satisfy some conditions:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="n">List</span><span class="o">&lt;</span><span class="n">Line</span><span class="o">&gt;</span> <span class="n">lines</span> <span class="o">=</span> <span class="n">page0</span><span class="o">.</span><span class="na">findAllLines</span><span class="o">(</span><span class="n">LineThat</span><span class="o">.</span><span class="na">matchesRegex</span><span class="o">(</span><span class="s">&quot;^IMPORTANT:&quot;</span><span class="o">));</span>
+</span><span class="line">
+</span><span class="line"><span class="k">for</span> <span class="o">(</span><span class="n">Line</span> <span class="nl">line:</span> <span class="n">lines</span><span class="o">){</span>
+</span><span class="line">  <span class="n">String</span> <span class="n">text</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">mkString</span><span class="o">();</span>
+</span><span class="line">  <span class="c1">// ...</span>
+</span><span class="line"><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>We can look for words in italics:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="n">List</span><span class="o">&lt;</span><span class="n">Word</span><span class="o">&gt;</span> <span class="n">words</span> <span class="o">=</span> <span class="n">page0</span><span class="o">.</span><span class="na">getAllWords</span><span class="o">();</span>
+</span><span class="line">
+</span><span class="line"><span class="k">for</span> <span class="o">(</span><span class="n">Word</span> <span class="nl">word:</span> <span class="n">words</span><span class="o">){</span>
+</span><span class="line">  <span class="k">if</span> <span class="o">(</span><span class="n">word</span><span class="o">.</span><span class="na">isItalic</span><span class="o">()){</span>
+</span><span class="line">    <span class="n">String</span> <span class="n">w</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="na">getText</span><span class="o">();</span>
+</span><span class="line">    <span class="c1">// ...</span>
+</span><span class="line">  <span class="o">}</span>
+</span><span class="line"><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>We can look for location of a word or phrase (spaces are ignored, as OCR sometimes inserts more or less of them):</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="c1">// let&#39;s censor the name of the culprit</span>
+</span><span class="line"><span class="n">Page</span> <span class="n">censoredPage</span> <span class="o">=</span> <span class="n">page0</span><span class="o">.</span><span class="na">mapLines</span><span class="o">(</span><span class="k">new</span> <span class="n">Function</span><span class="o">&lt;</span><span class="n">Line</span><span class="o">,</span><span class="n">Line</span><span class="o">&gt;(){</span>
+</span><span class="line">  <span class="kd">public</span> <span class="n">Line</span> <span class="nf">apply</span><span class="o">(</span><span class="n">Line</span> <span class="n">line</span><span class="o">){</span>
+</span><span class="line">
+</span><span class="line">    <span class="c1">// we check if the line mentions culprit&#39;s name</span>
+</span><span class="line">    <span class="kd">final</span> <span class="n">Bounds</span> <span class="n">theCulpritIs</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">findBoundsOfWord</span><span class="o">(</span><span class="s">&quot;The culprit is&quot;</span><span class="o">);</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">if</span> <span class="o">(</span><span class="n">theCulpritIs</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class="line">      <span class="c1">// we take bounds of the entire line</span>
+</span><span class="line">      <span class="n">Bounds</span> <span class="n">full</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">getBounds</span><span class="o">();</span>
+</span><span class="line">
+</span><span class="line">      <span class="c1">// and we calculate bounds of a line</span>
+</span><span class="line">      <span class="c1">// that doesn&#39;t extend beyond words &quot;The culprit is&quot;</span>
+</span><span class="line">      <span class="n">Bounds</span> <span class="n">remain</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Bounds</span><span class="o">(</span>
+</span><span class="line">        <span class="n">full</span><span class="o">.</span><span class="na">getLeft</span><span class="o">(),</span>
+</span><span class="line">        <span class="n">full</span><span class="o">.</span><span class="na">getTop</span><span class="o">(),</span>
+</span><span class="line">        <span class="n">theCulpritIs</span><span class="o">.</span><span class="na">getRight</span><span class="o">(),</span>
+</span><span class="line">        <span class="n">full</span><span class="o">.</span><span class="na">getBottom</span><span class="o">());</span>
+</span><span class="line">
+</span><span class="line">      <span class="c1">// finally, we trim our line</span>
+</span><span class="line">      <span class="k">return</span> <span class="n">line</span><span class="o">.</span><span class="na">createBounded</span><span class="o">(</span><span class="n">remain</span><span class="o">);</span>
+</span><span class="line">    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class="line">      <span class="c1">// all the other lines are left unmodified</span>
+</span><span class="line">      <span class="k">return</span> <span class="n">line</span><span class="o">;</span>
+</span><span class="line">    <span class="o">}</span>
+</span><span class="line">  <span class="o">}</span>
+</span><span class="line"><span class="o">});</span>
+</span><span class="line">
+</span><span class="line"><span class="k">return</span> <span class="n">censoredPage</span><span class="o">;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>In the near future, I’m planning a tutorial on extracting text columns from hOCR using hOCR4J.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Units 0.1 released]]></title>
@@ -27,192 +166,216 @@
 <p>Compile-time unit checking has multiple applications:</p>
 
 <ul>
-<li><p>scientists will be able to distinguish values in metres per second, metres, metres per second squared <a href="http://en.wikipedia.org/wiki/Mars_Climate_Orbiter">instead of crashing expensive space exploration equipment</a> or <a href="https://www.ismp.org/newsletters/acutecare/articles/A3Q99Action.asp">drugging a patient</a></p></li>
-<li><p>engineers will be able to distinguish values in metres, centimetres, feet, inches, litres, gallons <a href="http://en.wikipedia.org/wiki/Air_Canada_Flight_143">instead of running out of fuel in the middle of a flight</a> or <a href="http://spectrum.ieee.org/tech-talk/at-work/test-and-measurement/columbuss-geographical-miscalculations">thinking the distance to travel is many times shorter</a></p></li>
-<li><p>designers will be able to distinguish values in millimetres, inches, pixels, points</p></li>
-<li><p>economists will be able to distinguish values in euros, dollars, dollars per hour, ounces of gold</p></li>
-<li><p>game developers will be able to distinguish values in pixels, tiles, damage points, minerals, barrels of vespen gas</p></li>
-<li><p>network software developers will be able to distinguish values in kilobytes, kibibytes, kilobits, kilobits per second</p></li>
-<li><p>and so on and on</p></li>
+  <li>
+    <p>scientists will be able to distinguish values in metres per second, metres, metres per second squared <a href="http://en.wikipedia.org/wiki/Mars_Climate_Orbiter">instead of crashing expensive space exploration equipment</a> or <a href="https://www.ismp.org/newsletters/acutecare/articles/A3Q99Action.asp">drugging a patient</a></p>
+  </li>
+  <li>
+    <p>engineers will be able to distinguish values in metres, centimetres, feet, inches, litres, gallons <a href="http://en.wikipedia.org/wiki/Air_Canada_Flight_143">instead of running out of fuel in the middle of a flight</a> or <a href="http://spectrum.ieee.org/tech-talk/at-work/test-and-measurement/columbuss-geographical-miscalculations">thinking the distance to travel is many times shorter</a></p>
+  </li>
+  <li>
+    <p>designers will be able to distinguish values in millimetres, inches, pixels, points</p>
+  </li>
+  <li>
+    <p>economists will be able to distinguish values in euros, dollars, dollars per hour, ounces of gold</p>
+  </li>
+  <li>
+    <p>game developers will be able to distinguish values in pixels, tiles, damage points, minerals, barrels of vespen gas</p>
+  </li>
+  <li>
+    <p>network software developers will be able to distinguish values in kilobytes, kibibytes, kilobits, kilobits per second</p>
+  </li>
+  <li>
+    <p>and so on and on</p>
+  </li>
 </ul>
 
-
-<p>There are not many languages with units of measurement support, the first that comes to mind is <a href="http://msdn.microsoft.com/en-us/library/dd233243.aspx">F#</a>. I must admit that it is great at this. There also other languages that support units as a first-class language feature, and many that support units with a library. Those libraries vary in their expressibility and versatility, some of them only allow SI units, some of them require you to explicitly express relations between multiplied values, and some of them only support a limited subset of units. There have been earlier Scala libraries with units of measurements, but they all had severe limitations. <em>Units</em> library tries to be both expressive and versatile. While it&rsquo;s not as powerful as F# built-in unit support, it definitely allows for quite a bit.</p>
+<p>There are not many languages with units of measurement support, the first that comes to mind is <a href="http://msdn.microsoft.com/en-us/library/dd233243.aspx">F#</a>. I must admit that it is great at this. There also other languages that support units as a first-class language feature, and many that support units with a library. Those libraries vary in their expressibility and versatility, some of them only allow SI units, some of them require you to explicitly express relations between multiplied values, and some of them only support a limited subset of units. There have been earlier Scala libraries with units of measurements, but they all had severe limitations. <em>Units</em> library tries to be both expressive and versatile. While it’s not as powerful as F# built-in unit support, it definitely allows for quite a bit.</p>
 
 <p>Enough of that, time for some examples that will showcase the main features.</p>
 
 <!-- more -->
 
+<p>Let’s start with something simple:</p>
 
-<p>Let&rsquo;s start with something simple:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">io.github.karols.units._</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">io.github.karols.units.SI._</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">val</span> <span class="n">length1</span> <span class="k">=</span> <span class="mf">1.</span><span class="n">of</span><span class="o">[</span><span class="kt">metre</span><span class="o">]</span>
-</span><span class='line'><span class="k">val</span> <span class="n">length2</span> <span class="k">=</span> <span class="mf">2.</span><span class="n">of</span><span class="o">[</span><span class="kt">metre</span><span class="o">]</span>
-</span><span class='line'><span class="k">val</span> <span class="n">area1</span> <span class="k">=</span> <span class="mf">1.</span><span class="n">of</span><span class="o">[</span><span class="kt">square</span><span class="o">[</span><span class="kt">metre</span><span class="o">]]</span>
-</span><span class='line'><span class="k">val</span> <span class="n">area2</span> <span class="k">=</span> <span class="n">length1</span> <span class="o">*</span> <span class="n">length2</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">length1</span> <span class="o">&lt;</span> <span class="n">length2</span> <span class="c1">// OK</span>
-</span><span class='line'><span class="n">area1</span> <span class="o">+</span> <span class="n">area2</span> <span class="c1">//OK</span>
-</span><span class='line'><span class="n">area1</span> <span class="o">+</span> <span class="n">length2</span> <span class="c1">// not OK, compile time error</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="scala"><span class="line"><span class="k">import</span> <span class="nn">io.github.karols.units._</span>
+</span><span class="line"><span class="k">import</span> <span class="nn">io.github.karols.units.SI._</span>
+</span><span class="line">
+</span><span class="line"><span class="k">val</span> <span class="n">length1</span> <span class="k">=</span> <span class="mf">1.</span><span class="n">of</span><span class="o">[</span><span class="kt">metre</span><span class="o">]</span>
+</span><span class="line"><span class="k">val</span> <span class="n">length2</span> <span class="k">=</span> <span class="mf">2.</span><span class="n">of</span><span class="o">[</span><span class="kt">metre</span><span class="o">]</span>
+</span><span class="line"><span class="k">val</span> <span class="n">area1</span> <span class="k">=</span> <span class="mf">1.</span><span class="n">of</span><span class="o">[</span><span class="kt">square</span><span class="o">[</span><span class="kt">metre</span><span class="o">]]</span>
+</span><span class="line"><span class="k">val</span> <span class="n">area2</span> <span class="k">=</span> <span class="n">length1</span> <span class="o">*</span> <span class="n">length2</span>
+</span><span class="line">
+</span><span class="line"><span class="n">length1</span> <span class="o">&lt;</span> <span class="n">length2</span> <span class="c1">// OK</span>
+</span><span class="line"><span class="n">area1</span> <span class="o">+</span> <span class="n">area2</span> <span class="c1">//OK</span>
+</span><span class="line"><span class="n">area1</span> <span class="o">+</span> <span class="n">length2</span> <span class="c1">// not OK, compile time error</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>The main difference you see is that all the values have a unit defined. The type of the variables in this example is <code>IntU[metre]</code> and <code>IntU[square[metre]]</code> respectively. It is an <code>AnyVal</code> wrapping a 64-bit <code>Long</code>. There is also <code>DoubleU</code>, which wraps 64-bit <code>Double</code>.</p>
 
 <p>The library supports out-of-the-box most SI units, some Imperial and US Customary units, units of information and bandwidth, and many currencies. Most of the units can be semi-automatically converted, i.e. the following code:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">printMM</span><span class="o">(</span><span class="n">length</span><span class="k">:</span> <span class="kt">DoubleU</span><span class="o">[</span><span class="kt">millimetre</span><span class="o">])</span> <span class="k">=</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;The length is $length mm.&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">printMM</span><span class="o">(</span><span class="mf">1.</span><span class="n">of</span><span class="o">[</span><span class="kt">inch</span><span class="o">].</span><span class="n">convert</span><span class="o">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">printMM</span><span class="o">(</span><span class="mf">1.</span><span class="n">of</span><span class="o">[</span><span class="kt">metre</span><span class="o">]</span> <span class="o">+</span> <span class="mf">1.</span><span class="n">of</span><span class="o">[</span><span class="kt">millimetre</span><span class="o">])</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="scala"><span class="line"><span class="k">def</span> <span class="n">printMM</span><span class="o">(</span><span class="n">length</span><span class="k">:</span> <span class="kt">DoubleU</span><span class="o">[</span><span class="kt">millimetre</span><span class="o">])</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class="line">  <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;The length is $length mm.&quot;</span><span class="o">)</span>
+</span><span class="line"><span class="o">}</span>
+</span><span class="line">
+</span><span class="line"><span class="n">printMM</span><span class="o">(</span><span class="mf">1.</span><span class="n">of</span><span class="o">[</span><span class="kt">inch</span><span class="o">].</span><span class="n">convert</span><span class="o">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">printMM</span><span class="o">(</span><span class="mf">1.</span><span class="n">of</span><span class="o">[</span><span class="kt">metre</span><span class="o">]</span> <span class="o">+</span> <span class="mf">1.</span><span class="n">of</span><span class="o">[</span><span class="kt">millimetre</span><span class="o">])</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<p>will correctly print </p>
 
-<p>will correctly print</p>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="scala"><span class="line"><span class="nc">The</span> <span class="n">length</span> <span class="n">is</span> <span class="mf">25.4</span> <span class="n">mm</span><span class="o">.</span>
+</span><span class="line"><span class="nc">The</span> <span class="n">length</span> <span class="n">is</span> <span class="mf">1001.0</span> <span class="n">mm</span><span class="o">.</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="nc">The</span> <span class="n">length</span> <span class="n">is</span> <span class="mf">25.4</span> <span class="n">mm</span><span class="o">.</span>
-</span><span class='line'><span class="nc">The</span> <span class="n">length</span> <span class="n">is</span> <span class="mf">1001.0</span> <span class="n">mm</span><span class="o">.</span>
-</span></code></pre></td></tr></table></div></figure>
+<h3 id="implementation">Implementation</h3>
 
-
-<h3>Implementation</h3>
-
-<p>How does it work, you ask. It&rsquo;s simple. Down deep in the guts of the library, there lurks an implementation of a type-level map from strings to integers, with the following properties:</p>
+<p>How does it work, you ask. It’s simple. Down deep in the guts of the library, there lurks an implementation of a type-level map from strings to integers, with the following properties:</p>
 
 <ul>
-<li><p>strings are sorted lexicographically (so the equality can be structural)</p></li>
-<li><p>no integer value is equal to zero (so units to the zeroth power don&rsquo;t matter)</p></li>
+  <li>
+    <p>strings are sorted lexicographically (so the equality can be structural)</p>
+  </li>
+  <li>
+    <p>no integer value is equal to zero (so units to the zeroth power don’t matter)</p>
+  </li>
 </ul>
-
 
 <p>For example, the above units are represented as <code>{"m" -&gt; 1}</code> and <code>{"m" -&gt; 2}</code> respectively.</p>
 
 <p>You are probably curious how type-level datatypes are defined. I admit that they are implemented pretty simply. Here are <a href="https://github.com/KarolS/units/blob/master/units/src/main/scala/internal/Bools.scala">booleans</a>, here <a href="https://github.com/KarolS/units/blob/master/units/src/main/scala/internal/Integers.scala">integers</a>, here <a href="https://github.com/KarolS/units/blob/master/units/src/main/scala/internal/Strings.scala">characters and strings</a>, here <a href="https://github.com/KarolS/units/blob/master/units/src/main/scala/internal/SingleUnits.scala">unit names</a> and here <a href="https://github.com/KarolS/units/blob/master/units/src/main/scala/internal/UnitImpl.scala">unit maps</a>.</p>
 
-<p>I&rsquo;ll focus here on integers, because they&rsquo;re simple enough to explain. Here&rsquo;s the code (slightly simplified):</p>
+<p>I’ll focus here on integers, because they’re simple enough to explain. Here’s the code (slightly simplified):</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">sealed</span> <span class="k">trait</span> <span class="nc">TInteger</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">Succ</span> <span class="k">&lt;:</span> <span class="kt">TInteger</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">Pred</span> <span class="k">&lt;:</span> <span class="kt">TInteger</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">Negate</span> <span class="k">&lt;:</span> <span class="kt">TInteger</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="nc">TInteger</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">Mul</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="nc">TInteger</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">ZeroNegPos</span><span class="o">[</span><span class="kt">IfZero</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfNeg</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfPos</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">ResultType</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="nc">ResultType</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">Equal</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="nc">TBool</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="k">type</span> <span class="kt">LambdaNatFalse</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="nc">False</span>
-</span><span class='line'><span class="k">sealed</span> <span class="k">trait</span> <span class="nc">_0</span> <span class="k">extends</span> <span class="nc">TInteger</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">Succ</span> <span class="o">=</span> <span class="nc">Inc</span><span class="o">[</span><span class="k">_</span><span class="err">0</span><span class="o">]</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">Pred</span> <span class="o">=</span> <span class="nc">Dec</span><span class="o">[</span><span class="k">_</span><span class="err">0</span><span class="o">]</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">Negate</span> <span class="o">=</span> <span class="n">_0</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="n">X</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">Mul</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="n">_0</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">ZeroNegPos</span><span class="o">[</span><span class="kt">IfZero</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfNeg</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfPos</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">ResultType</span><span class="o">]</span> <span class="k">=</span> <span class="nc">IfZero</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">Equal</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="n">X</span><span class="k">#</span><span class="nc">ZeroNegPos</span><span class="o">[</span><span class="kt">True</span>, <span class="kt">LambdaNatFalse</span>, <span class="kt">LambdaNatFalse</span>, <span class="kt">TBool</span><span class="o">]</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="k">sealed</span> <span class="k">trait</span> <span class="nc">Inc</span><span class="o">[</span><span class="kt">N</span> <span class="k">&lt;:</span> <span class="kt">TInteger</span><span class="o">]</span> <span class="nc">extends</span> <span class="nc">TInteger</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">Succ</span> <span class="o">=</span> <span class="nc">Inc</span><span class="o">[</span><span class="kt">Inc</span><span class="o">[</span><span class="kt">N</span><span class="o">]]</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">Pred</span> <span class="o">=</span> <span class="n">N</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">Negate</span> <span class="o">=</span> <span class="nc">Dec</span><span class="o">[</span><span class="kt">N</span><span class="k">#</span><span class="kt">Negate</span><span class="o">]</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="n">N</span><span class="k">#</span><span class="nc">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">#</span><span class="kt">Succ</span><span class="o">]</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">Mul</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="n">N</span><span class="k">#</span><span class="nc">Mul</span><span class="o">[</span><span class="kt">X</span><span class="o">]</span><span class="k">#</span><span class="nc">Add</span><span class="o">[</span><span class="kt">X</span><span class="o">]</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">ZeroNegPos</span><span class="o">[</span><span class="kt">IfZero</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfNeg</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfPos</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">ResultType</span><span class="o">]</span> <span class="k">=</span> <span class="nc">IfPos</span><span class="o">[</span><span class="kt">N</span><span class="o">]</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">Equal</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="n">X</span><span class="k">#</span><span class="nc">ZeroNegPos</span><span class="o">[</span><span class="kt">False</span>, <span class="kt">LambdaNatFalse</span>, <span class="kt">N</span><span class="k">#</span><span class="kt">Equal</span>, <span class="kt">TBool</span><span class="o">]</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="k">sealed</span> <span class="k">trait</span> <span class="nc">Dec</span><span class="o">[</span><span class="kt">N</span> <span class="k">&lt;:</span> <span class="kt">TInteger</span><span class="o">]</span> <span class="nc">extends</span> <span class="nc">TInteger</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">Succ</span> <span class="o">=</span> <span class="n">N</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">Pred</span> <span class="o">=</span> <span class="nc">Dec</span><span class="o">[</span><span class="kt">Dec</span><span class="o">[</span><span class="kt">N</span><span class="o">]]</span>
-</span><span class='line'>    <span class="nc">TInteger</span><span class="err">]</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">Negate</span> <span class="o">=</span> <span class="nc">Inc</span><span class="o">[</span><span class="kt">N</span><span class="k">#</span><span class="kt">Negate</span><span class="o">]</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="n">N</span><span class="k">#</span><span class="nc">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">#</span><span class="kt">Pred</span><span class="o">]</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">Mul</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="n">N</span><span class="k">#</span><span class="nc">Mul</span><span class="o">[</span><span class="kt">X</span><span class="o">]</span><span class="k">#</span><span class="nc">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">#</span><span class="kt">Negate</span><span class="o">]</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">ZeroNegPos</span><span class="o">[</span><span class="kt">IfZero</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfNeg</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfPos</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">ResultType</span><span class="o">]</span> <span class="k">=</span> <span class="nc">IfNeg</span><span class="o">[</span><span class="kt">N</span><span class="o">]</span>
-</span><span class='line'>    <span class="k">type</span> <span class="kt">Equal</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="n">X</span><span class="k">#</span><span class="nc">ZeroNegPos</span><span class="o">[</span><span class="kt">False</span>, <span class="kt">N</span><span class="k">#</span><span class="kt">Equal</span>, <span class="kt">LambdaNatFalse</span>, <span class="kt">TBool</span><span class="o">]</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+</pre></td><td class="code"><pre><code class="scala"><span class="line"><span class="k">sealed</span> <span class="k">trait</span> <span class="nc">TInteger</span> <span class="o">{</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">Succ</span> <span class="k">&lt;:</span> <span class="kt">TInteger</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">Pred</span> <span class="k">&lt;:</span> <span class="kt">TInteger</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">Negate</span> <span class="k">&lt;:</span> <span class="kt">TInteger</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="nc">TInteger</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">Mul</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="nc">TInteger</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">ZeroNegPos</span><span class="o">[</span><span class="kt">IfZero</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfNeg</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfPos</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">ResultType</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="nc">ResultType</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">Equal</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="nc">TBool</span>
+</span><span class="line"><span class="o">}</span>
+</span><span class="line"><span class="k">type</span> <span class="kt">LambdaNatFalse</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="nc">False</span>
+</span><span class="line"><span class="k">sealed</span> <span class="k">trait</span> <span class="nc">_0</span> <span class="k">extends</span> <span class="nc">TInteger</span> <span class="o">{</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">Succ</span> <span class="o">=</span> <span class="nc">Inc</span><span class="o">[</span><span class="k">_</span><span class="err">0</span><span class="o">]</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">Pred</span> <span class="o">=</span> <span class="nc">Dec</span><span class="o">[</span><span class="k">_</span><span class="err">0</span><span class="o">]</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">Negate</span> <span class="o">=</span> <span class="n">_0</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="n">X</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">Mul</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="n">_0</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">ZeroNegPos</span><span class="o">[</span><span class="kt">IfZero</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfNeg</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfPos</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">ResultType</span><span class="o">]</span> <span class="k">=</span> <span class="nc">IfZero</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">Equal</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="n">X</span><span class="k">#</span><span class="nc">ZeroNegPos</span><span class="o">[</span><span class="kt">True</span>, <span class="kt">LambdaNatFalse</span>, <span class="kt">LambdaNatFalse</span>, <span class="kt">TBool</span><span class="o">]</span>
+</span><span class="line"><span class="o">}</span>
+</span><span class="line"><span class="k">sealed</span> <span class="k">trait</span> <span class="nc">Inc</span><span class="o">[</span><span class="kt">N</span> <span class="k">&lt;:</span> <span class="kt">TInteger</span><span class="o">]</span> <span class="nc">extends</span> <span class="nc">TInteger</span> <span class="o">{</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">Succ</span> <span class="o">=</span> <span class="nc">Inc</span><span class="o">[</span><span class="kt">Inc</span><span class="o">[</span><span class="kt">N</span><span class="o">]]</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">Pred</span> <span class="o">=</span> <span class="n">N</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">Negate</span> <span class="o">=</span> <span class="nc">Dec</span><span class="o">[</span><span class="kt">N</span><span class="k">#</span><span class="kt">Negate</span><span class="o">]</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="n">N</span><span class="k">#</span><span class="nc">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">#</span><span class="kt">Succ</span><span class="o">]</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">Mul</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="n">N</span><span class="k">#</span><span class="nc">Mul</span><span class="o">[</span><span class="kt">X</span><span class="o">]</span><span class="k">#</span><span class="nc">Add</span><span class="o">[</span><span class="kt">X</span><span class="o">]</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">ZeroNegPos</span><span class="o">[</span><span class="kt">IfZero</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfNeg</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfPos</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">ResultType</span><span class="o">]</span> <span class="k">=</span> <span class="nc">IfPos</span><span class="o">[</span><span class="kt">N</span><span class="o">]</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">Equal</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="n">X</span><span class="k">#</span><span class="nc">ZeroNegPos</span><span class="o">[</span><span class="kt">False</span>, <span class="kt">LambdaNatFalse</span>, <span class="kt">N</span><span class="k">#</span><span class="kt">Equal</span>, <span class="kt">TBool</span><span class="o">]</span>
+</span><span class="line"><span class="o">}</span>
+</span><span class="line"><span class="k">sealed</span> <span class="k">trait</span> <span class="nc">Dec</span><span class="o">[</span><span class="kt">N</span> <span class="k">&lt;:</span> <span class="kt">TInteger</span><span class="o">]</span> <span class="nc">extends</span> <span class="nc">TInteger</span> <span class="o">{</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">Succ</span> <span class="o">=</span> <span class="n">N</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">Pred</span> <span class="o">=</span> <span class="nc">Dec</span><span class="o">[</span><span class="kt">Dec</span><span class="o">[</span><span class="kt">N</span><span class="o">]]</span>
+</span><span class="line">    <span class="nc">TInteger</span><span class="err">]</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">Negate</span> <span class="o">=</span> <span class="nc">Inc</span><span class="o">[</span><span class="kt">N</span><span class="k">#</span><span class="kt">Negate</span><span class="o">]</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="n">N</span><span class="k">#</span><span class="nc">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">#</span><span class="kt">Pred</span><span class="o">]</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">Mul</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="n">N</span><span class="k">#</span><span class="nc">Mul</span><span class="o">[</span><span class="kt">X</span><span class="o">]</span><span class="k">#</span><span class="nc">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">#</span><span class="kt">Negate</span><span class="o">]</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">ZeroNegPos</span><span class="o">[</span><span class="kt">IfZero</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfNeg</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfPos</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">ResultType</span><span class="o">]</span> <span class="k">=</span> <span class="nc">IfNeg</span><span class="o">[</span><span class="kt">N</span><span class="o">]</span>
+</span><span class="line">    <span class="k">type</span> <span class="kt">Equal</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="n">X</span><span class="k">#</span><span class="nc">ZeroNegPos</span><span class="o">[</span><span class="kt">False</span>, <span class="kt">N</span><span class="k">#</span><span class="kt">Equal</span>, <span class="kt">LambdaNatFalse</span>, <span class="kt">TBool</span><span class="o">]</span>
+</span><span class="line"><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 <p>As you can see:</p>
 
 <ul>
-<li><p>The code looks like normal code, but with <code>type</code> instead of <code>def</code> and with <code>Object#Method[Param]</code> instead of <code>object.method(param)</code>.</p></li>
-<li><p><code>_0</code> is the type-level zero, <code>Dec</code> is a type-level negative number, and <code>Inc</code> is a type-level positive number.</p></li>
-<li><p><code>Succ</code> and <code>Pred</code> are successor and predecessor respectively;</p></li>
-<li><p><code>Negate</code>, <code>Add</code> and <code>Mul</code> are defined recursively in a pretty straightforward way.</p></li>
-<li><p><code>ZeroNegPos</code> is integer pattern matching. It&rsquo;s explicitly polymorphic. It takes four parameters: the result for when the number is zero, the function for when the number is positive, the function for when the number is negative, and the result type. If the result is zero, the first parameter is returned. If it&rsquo;s not, the correct function is applied to the underlying value (the integer that is closer to zero), yielding the result. For example, let&rsquo;s have a look at <code>Inc#Equal</code>: <code>type Equal[X&lt;:TInteger] &lt;: X#ZeroNegPos[False, LambdaNatFalse, N#Equal, TBool]</code></p>
+  <li>
+    <p>The code looks like normal code, but with <code>type</code> instead of <code>def</code> and with <code>Object#Method[Param]</code> instead of <code>object.method(param)</code>.</p>
+  </li>
+  <li>
+    <p><code>_0</code> is the type-level zero, <code>Dec</code> is a type-level negative number, and <code>Inc</code> is a type-level positive number.</p>
+  </li>
+  <li>
+    <p><code>Succ</code> and <code>Pred</code> are successor and predecessor respectively;</p>
+  </li>
+  <li>
+    <p><code>Negate</code>, <code>Add</code> and <code>Mul</code> are defined recursively in a pretty straightforward way.</p>
+  </li>
+  <li>
+    <p><code>ZeroNegPos</code> is integer pattern matching. It’s explicitly polymorphic. It takes four parameters: the result for when the number is zero, the function for when the number is positive, the function for when the number is negative, and the result type. If the result is zero, the first parameter is returned. If it’s not, the correct function is applied to the underlying value (the integer that is closer to zero), yielding the result. For example, let’s have a look at <code>Inc#Equal</code>: <code>type Equal[X&lt;:TInteger] &lt;: X#ZeroNegPos[False, LambdaNatFalse, N#Equal, TBool]</code></p>
 
-<ul>
-<li><p>if <code>X</code> is <code>_0</code>, returns <code>False</code></p></li>
-<li><p>if <code>X</code> is <code>Dec[Y]</code>, returns <code>LambdaNatFalse[Y]</code>, i.e. <code>False</code></p></li>
-<li><p>if <code>X</code> is <code>Inc[Y]</code>, returns <code>N#Equal[Y]</code> (a recursive call)</p></li>
+    <ul>
+      <li>
+        <p>if <code>X</code> is <code>_0</code>, returns <code>False</code></p>
+      </li>
+      <li>
+        <p>if <code>X</code> is <code>Dec[Y]</code>, returns <code>LambdaNatFalse[Y]</code>, i.e. <code>False</code></p>
+      </li>
+      <li>
+        <p>if <code>X</code> is <code>Inc[Y]</code>, returns <code>N#Equal[Y]</code> (a recursive call)</p>
+      </li>
+    </ul>
+  </li>
 </ul>
-</li>
-</ul>
-
 
 <p>(<code>True</code> and <code>False</code> are type-level booleans)</p>
 
@@ -221,70 +384,82 @@
 <p>You can probably guess how the arithmetic works:</p>
 
 <ul>
-<li><p>adding and subtracting values requires both units to match</p></li>
-<li><p>multiplying causes the values with the same keys be added together</p></li>
-<li><p>dividing causes the values with the same keys be subtracted</p></li>
-<li><p>all missing keys in the unit map have value zero</p></li>
-<li><p>if after adding or subtracting you get zero, you remove the key</p></li>
+  <li>
+    <p>adding and subtracting values requires both units to match</p>
+  </li>
+  <li>
+    <p>multiplying causes the values with the same keys be added together</p>
+  </li>
+  <li>
+    <p>dividing causes the values with the same keys be subtracted</p>
+  </li>
+  <li>
+    <p>all missing keys in the unit map have value zero</p>
+  </li>
+  <li>
+    <p>if after adding or subtracting you get zero, you remove the key</p>
+  </li>
 </ul>
 
-
-<h3>Defining units</h3>
+<h3 id="defining-units">Defining units</h3>
 
 <p>Defining your own units is quite easy. The most basic thing you have to do is to define a unit and its type-level string. The string will be used to display the name of the unit (so better pick something that makes sense), but also to distinguish units themselves (so better pick something unique).</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">io.github.karols.units._</span>
-</span><span class='line'><span class="k">import</span> <span class="nn">io.github.karols.units.defining._</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">type</span> <span class="kt">fortnight</span> <span class="o">=</span> <span class="nc">DefineUnit</span><span class="o">[</span><span class="k">_</span><span class="kt">f</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">o</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">r</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">t</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">n</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">i</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">g</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">h</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">t</span><span class="o">]</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="scala"><span class="line"><span class="k">import</span> <span class="nn">io.github.karols.units._</span>
+</span><span class="line"><span class="k">import</span> <span class="nn">io.github.karols.units.defining._</span>
+</span><span class="line">
+</span><span class="line"><span class="k">type</span> <span class="kt">fortnight</span> <span class="o">=</span> <span class="nc">DefineUnit</span><span class="o">[</span><span class="k">_</span><span class="kt">f</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">o</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">r</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">t</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">n</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">i</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">g</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">h</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">t</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-
-<p>That&rsquo;s it!</p>
+<p>That’s it!</p>
 
 <p>You can also define some conversions:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">io.github.karols.units.SI._</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">implicit</span> <span class="k">val</span> <span class="n">fortnight_to_day</span> <span class="k">=</span> <span class="n">one</span><span class="o">[</span><span class="kt">fortnight</span><span class="o">].</span><span class="n">contains</span><span class="o">(</span><span class="mi">14</span><span class="o">)[</span><span class="kt">day</span><span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">println</span><span class="o">((</span><span class="mf">1.</span><span class="n">of</span><span class="o">[</span><span class="kt">fortnight</span><span class="o">]</span> <span class="o">+</span> <span class="mf">3.</span><span class="n">of</span><span class="o">[</span><span class="kt">day</span><span class="o">]).</span><span class="n">mkString</span><span class="o">)</span> <span class="c1">// prints &quot;17 d&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="scala"><span class="line"><span class="k">import</span> <span class="nn">io.github.karols.units.SI._</span>
+</span><span class="line">
+</span><span class="line"><span class="k">implicit</span> <span class="k">val</span> <span class="n">fortnight_to_day</span> <span class="k">=</span> <span class="n">one</span><span class="o">[</span><span class="kt">fortnight</span><span class="o">].</span><span class="n">contains</span><span class="o">(</span><span class="mi">14</span><span class="o">)[</span><span class="kt">day</span><span class="o">]</span>
+</span><span class="line">
+</span><span class="line"><span class="n">println</span><span class="o">((</span><span class="mf">1.</span><span class="n">of</span><span class="o">[</span><span class="kt">fortnight</span><span class="o">]</span> <span class="o">+</span> <span class="mf">3.</span><span class="n">of</span><span class="o">[</span><span class="kt">day</span><span class="o">]).</span><span class="n">mkString</span><span class="o">)</span> <span class="c1">// prints &quot;17 d&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<p>Sadly, you need to define conversions from fortnights to other units manually, and then you’ll have to define conversions of compound units, like from <em>mile/fortnight</em> to <em>kilometre/day</em>. The ratios have several operators defined to help with this, consult the documentation and source for more info.</p>
 
-<p>Sadly, you need to define conversions from fortnights to other units manually, and then you&rsquo;ll have to define conversions of compound units, like from <em>mile/fortnight</em> to <em>kilometre/day</em>. The ratios have several operators defined to help with this, consult the documentation and source for more info.</p>
+<h3 id="affine-spaces">Affine spaces</h3>
 
-<h3>Affine spaces</h3>
+<p>The library preserves also another distinction: between normal values with units and elements of affine spaces. Affine spaces (also known as torsor spaces) are spaces that contain elements that cannot be added or multiplied, because those operations make no sense. For example, temperature is such space: there’s no reason to say “yesterday it was 3°C, today it’s 8°C, the sum of these is 11°C”. For these applications, the library provides <code>IntA</code> and <code>DoubleA</code> types. Subtracting two values of such type (using <code>--</code> operator) yields a value of <code>IntU</code> or <code>DoubleU</code> type, which we can call here the difference type.</p>
 
-<p>The library preserves also another distinction: between normal values with units and elements of affine spaces. Affine spaces (also known as torsor spaces) are spaces that contain elements that cannot be added or multiplied, because those operations make no sense. For example, temperature is such space: there&rsquo;s no reason to say &ldquo;yesterday it was 3°C, today it&rsquo;s 8°C, the sum of these is 11°C&rdquo;. For these applications, the library provides <code>IntA</code> and <code>DoubleA</code> types. Subtracting two values of such type (using <code>--</code> operator) yields a value of <code>IntU</code> or <code>DoubleU</code> type, which we can call here the difference type.</p>
-
-<p>The affine spaces often have an arbitrarily selected zero point. The zero point has no special properties, unlike the zero element of a vector space. It&rsquo;s simply chosen to provide people a frame of reference.</p>
+<p>The affine spaces often have an arbitrarily selected zero point. The zero point has no special properties, unlike the zero element of a vector space. It’s simply chosen to provide people a frame of reference.</p>
 
 <p>Some examples of affine spaces, their zero points, and their difference spaces:</p>
 
 <ul>
-<li><p>temperature is an affine space, its zero point is the temperature of zero degrees, and its difference space is the space of temperature differences</p></li>
-<li><p>timestamps form an affine space, its zero point is an arbitrary moment in time (usually first midnight of the 1st day of January 1900, 1904, 1970, or 2000), and its difference space is time</p></li>
-<li><p>positions form an affine space, its zero point is usually called an origin, and its difference space is the corresponding vector space</p></li>
+  <li>
+    <p>temperature is an affine space, its zero point is the temperature of zero degrees, and its difference space is the space of temperature differences</p>
+  </li>
+  <li>
+    <p>timestamps form an affine space, its zero point is an arbitrary moment in time (usually first midnight of the 1st day of January 1900, 1904, 1970, or 2000), and its difference space is time</p>
+  </li>
+  <li>
+    <p>positions form an affine space, its zero point is usually called an origin, and its difference space is the corresponding vector space</p>
+  </li>
 </ul>
 
-
-<p>Adding or multiplying temperatures, timestamps or positions doesn&rsquo;t make sense. Adding to them a value from the corresponding difference space (this value is usually called an displacement) makes sense and yields another value from the affine space.</p>
+<p>Adding or multiplying temperatures, timestamps or positions doesn’t make sense. Adding to them a value from the corresponding difference space (this value is usually called an displacement) makes sense and yields another value from the affine space.</p>
 
 <p><em>Units</em> library suggests using <code>IntA</code> and <code>DoubleA</code> for values from affine spaces and <code>IntU</code> and <code>DoubleU</code> for values from difference spaces.</p>
 
 <p>Out-of-the-box <em>Units</em> defines Celsius and Fahrenheit scales and Unix timestamps in second, millisecond and nanosecond precisions.</p>
 
-<h3>Arrays</h3>
+<h3 id="arrays">Arrays</h3>
 
 <p>In Scala, the only unboxed collection types are arrays of primitive types. So all the other collections, and also arrays of custom value classes, are boxed. This leads to serious performance implications. You may think it would be easier to just use non-type safe code and revert back to raw doubles and longs.</p>
 
@@ -292,30 +467,32 @@
 
 <p>Besides, you might have asked before:</p>
 
-<blockquote><p>Hey, you <strong>can</strong> add temperatures, provided you divide them immediately afterwards to get an average!</p></blockquote>
+<blockquote>
+  <p>Hey, you <strong>can</strong> add temperatures, provided you divide them immediately afterwards to get an average!</p>
+</blockquote>
 
 <p>All of these array classes provide an <code>avg</code> method, so you can write:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">t1</span> <span class="k">=</span> <span class="mf">3.</span><span class="n">at</span><span class="o">[</span><span class="kt">CelsiusScale</span><span class="o">]</span>
-</span><span class='line'><span class="k">val</span> <span class="n">t2</span> <span class="k">=</span> <span class="mf">8.</span><span class="n">at</span><span class="o">[</span><span class="kt">CelsiusScale</span><span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">val</span> <span class="n">average</span> <span class="k">=</span> <span class="nc">IntAArray</span><span class="o">(</span><span class="n">t1</span><span class="o">,</span><span class="n">t2</span><span class="o">).</span><span class="n">avg</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">println</span><span class="o">(</span><span class="n">average</span><span class="o">.</span><span class="n">mkString</span><span class="o">)</span> <span class="c1">// prints 5.5 °C</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="scala"><span class="line"><span class="k">val</span> <span class="n">t1</span> <span class="k">=</span> <span class="mf">3.</span><span class="n">at</span><span class="o">[</span><span class="kt">CelsiusScale</span><span class="o">]</span>
+</span><span class="line"><span class="k">val</span> <span class="n">t2</span> <span class="k">=</span> <span class="mf">8.</span><span class="n">at</span><span class="o">[</span><span class="kt">CelsiusScale</span><span class="o">]</span>
+</span><span class="line">
+</span><span class="line"><span class="k">val</span> <span class="n">average</span> <span class="k">=</span> <span class="nc">IntAArray</span><span class="o">(</span><span class="n">t1</span><span class="o">,</span><span class="n">t2</span><span class="o">).</span><span class="n">avg</span>
+</span><span class="line">
+</span><span class="line"><span class="n">println</span><span class="o">(</span><span class="n">average</span><span class="o">.</span><span class="n">mkString</span><span class="o">)</span> <span class="c1">// prints 5.5 °C</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-
-<h3>And there&rsquo;s more!</h3>
+<h3 id="and-theres-more">And there’s more!</h3>
 
 <p>The <em>Units</em> library also supports 2D and 3D vectors (both normal and affine), unboxed efficient vector arrays, semi-automatic affine space conversions, various ways to express functions with unit polymorphism (sadly, none of them as clean as in F#) and interoperability layers for many libraries (Scalaz, Spire, Slick, JodaTime, Algebird, Scalacheck, more to come).</p>
 
 <p>The next goal is to get it to Sonatype.</p>
+
 ]]></content>
   </entry>
   
@@ -324,315 +501,329 @@
     <link href="http://KarolS.github.io/blog/2013/11/18/creating-custom-keyboard-layouts-for-linux/"/>
     <updated>2013-11-18T21:05:00+01:00</updated>
     <id>http://KarolS.github.io/blog/2013/11/18/creating-custom-keyboard-layouts-for-linux</id>
-    <content type="html"><![CDATA[<p>I think almost every one of you has some beef with your keyboard layout. There are characters you&rsquo;re never going to use, there are characters you&rsquo;d love to use but they&rsquo;re missing (and you don&rsquo;t like/can&rsquo;t use the compose key for them), and so on.</p>
+    <content type="html"><![CDATA[<p>I think almost every one of you has some beef with your keyboard layout. There are characters you’re never going to use, there are characters you’d love to use but they’re missing (and you don’t like/can’t use the compose key for them), and so on.</p>
 
 <p>For example, this is the default Polish layout in Linux:</p>
 
-<p><img src="http://KarolS.github.io/images/layout-pl.png"></p>
+<p><img src="http://KarolS.github.io/images/layout-pl.png" /></p>
 
 <p>A keen eye can notice several things that could be improved:</p>
 
 <ul>
-<li><p>many characters can be input in multiple ways: <code>[</code> (as <code>[</code> or as <code>AltGr-9</code>), <code>ł</code> (as <code>AltGr-w</code> or <code>AltGr-l</code>), <code>&amp;</code> (as <code>Shift-7</code> or <code>AltGr-Shift-k</code>), <code>@</code> (as <code>Shift-2</code> or <code>AltGr-q</code>),</p></li>
-<li><p>the layout has some unassigned combinations (for example <code>AltGr-Shift-4</code>),</p></li>
-<li><p>some important characters are missing: <code>€</code> (the euro sign) and <code>„</code> (Polish opening quote),</p></li>
-<li><p>since I can use the compose key, I don&rsquo;t need all those arbitrarily assigned dead keys on the right.</p></li>
+  <li>
+    <p>many characters can be input in multiple ways: <code>[</code> (as <code>[</code> or as <code>AltGr-9</code>), <code>ł</code> (as <code>AltGr-w</code> or <code>AltGr-l</code>), <code>&amp;</code> (as <code>Shift-7</code> or <code>AltGr-Shift-k</code>), <code>@</code> (as <code>Shift-2</code> or <code>AltGr-q</code>),</p>
+  </li>
+  <li>
+    <p>the layout has some unassigned combinations (for example <code>AltGr-Shift-4</code>),</p>
+  </li>
+  <li>
+    <p>some important characters are missing: <code>€</code> (the euro sign) and <code>„</code> (Polish opening quote),</p>
+  </li>
+  <li>
+    <p>since I can use the compose key, I don’t need all those arbitrarily assigned dead keys on the right.</p>
+  </li>
 </ul>
-
 
 <p>Of course your keyboard layout may have different problems.</p>
 
-<p><strong>Disclaimer:</strong> The following was done on Ubuntu 12.04 with Unity DE, I don&rsquo;t guarantee it will work on other distros. In particular, the file paths can differ.</p>
+<p><strong>Disclaimer:</strong> The following was done on Ubuntu 12.04 with Unity DE, I don’t guarantee it will work on other distros. In particular, the file paths can differ.</p>
 
-<p>How to create a new one, you ask? That&rsquo;s actually pretty simple.</p>
+<p>How to create a new one, you ask? That’s actually pretty simple.</p>
 
 <ul>
-<li><p>layout definitions are in the <code>/usr/share/X11/xkb/symbols</code> directory,</p></li>
-<li><p>layout metadata are in the <code>/usr/share/X11/xkb/rules/evdev.xml</code> file.</p></li>
+  <li>
+    <p>layout definitions are in the <code>/usr/share/X11/xkb/symbols</code> directory,</p>
+  </li>
+  <li>
+    <p>layout metadata are in the <code>/usr/share/X11/xkb/rules/evdev.xml</code> file.</p>
+  </li>
 </ul>
 
-
-<p>Let&rsquo;s first define our layout. The <code>/usr/share/X11/xkb/symbols</code> contains files, each corresponding to a language. Some layouts can belong to several languages, but they&rsquo;re defined in only one of the files. If your layout is supposed to be listed under one language in the keyboard setting anyway, you&rsquo;ll have to add it to the correct file. Since my keyboard layout was to be mostly an improvement on top of the Polish language layout, I decided to add it to <code>/usr/share/X11/xkb/symbols/pl</code>.</p>
+<p>Let’s first define our layout. The <code>/usr/share/X11/xkb/symbols</code> contains files, each corresponding to a language. Some layouts can belong to several languages, but they’re defined in only one of the files. If your layout is supposed to be listed under one language in the keyboard setting anyway, you’ll have to add it to the correct file. Since my keyboard layout was to be mostly an improvement on top of the Polish language layout, I decided to add it to <code>/usr/share/X11/xkb/symbols/pl</code>.</p>
 
 <!-- more -->
 
+<p>The format of this file is pretty simple. I’m going to analyse the default Polish layout line by line.</p>
 
-<p>The format of this file is pretty simple. I&rsquo;m going to analyse the default Polish layout line by line.</p>
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">partial default alphanumeric_keys
+</span><span class="line">xkb_symbols "basic" {</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>partial default alphanumeric_keys
-</span><span class='line'>xkb_symbols "basic" {</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>default</code> means that this is the default layout in this file (other layouts don&rsquo;t have this tag).</p>
+<p><code>default</code> means that this is the default layout in this file (other layouts don’t have this tag).</p>
 
 <p><code>"basic"</code> is the indentifier of this layout within the file.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>include "latin"</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">include "latin"</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>Since most layouts are similar, the <code>include</code> directive simply inserts all key definitions from one layout to another. This one includes the (default) <code>"basic"</code> layout from the <code>/usr/share/X11/xkb/symbols/latin</code> file.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>name[Group1]="Polish";</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">name[Group1]="Polish";</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<p>No clue what it does. It’s recommended to set it to a full English name for the layout.</p>
 
-<p>No clue what it does. It&rsquo;s recommended to set it to a full English name for the layout.</p>
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">key &lt;AD01&gt;  { [         q,          Q ] };
+</span><span class="line">key &lt;AD02&gt;  { [         w,          W ] };
+</span><span class="line">key &lt;AD03&gt;  { [         e,          E,      eogonek,      Eogonek ] };
+</span><span class="line">key &lt;AD09&gt;  { [         o,          O,       oacute,       Oacute ] };
+</span><span class="line">
+</span><span class="line">key &lt;AC01&gt;  { [         a,          A,      aogonek,      Aogonek ] };
+</span><span class="line">key &lt;AC02&gt;  { [         s,          S,       sacute,       Sacute ] };
+</span><span class="line">key &lt;AC04&gt;  { [         f,          F ] };
+</span><span class="line">
+</span><span class="line">key &lt;AB01&gt;  { [         z,          Z,    zabovedot,    Zabovedot ] };
+</span><span class="line">key &lt;AB02&gt;  { [         x,          X,       zacute,       Zacute ] };
+</span><span class="line">key &lt;AB03&gt;  { [         c,          C,       cacute,       Cacute ] };
+</span><span class="line">key &lt;AB06&gt;  { [         n,          N,       nacute,       Nacute ] };</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>key &lt;AD01&gt;  { [         q,          Q ] };
-</span><span class='line'>key &lt;AD02&gt;  { [         w,          W ] };
-</span><span class='line'>key &lt;AD03&gt;  { [         e,          E,      eogonek,      Eogonek ] };
-</span><span class='line'>key &lt;AD09&gt;  { [         o,          O,       oacute,       Oacute ] };
-</span><span class='line'>
-</span><span class='line'>key &lt;AC01&gt;  { [         a,          A,      aogonek,      Aogonek ] };
-</span><span class='line'>key &lt;AC02&gt;  { [         s,          S,       sacute,       Sacute ] };
-</span><span class='line'>key &lt;AC04&gt;  { [         f,          F ] };
-</span><span class='line'>
-</span><span class='line'>key &lt;AB01&gt;  { [         z,          Z,    zabovedot,    Zabovedot ] };
-</span><span class='line'>key &lt;AB02&gt;  { [         x,          X,       zacute,       Zacute ] };
-</span><span class='line'>key &lt;AB03&gt;  { [         c,          C,       cacute,       Cacute ] };
-</span><span class='line'>key &lt;AB06&gt;  { [         n,          N,       nacute,       Nacute ] };</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Those are the definitions that make the Polish layout different from the default Latin one.Each line contains:</p>
+<p>Those are the definitions that make the Polish layout different from the default Latin one.Each line contains: </p>
 
 <ul>
-<li><p>the <code>key</code> keyword,</p></li>
-<li><p>a symbol defining the physical key,</p></li>
-<li><p>a list of characters associated with that key, from left to right: the default one, with Shift key, with AltGr key, with both Shift and AltGr keys.</p></li>
+  <li>
+    <p>the <code>key</code> keyword,</p>
+  </li>
+  <li>
+    <p>a symbol defining the physical key,</p>
+  </li>
+  <li>
+    <p>a list of characters associated with that key, from left to right: the default one, with Shift key, with AltGr key, with both Shift and AltGr keys.</p>
+  </li>
 </ul>
 
-
-<p>The names of the physical keys are as follows (I&rsquo;m referring to keys by their American/Polish usage):</p>
+<p>The names of the physical keys are as follows (I’m referring to keys by their American/Polish usage):</p>
 
 <ul>
-<li><p><code>&lt;TLDE&gt;</code> for the grave accent/tilde key</p></li>
-<li><p><code>&lt;BKSL&gt;</code> for the backslash/bar key</p></li>
-<li><p><code>&lt;AB01&gt;</code>, <code>&lt;AB02&gt;</code> and so on for <code>Z</code>, <code>X</code> &hellip; keys</p></li>
-<li><p><code>&lt;AC01&gt;</code>, <code>&lt;AC02&gt;</code> and so on for <code>A</code>, <code>S</code> &hellip; keys</p></li>
-<li><p><code>&lt;AD01&gt;</code>, <code>&lt;AD02&gt;</code> and so on for <code>Q</code>, <code>W</code> &hellip; keys</p></li>
-<li><p><code>&lt;AE01&gt;</code>, <code>&lt;AE02&gt;</code> and so on for <code>1</code>, <code>2</code> &hellip; keys</p></li>
+  <li>
+    <p><code>&lt;TLDE&gt;</code> for the grave accent/tilde key</p>
+  </li>
+  <li>
+    <p><code>&lt;BKSL&gt;</code> for the backslash/bar key</p>
+  </li>
+  <li>
+    <p><code>&lt;AB01&gt;</code>, <code>&lt;AB02&gt;</code> and so on for <code>Z</code>, <code>X</code> … keys</p>
+  </li>
+  <li>
+    <p><code>&lt;AC01&gt;</code>, <code>&lt;AC02&gt;</code> and so on for <code>A</code>, <code>S</code> … keys</p>
+  </li>
+  <li>
+    <p><code>&lt;AD01&gt;</code>, <code>&lt;AD02&gt;</code> and so on for <code>Q</code>, <code>W</code> … keys</p>
+  </li>
+  <li>
+    <p><code>&lt;AE01&gt;</code>, <code>&lt;AE02&gt;</code> and so on for <code>1</code>, <code>2</code> … keys</p>
+  </li>
 </ul>
-
 
 <p>Note: this refers to their <em>physical</em> layout, so I could also say that <code>AB</code> is the row above the spacebar, <code>AC</code> is the row with caps lock key, <code>AD</code> is the row with tab key, and <code>AE</code> is the row with digits, and the numbering goes from left to right. For example, <code>&lt;AD11&gt;</code> is labelled <code>[</code> on the American keyboard and <code>Ü</code> on the German one; <code>&lt;AB01&gt;</code> is <code>Z</code> on the American keyboard, <code>W</code> on the French keyboard, and <code>Y</code> on the German keyboard. <code>&lt;TLDE&gt;</code> is always in the top left, just under the <code>Esc</code> key, and <code>&lt;BKSL&gt;</code> is in either <code>AC</code>, <code>AD</code> or <code>AE</code> row (depending on the keyboard).</p>
 
-<p>Also, for some reason trying to override a key with a shorter definition doesn&rsquo;t work.</p>
+<p>Also, for some reason trying to override a key with a shorter definition doesn’t work.</p>
 
 <p>As for the character codes, you can look around the files to learn them, or just use Unicode codepoints in hexadecimal, for example <code>U0041</code> and <code>A</code> are synonymous.</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>include "kpdl(comma)"</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">include "kpdl(comma)"</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>This defines the behaviour of the decimal point key on the numpad. (More accurately, imports such behaviour override from <code>/usr/share/X11/xkb/symbols/kpdl</code>.)</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>include "level3(ralt_switch)"
-</span><span class='line'>};</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">include "level3(ralt_switch)"
+</span><span class="line">};</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-
-<p>And finally, this defines how the 3rd level (the one with accented characters, the one I referred to as “AltGr”) is accessed. In this case, it&rsquo;s with the right Alt key.</p>
+<p>And finally, this defines how the 3rd level (the one with accented characters, the one I referred to as “AltGr”) is accessed. In this case, it’s with the right Alt key.</p>
 
 <p>So I created my own layout by copying the existing one and modifying it:</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>partial alphanumeric_keys
-</span><span class='line'>xkb_symbols "custom3" {
-</span><span class='line'>    include "latin"</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">partial alphanumeric_keys
+</span><span class="line">xkb_symbols "custom3" {
+</span><span class="line">    include "latin"</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<p><code>"custom3"</code> is the identifier of my new layout (why 3, I’ll explain later). My new layout is not defined as the default one.</p>
 
-<p><code>"custom3"</code> is the identifier of my new layout (why 3, I&rsquo;ll explain later). My new layout is not defined as the default one.</p>
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">name[Group1]="Polish (custom)";</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>name[Group1]="Polish (custom)";</span></code></pre></td></tr></table></div></figure>
+<p>No clue why I did this, but it looks consistent with the rest of the file, so I guess it’s correct.</p>
 
-
-<p>No clue why I did this, but it looks consistent with the rest of the file, so I guess it&rsquo;s correct.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>key &lt;AE07&gt;  { [ 7, ampersand, copyright, seveneighths ] };
-</span><span class='line'>key &lt;AE08&gt;  { [ 8, asterisk, U221E, trademark ] };
-</span><span class='line'>key &lt;AE09&gt;  { [ 9, parenleft, guillemotleft, plusminus ] };
-</span><span class='line'>key &lt;AE10&gt;  { [ 0, parenright, guillemotright, degree ] };
-</span><span class='line'>
-</span><span class='line'>key &lt;AD03&gt;  { [         e,          E,      eogonek,      Eogonek ] };
-</span><span class='line'>key &lt;AD09&gt;  { [         o,          O,       oacute,       Oacute ] };
-</span><span class='line'>
-</span><span class='line'>key &lt;AC01&gt;  { [         a,          A,      aogonek,      Aogonek ] };
-</span><span class='line'>key &lt;AC02&gt;  { [         s,          S,       sacute,       Sacute ] };
-</span><span class='line'>key &lt;AC04&gt;  { [         f,          F ] };
-</span><span class='line'>
-</span><span class='line'>key &lt;AB01&gt;  { [         z,          Z,    zabovedot,    Zabovedot ] };
-</span><span class='line'>key &lt;AB02&gt;  { [         x,          X,       zacute,       Zacute ] };
-</span><span class='line'>key &lt;AB03&gt;  { [         c,          C,       cacute,       Cacute ] };
-</span><span class='line'>key &lt;AB06&gt;  { [         n,          N,       nacute,       Nacute ] };
-</span><span class='line'>
-</span><span class='line'>include "kpdl(comma)"
-</span><span class='line'>
-</span><span class='line'>include "level3(ralt_switch)"
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>key &lt;TLDE&gt;  { [ grave, asciitilde, notsign, section ] };
-</span><span class='line'>
-</span><span class='line'>key &lt;AE04&gt;  { [ 4, dollar, onequarter, EuroSign ] };
-</span><span class='line'>key &lt;AE07&gt;  { [ 7, ampersand, copyright, seveneighths ] };
-</span><span class='line'>key &lt;AE08&gt;  { [ 8, asterisk, U221E, trademark ] };
-</span><span class='line'>key &lt;AE09&gt;  { [ 9, parenleft, guillemotleft, plusminus ] };
-</span><span class='line'>key &lt;AE10&gt;  { [ 0, parenright, guillemotright, degree ] };
-</span><span class='line'>key &lt;AE11&gt;  { [ minus, underscore, U2013, questiondown ] };
-</span><span class='line'>key &lt;AE12&gt;  { [ equal, plus, U2260, Greek_SIGMA ] };
-</span><span class='line'>
-</span><span class='line'>key &lt;AD01&gt;  { [ q, Q, Greek_pi, Greek_OMEGA ] };
-</span><span class='line'>key &lt;AD02&gt;  { [ w, W, cent, U20A9 ] };
-</span><span class='line'>key &lt;AD11&gt;  { [bracketleft,  braceleft, udiaeresis, Udiaeresis ] };
-</span><span class='line'>key &lt;AD12&gt;  { [bracketright, braceright, ssharp,  ediaeresis ] };
-</span><span class='line'>
-</span><span class='line'>key &lt;BKSL&gt;  { [backslash, bar, eacute, egrave] };
-</span><span class='line'>
-</span><span class='line'>key &lt;AC07&gt;  { [ j, J, doublelowquotemark, singlelowquotemark] };
-</span><span class='line'>key &lt;AC08&gt;  { [ k, K, kra, U2030] };
-</span><span class='line'>key &lt;AC10&gt;  { [ semicolon,    colon, odiaeresis, Odiaeresis ] };
-</span><span class='line'>key &lt;AC11&gt;  { [apostrophe, quotedbl, adiaeresis,  Adiaeresis ] };
-</span><span class='line'>
-</span><span class='line'>key &lt;AB08&gt;  { [ comma,  less, ellipsis, multiply ]  };
-</span><span class='line'>key &lt;AB10&gt;  { [ slash, question, agrave, idiaeresis ] };
-</span><span class='line'>
-</span><span class='line'>};</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">key &lt;AE07&gt;  { [ 7, ampersand, copyright, seveneighths ] };
+</span><span class="line">key &lt;AE08&gt;  { [ 8, asterisk, U221E, trademark ] };
+</span><span class="line">key &lt;AE09&gt;  { [ 9, parenleft, guillemotleft, plusminus ] };
+</span><span class="line">key &lt;AE10&gt;  { [ 0, parenright, guillemotright, degree ] };
+</span><span class="line">
+</span><span class="line">key &lt;AD03&gt;  { [         e,          E,      eogonek,      Eogonek ] };
+</span><span class="line">key &lt;AD09&gt;  { [         o,          O,       oacute,       Oacute ] };
+</span><span class="line">
+</span><span class="line">key &lt;AC01&gt;  { [         a,          A,      aogonek,      Aogonek ] };
+</span><span class="line">key &lt;AC02&gt;  { [         s,          S,       sacute,       Sacute ] };
+</span><span class="line">key &lt;AC04&gt;  { [         f,          F ] };
+</span><span class="line">
+</span><span class="line">key &lt;AB01&gt;  { [         z,          Z,    zabovedot,    Zabovedot ] };
+</span><span class="line">key &lt;AB02&gt;  { [         x,          X,       zacute,       Zacute ] };
+</span><span class="line">key &lt;AB03&gt;  { [         c,          C,       cacute,       Cacute ] };
+</span><span class="line">key &lt;AB06&gt;  { [         n,          N,       nacute,       Nacute ] };
+</span><span class="line">
+</span><span class="line">include "kpdl(comma)"
+</span><span class="line">
+</span><span class="line">include "level3(ralt_switch)"
+</span><span class="line">
+</span><span class="line">
+</span><span class="line">key &lt;TLDE&gt;  { [ grave, asciitilde, notsign, section ] };
+</span><span class="line">
+</span><span class="line">key &lt;AE04&gt;  { [ 4, dollar, onequarter, EuroSign ] };
+</span><span class="line">key &lt;AE07&gt;  { [ 7, ampersand, copyright, seveneighths ] };
+</span><span class="line">key &lt;AE08&gt;  { [ 8, asterisk, U221E, trademark ] };
+</span><span class="line">key &lt;AE09&gt;  { [ 9, parenleft, guillemotleft, plusminus ] };
+</span><span class="line">key &lt;AE10&gt;  { [ 0, parenright, guillemotright, degree ] };
+</span><span class="line">key &lt;AE11&gt;  { [ minus, underscore, U2013, questiondown ] };
+</span><span class="line">key &lt;AE12&gt;  { [ equal, plus, U2260, Greek_SIGMA ] };
+</span><span class="line">
+</span><span class="line">key &lt;AD01&gt;  { [ q, Q, Greek_pi, Greek_OMEGA ] };
+</span><span class="line">key &lt;AD02&gt;  { [ w, W, cent, U20A9 ] };
+</span><span class="line">key &lt;AD11&gt;  { [bracketleft,  braceleft, udiaeresis, Udiaeresis ] };
+</span><span class="line">key &lt;AD12&gt;  { [bracketright, braceright, ssharp,  ediaeresis ] };
+</span><span class="line">
+</span><span class="line">key &lt;BKSL&gt;  { [backslash, bar, eacute, egrave] };
+</span><span class="line">
+</span><span class="line">key &lt;AC07&gt;  { [ j, J, doublelowquotemark, singlelowquotemark] };
+</span><span class="line">key &lt;AC08&gt;  { [ k, K, kra, U2030] };
+</span><span class="line">key &lt;AC10&gt;  { [ semicolon,    colon, odiaeresis, Odiaeresis ] };
+</span><span class="line">key &lt;AC11&gt;  { [apostrophe, quotedbl, adiaeresis,  Adiaeresis ] };
+</span><span class="line">
+</span><span class="line">key &lt;AB08&gt;  { [ comma,  less, ellipsis, multiply ]  };
+</span><span class="line">key &lt;AB10&gt;  { [ slash, question, agrave, idiaeresis ] };
+</span><span class="line">
+</span><span class="line">};</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>As you can see, I added an euro sign to <code>Shift-AltGr-4</code>, opening quotes to the <code>J</code> key, and so on.</p>
 
 <p>Okay, my layout is ready. Time to hook it in.</p>
 
-<p>Now we&rsquo;re editing the <code>/usr/share/X11/xkb/rules/evdev.xml</code> file. The interesting fragment looks like this:</p>
+<p>Now we’re editing the <code>/usr/share/X11/xkb/rules/evdev.xml</code> file. The interesting fragment looks like this:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;layout&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;configItem&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;name&gt;</span>pl<span class="nt">&lt;/name&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;shortDescription&gt;</span>pl<span class="nt">&lt;/shortDescription&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;description&gt;</span>Polish<span class="nt">&lt;/description&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;languageList&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;iso639Id&gt;</span>pol<span class="nt">&lt;/iso639Id&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/languageList&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/configItem&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;variantList&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;variant&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;configItem&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;name&gt;</span>qwertz<span class="nt">&lt;/name&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;description&gt;</span>Polish (qwertz)<span class="nt">&lt;/description&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;/configItem&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/variant&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+</pre></td><td class="code"><pre><code class="xml"><span class="line"><span class="nt">&lt;layout&gt;</span>
+</span><span class="line">  <span class="nt">&lt;configItem&gt;</span>
+</span><span class="line">    <span class="nt">&lt;name&gt;</span>pl<span class="nt">&lt;/name&gt;</span>
+</span><span class="line">    <span class="nt">&lt;shortDescription&gt;</span>pl<span class="nt">&lt;/shortDescription&gt;</span>
+</span><span class="line">    <span class="nt">&lt;description&gt;</span>Polish<span class="nt">&lt;/description&gt;</span>
+</span><span class="line">    <span class="nt">&lt;languageList&gt;</span>
+</span><span class="line">      <span class="nt">&lt;iso639Id&gt;</span>pol<span class="nt">&lt;/iso639Id&gt;</span>
+</span><span class="line">    <span class="nt">&lt;/languageList&gt;</span>
+</span><span class="line">  <span class="nt">&lt;/configItem&gt;</span>
+</span><span class="line">  <span class="nt">&lt;variantList&gt;</span>
+</span><span class="line">    <span class="nt">&lt;variant&gt;</span>
+</span><span class="line">      <span class="nt">&lt;configItem&gt;</span>
+</span><span class="line">        <span class="nt">&lt;name&gt;</span>qwertz<span class="nt">&lt;/name&gt;</span>
+</span><span class="line">        <span class="nt">&lt;description&gt;</span>Polish (qwertz)<span class="nt">&lt;/description&gt;</span>
+</span><span class="line">      <span class="nt">&lt;/configItem&gt;</span>
+</span><span class="line">    <span class="nt">&lt;/variant&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<p>What does it mean? <code>configItem/name</code> is the name of the file in <code>/usr/share/X11/xkb/symbols</code> that contains layout definitions. <code>languageList</code> is a list of languages which that file supports. <code>variantList</code> is a list of alternative layouts that are defined in that file and their user-friendly names (which will be translated if there’s translation for them).</p>
 
-<p>What does it mean? <code>configItem/name</code> is the name of the file in <code>/usr/share/X11/xkb/symbols</code> that contains layout definitions. <code>languageList</code> is a list of languages which that file supports. <code>variantList</code> is a list of alternative layouts that are defined in that file and their user-friendly names (which will be translated if there&rsquo;s translation for them).</p>
+<p>Since I didn’t want to add the translation for the name of my layout, I simply added an entry with the name hardcoded in Polish:</p>
 
-<p>Since I didn&rsquo;t want to add the translation for the name of my layout, I simply added an entry with the name hardcoded in Polish:</p>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="xml"><span class="line">    <span class="nt">&lt;variant&gt;</span>
+</span><span class="line">      <span class="nt">&lt;configItem&gt;</span>
+</span><span class="line">        <span class="nt">&lt;name&gt;</span>custom3<span class="nt">&lt;/name&gt;</span>
+</span><span class="line">        <span class="nt">&lt;description&gt;</span>Polski (własny)<span class="nt">&lt;/description&gt;</span>
+</span><span class="line">      <span class="nt">&lt;/configItem&gt;</span>
+</span><span class="line">    <span class="nt">&lt;/variant&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'>    <span class="nt">&lt;variant&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;configItem&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;name&gt;</span>custom3<span class="nt">&lt;/name&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;description&gt;</span>Polski (własny)<span class="nt">&lt;/description&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;/configItem&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/variant&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
+<p>And that’s all!</p>
 
-
-<p>And that&rsquo;s all!</p>
-
-<p>Also, it&rsquo;s time to explain why it&rsquo;s <code>custom3</code>, not <code>custom</code>. Since those files are cached in memory by the DE, if you change the layout in the <code>/usr/share/X11/xkb/symbols/*</code> file, those changes won&rsquo;t be reloaded. Since I didn&rsquo;t want to restart everything just to test the layout, I solved that problem by adding 2 (and later 3) to the identifier.</p>
+<p>Also, it’s time to explain why it’s <code>custom3</code>, not <code>custom</code>. Since those files are cached in memory by the DE, if you change the layout in the <code>/usr/share/X11/xkb/symbols/*</code> file, those changes won’t be reloaded. Since I didn’t want to restart everything just to test the layout, I solved that problem by adding 2 (and later 3) to the identifier.</p>
 
 <p>And this is the result:</p>
 
-<p><img src="http://KarolS.github.io/images/layout-pl-custom.png"></p>
+<p><img src="http://KarolS.github.io/images/layout-pl-custom.png" /></p>
 
 <p>Still not perfect, but way better.</p>
 ]]></content>
@@ -643,7 +834,7 @@
     <link href="http://KarolS.github.io/blog/2013/10/21/test-post-please-ignore/"/>
     <updated>2013-10-21T17:03:00+02:00</updated>
     <id>http://KarolS.github.io/blog/2013/10/21/test-post-please-ignore</id>
-    <content type="html"><![CDATA[<p>I&rsquo;m figuring out how to use Octopress. Looks good so far.</p>
+    <content type="html"><![CDATA[<p>I’m figuring out how to use Octopress. Looks good so far.</p>
 ]]></content>
   </entry>
   

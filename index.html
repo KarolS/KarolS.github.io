@@ -9,7 +9,7 @@
   <meta name="author" content="Karol Stasiak">
 
   
-  <meta name="description" content="After several months of not-so-intensive work, I present the version 0.1 of the Units library: https://github.com/KarolS/units. Units is a Scala &hellip;">
+  <meta name="description" content="I would like to announce the release of a Java library for parsing hOCR documents: hOCR4J. You can download it from here. I’m planning to get it to &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -29,6 +29,22 @@
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
 
   
   <script type="text/javascript">
@@ -83,6 +99,53 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2014/01/03/hocr4j-0-1-released/">hOCR4J 0.1 Released</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-03T00:11:00+01:00" pubdate data-updated="true">Jan 3<span>rd</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I would like to announce the release of a Java library for parsing hOCR documents: <strong>hOCR4J</strong>. You can <a href="https://github.com/KarolS/hOCR4J">download it from here</a>. I’m planning to get it to Sonatype too, so you may be able to get it from there in the near future.</p>
+
+<p>hOCR is an output format used by OCR programs, including <a href="http://code.google.com/p/tesseract-ocr">Tesseract</a>. It contains information about all the OCR’d words, their position, and their assumed organisation into lines and paragraphs. Currently, hOCR4J was tested to work with Tesseract-generated hOCR’s, I plan to test other OCR programs in the future.</p>
+
+<p>hOCR4J parses hOCR documents, creates an immutable model for them (nice when using functional programming style), and provides various tools to manipulate and modify them.</p>
+
+<p>hOCR4J makes a good starting point when developing an application which extracts data from OCR’d documents that have non-trivial layouts.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/01/03/hocr4j-0-1-released/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2014/01/02/units-0-1-released/">Units 0.1 Released</a></h1>
     
     
@@ -115,17 +178,30 @@
 <p>Compile-time unit checking has multiple applications:</p>
 
 <ul>
-<li><p>scientists will be able to distinguish values in metres per second, metres, metres per second squared <a href="http://en.wikipedia.org/wiki/Mars_Climate_Orbiter">instead of crashing expensive space exploration equipment</a> or <a href="https://www.ismp.org/newsletters/acutecare/articles/A3Q99Action.asp">drugging a patient</a></p></li>
-<li><p>engineers will be able to distinguish values in metres, centimetres, feet, inches, litres, gallons <a href="http://en.wikipedia.org/wiki/Air_Canada_Flight_143">instead of running out of fuel in the middle of a flight</a> or <a href="http://spectrum.ieee.org/tech-talk/at-work/test-and-measurement/columbuss-geographical-miscalculations">thinking the distance to travel is many times shorter</a></p></li>
-<li><p>designers will be able to distinguish values in millimetres, inches, pixels, points</p></li>
-<li><p>economists will be able to distinguish values in euros, dollars, dollars per hour, ounces of gold</p></li>
-<li><p>game developers will be able to distinguish values in pixels, tiles, damage points, minerals, barrels of vespen gas</p></li>
-<li><p>network software developers will be able to distinguish values in kilobytes, kibibytes, kilobits, kilobits per second</p></li>
-<li><p>and so on and on</p></li>
+  <li>
+    <p>scientists will be able to distinguish values in metres per second, metres, metres per second squared <a href="http://en.wikipedia.org/wiki/Mars_Climate_Orbiter">instead of crashing expensive space exploration equipment</a> or <a href="https://www.ismp.org/newsletters/acutecare/articles/A3Q99Action.asp">drugging a patient</a></p>
+  </li>
+  <li>
+    <p>engineers will be able to distinguish values in metres, centimetres, feet, inches, litres, gallons <a href="http://en.wikipedia.org/wiki/Air_Canada_Flight_143">instead of running out of fuel in the middle of a flight</a> or <a href="http://spectrum.ieee.org/tech-talk/at-work/test-and-measurement/columbuss-geographical-miscalculations">thinking the distance to travel is many times shorter</a></p>
+  </li>
+  <li>
+    <p>designers will be able to distinguish values in millimetres, inches, pixels, points</p>
+  </li>
+  <li>
+    <p>economists will be able to distinguish values in euros, dollars, dollars per hour, ounces of gold</p>
+  </li>
+  <li>
+    <p>game developers will be able to distinguish values in pixels, tiles, damage points, minerals, barrels of vespen gas</p>
+  </li>
+  <li>
+    <p>network software developers will be able to distinguish values in kilobytes, kibibytes, kilobits, kilobits per second</p>
+  </li>
+  <li>
+    <p>and so on and on</p>
+  </li>
 </ul>
 
-
-<p>There are not many languages with units of measurement support, the first that comes to mind is <a href="http://msdn.microsoft.com/en-us/library/dd233243.aspx">F#</a>. I must admit that it is great at this. There also other languages that support units as a first-class language feature, and many that support units with a library. Those libraries vary in their expressibility and versatility, some of them only allow SI units, some of them require you to explicitly express relations between multiplied values, and some of them only support a limited subset of units. There have been earlier Scala libraries with units of measurements, but they all had severe limitations. <em>Units</em> library tries to be both expressive and versatile. While it&rsquo;s not as powerful as F# built-in unit support, it definitely allows for quite a bit.</p>
+<p>There are not many languages with units of measurement support, the first that comes to mind is <a href="http://msdn.microsoft.com/en-us/library/dd233243.aspx">F#</a>. I must admit that it is great at this. There also other languages that support units as a first-class language feature, and many that support units with a library. Those libraries vary in their expressibility and versatility, some of them only allow SI units, some of them require you to explicitly express relations between multiplied values, and some of them only support a limited subset of units. There have been earlier Scala libraries with units of measurements, but they all had severe limitations. <em>Units</em> library tries to be both expressive and versatile. While it’s not as powerful as F# built-in unit support, it definitely allows for quite a bit.</p>
 
 <p>Enough of that, time for some examples that will showcase the main features.</p>
 
@@ -168,35 +244,45 @@
   </header>
 
 
-  <div class="entry-content"><p>I think almost every one of you has some beef with your keyboard layout. There are characters you&rsquo;re never going to use, there are characters you&rsquo;d love to use but they&rsquo;re missing (and you don&rsquo;t like/can&rsquo;t use the compose key for them), and so on.</p>
+  <div class="entry-content"><p>I think almost every one of you has some beef with your keyboard layout. There are characters you’re never going to use, there are characters you’d love to use but they’re missing (and you don’t like/can’t use the compose key for them), and so on.</p>
 
 <p>For example, this is the default Polish layout in Linux:</p>
 
-<p><img src="/images/layout-pl.png"></p>
+<p><img src="/images/layout-pl.png" /></p>
 
 <p>A keen eye can notice several things that could be improved:</p>
 
 <ul>
-<li><p>many characters can be input in multiple ways: <code>[</code> (as <code>[</code> or as <code>AltGr-9</code>), <code>ł</code> (as <code>AltGr-w</code> or <code>AltGr-l</code>), <code>&amp;</code> (as <code>Shift-7</code> or <code>AltGr-Shift-k</code>), <code>@</code> (as <code>Shift-2</code> or <code>AltGr-q</code>),</p></li>
-<li><p>the layout has some unassigned combinations (for example <code>AltGr-Shift-4</code>),</p></li>
-<li><p>some important characters are missing: <code>€</code> (the euro sign) and <code>„</code> (Polish opening quote),</p></li>
-<li><p>since I can use the compose key, I don&rsquo;t need all those arbitrarily assigned dead keys on the right.</p></li>
+  <li>
+    <p>many characters can be input in multiple ways: <code>[</code> (as <code>[</code> or as <code>AltGr-9</code>), <code>ł</code> (as <code>AltGr-w</code> or <code>AltGr-l</code>), <code>&amp;</code> (as <code>Shift-7</code> or <code>AltGr-Shift-k</code>), <code>@</code> (as <code>Shift-2</code> or <code>AltGr-q</code>),</p>
+  </li>
+  <li>
+    <p>the layout has some unassigned combinations (for example <code>AltGr-Shift-4</code>),</p>
+  </li>
+  <li>
+    <p>some important characters are missing: <code>€</code> (the euro sign) and <code>„</code> (Polish opening quote),</p>
+  </li>
+  <li>
+    <p>since I can use the compose key, I don’t need all those arbitrarily assigned dead keys on the right.</p>
+  </li>
 </ul>
-
 
 <p>Of course your keyboard layout may have different problems.</p>
 
-<p><strong>Disclaimer:</strong> The following was done on Ubuntu 12.04 with Unity DE, I don&rsquo;t guarantee it will work on other distros. In particular, the file paths can differ.</p>
+<p><strong>Disclaimer:</strong> The following was done on Ubuntu 12.04 with Unity DE, I don’t guarantee it will work on other distros. In particular, the file paths can differ.</p>
 
-<p>How to create a new one, you ask? That&rsquo;s actually pretty simple.</p>
+<p>How to create a new one, you ask? That’s actually pretty simple.</p>
 
 <ul>
-<li><p>layout definitions are in the <code>/usr/share/X11/xkb/symbols</code> directory,</p></li>
-<li><p>layout metadata are in the <code>/usr/share/X11/xkb/rules/evdev.xml</code> file.</p></li>
+  <li>
+    <p>layout definitions are in the <code>/usr/share/X11/xkb/symbols</code> directory,</p>
+  </li>
+  <li>
+    <p>layout metadata are in the <code>/usr/share/X11/xkb/rules/evdev.xml</code> file.</p>
+  </li>
 </ul>
 
-
-<p>Let&rsquo;s first define our layout. The <code>/usr/share/X11/xkb/symbols</code> contains files, each corresponding to a language. Some layouts can belong to several languages, but they&rsquo;re defined in only one of the files. If your layout is supposed to be listed under one language in the keyboard setting anyway, you&rsquo;ll have to add it to the correct file. Since my keyboard layout was to be mostly an improvement on top of the Polish language layout, I decided to add it to <code>/usr/share/X11/xkb/symbols/pl</code>.</p>
+<p>Let’s first define our layout. The <code>/usr/share/X11/xkb/symbols</code> contains files, each corresponding to a language. Some layouts can belong to several languages, but they’re defined in only one of the files. If your layout is supposed to be listed under one language in the keyboard setting anyway, you’ll have to add it to the correct file. Since my keyboard layout was to be mostly an improvement on top of the Polish language layout, I decided to add it to <code>/usr/share/X11/xkb/symbols/pl</code>.</p>
 
 </div>
   
@@ -237,7 +323,7 @@
   </header>
 
 
-  <div class="entry-content"><p>I&rsquo;m figuring out how to use Octopress. Looks good so far.</p>
+  <div class="entry-content"><p>I’m figuring out how to use Octopress. Looks good so far.</p>
 </div>
   
   
@@ -258,6 +344,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/01/03/hocr4j-0-1-released/">hOCR4J 0.1 Released</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/01/02/units-0-1-released/">Units 0.1 Released</a>
       </li>
     
@@ -273,7 +363,7 @@
 </section>
 <section>
   <h1>Category Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/keyboard' style='font-size: 160.0%'>keyboard(1)</a> <a href='/blog/categories/linux' style='font-size: 160.0%'>Linux(1)</a> <a href='/blog/categories/personal-project' style='font-size: 160.0%'>personal project(1)</a> <a href='/blog/categories/programming' style='font-size: 160.0%'>programming(1)</a> <a href='/blog/categories/scala' style='font-size: 160.0%'>scala(1)</a> <a href='/blog/categories/unicode' style='font-size: 160.0%'>Unicode(1)</a> <a href='/blog/categories/units' style='font-size: 160.0%'>units(1)</a> <a href='/blog/categories/units-of-measurement' style='font-size: 160.0%'>units of measurement(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/hocr4j' style='font-size: 130.0%'>hOCR4J(1)</a> <a href='/blog/categories/java' style='font-size: 130.0%'>Java(1)</a> <a href='/blog/categories/keyboard' style='font-size: 130.0%'>keyboard(1)</a> <a href='/blog/categories/linux' style='font-size: 130.0%'>Linux(1)</a> <a href='/blog/categories/ocr' style='font-size: 130.0%'>OCR(1)</a> <a href='/blog/categories/personal-project' style='font-size: 160.0%'>personal project(2)</a> <a href='/blog/categories/programming' style='font-size: 160.0%'>programming(2)</a> <a href='/blog/categories/scala' style='font-size: 130.0%'>scala(1)</a> <a href='/blog/categories/unicode' style='font-size: 130.0%'>Unicode(1)</a> <a href='/blog/categories/units' style='font-size: 130.0%'>units(1)</a> <a href='/blog/categories/units-of-measurement' style='font-size: 130.0%'>units of measurement(1)</a> </span>
 </section>
 
   
