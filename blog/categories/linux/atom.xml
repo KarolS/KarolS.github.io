@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Linux | Karol Stasiak's Blog]]></title>
+  <title><![CDATA[Category: linux | Karol Stasiak's Blog]]></title>
   <link href="http://KarolS.github.io/blog/categories/linux/atom.xml" rel="self"/>
   <link href="http://KarolS.github.io/"/>
-  <updated>2014-01-03T10:35:23+01:00</updated>
+  <updated>2014-01-11T23:26:03+01:00</updated>
   <id>http://KarolS.github.io/</id>
   <author>
     <name><![CDATA[Karol Stasiak]]></name>

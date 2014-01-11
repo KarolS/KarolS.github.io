@@ -30,35 +30,7 @@
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
-<!-- mathjax config similar to math.stackexchange -->
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  jax: ["input/TeX", "output/HTML-CSS"],
-  tex2jax: {
-    inlineMath: [ ['$', '$'] ],
-    displayMath: [ ['$$', '$$']],
-    processEscapes: true,
-    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-  },
-  messageStyle: "none",
-  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
-});
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
-
   
-  <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-45876308-1']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-  </script>
-
 
 </head>
 
@@ -159,57 +131,32 @@ MathJax.Hub.Config({
 
 <p>Let’s start with something simple:</p>
 
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-</pre></td><td class="code"><pre><code class="scala"><span class="line"><span class="k">import</span> <span class="nn">io.github.karols.units._</span>
-</span><span class="line"><span class="k">import</span> <span class="nn">io.github.karols.units.SI._</span>
-</span><span class="line">
-</span><span class="line"><span class="k">val</span> <span class="n">length1</span> <span class="k">=</span> <span class="mf">1.</span><span class="n">of</span><span class="o">[</span><span class="kt">metre</span><span class="o">]</span>
-</span><span class="line"><span class="k">val</span> <span class="n">length2</span> <span class="k">=</span> <span class="mf">2.</span><span class="n">of</span><span class="o">[</span><span class="kt">metre</span><span class="o">]</span>
-</span><span class="line"><span class="k">val</span> <span class="n">area1</span> <span class="k">=</span> <span class="mf">1.</span><span class="n">of</span><span class="o">[</span><span class="kt">square</span><span class="o">[</span><span class="kt">metre</span><span class="o">]]</span>
-</span><span class="line"><span class="k">val</span> <span class="n">area2</span> <span class="k">=</span> <span class="n">length1</span> <span class="o">*</span> <span class="n">length2</span>
-</span><span class="line">
-</span><span class="line"><span class="n">length1</span> <span class="o">&lt;</span> <span class="n">length2</span> <span class="c1">// OK</span>
-</span><span class="line"><span class="n">area1</span> <span class="o">+</span> <span class="n">area2</span> <span class="c1">//OK</span>
-</span><span class="line"><span class="n">area1</span> <span class="o">+</span> <span class="n">length2</span> <span class="c1">// not OK, compile time error</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
+<figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div><div data-line="9" class="line-number"></div><div data-line="10" class="line-number"></div><div data-line="11" class="line-number"></div></pre></td><td class="main  scala"><pre><div class="line"><span class="k">import</span> <span class="nn">io.github.karols.units._</span>
+</div><div class="line"><span class="k">import</span> <span class="nn">io.github.karols.units.SI._</span>
+</div><div class="line"> </div><div class="line"><span class="k">val</span> <span class="n">length1</span> <span class="k">=</span> <span class="mf">1.</span><span class="n">of</span><span class="o">[</span><span class="kt">metre</span><span class="o">]</span>
+</div><div class="line"><span class="k">val</span> <span class="n">length2</span> <span class="k">=</span> <span class="mf">2.</span><span class="n">of</span><span class="o">[</span><span class="kt">metre</span><span class="o">]</span>
+</div><div class="line"><span class="k">val</span> <span class="n">area1</span> <span class="k">=</span> <span class="mf">1.</span><span class="n">of</span><span class="o">[</span><span class="kt">square</span><span class="o">[</span><span class="kt">metre</span><span class="o">]]</span>
+</div><div class="line"><span class="k">val</span> <span class="n">area2</span> <span class="k">=</span> <span class="n">length1</span> <span class="o">*</span> <span class="n">length2</span>
+</div><div class="line"> </div><div class="line"><span class="n">length1</span> <span class="o">&lt;</span> <span class="n">length2</span> <span class="c1">// OK</span>
+</div><div class="line"><span class="n">area1</span> <span class="o">+</span> <span class="n">area2</span> <span class="c1">//OK</span>
+</div><div class="line"><span class="n">area1</span> <span class="o">+</span> <span class="n">length2</span> <span class="c1">// not OK, compile time error</span>
+</div></pre></td></tr></table></div></figure>
 
 <p>The main difference you see is that all the values have a unit defined. The type of the variables in this example is <code>IntU[metre]</code> and <code>IntU[square[metre]]</code> respectively. It is an <code>AnyVal</code> wrapping a 64-bit <code>Long</code>. There is also <code>DoubleU</code>, which wraps 64-bit <code>Double</code>.</p>
 
 <p>The library supports out-of-the-box most SI units, some Imperial and US Customary units, units of information and bandwidth, and many currencies. Most of the units can be semi-automatically converted, i.e. the following code:</p>
 
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-</pre></td><td class="code"><pre><code class="scala"><span class="line"><span class="k">def</span> <span class="n">printMM</span><span class="o">(</span><span class="n">length</span><span class="k">:</span> <span class="kt">DoubleU</span><span class="o">[</span><span class="kt">millimetre</span><span class="o">])</span> <span class="k">=</span> <span class="o">{</span>
-</span><span class="line">  <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;The length is $length mm.&quot;</span><span class="o">)</span>
-</span><span class="line"><span class="o">}</span>
-</span><span class="line">
-</span><span class="line"><span class="n">printMM</span><span class="o">(</span><span class="mf">1.</span><span class="n">of</span><span class="o">[</span><span class="kt">inch</span><span class="o">].</span><span class="n">convert</span><span class="o">)</span>
-</span><span class="line">
-</span><span class="line"><span class="n">printMM</span><span class="o">(</span><span class="mf">1.</span><span class="n">of</span><span class="o">[</span><span class="kt">metre</span><span class="o">]</span> <span class="o">+</span> <span class="mf">1.</span><span class="n">of</span><span class="o">[</span><span class="kt">millimetre</span><span class="o">])</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
+<figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div></pre></td><td class="main  scala"><pre><div class="line"><span class="k">def</span> <span class="n">printMM</span><span class="o">(</span><span class="n">length</span><span class="k">:</span> <span class="kt">DoubleU</span><span class="o">[</span><span class="kt">millimetre</span><span class="o">])</span> <span class="k">=</span> <span class="o">{</span>
+</div><div class="line">  <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;The length is $length mm.&quot;</span><span class="o">)</span>
+</div><div class="line"><span class="o">}</span>
+</div><div class="line"> </div><div class="line"><span class="n">printMM</span><span class="o">(</span><span class="mf">1.</span><span class="n">of</span><span class="o">[</span><span class="kt">inch</span><span class="o">].</span><span class="n">convert</span><span class="o">)</span>
+</div><div class="line"> </div><div class="line"><span class="n">printMM</span><span class="o">(</span><span class="mf">1.</span><span class="n">of</span><span class="o">[</span><span class="kt">metre</span><span class="o">]</span> <span class="o">+</span> <span class="mf">1.</span><span class="n">of</span><span class="o">[</span><span class="kt">millimetre</span><span class="o">])</span>
+</div></pre></td></tr></table></div></figure>
 
 <p>will correctly print </p>
 
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-</pre></td><td class="code"><pre><code class="scala"><span class="line"><span class="nc">The</span> <span class="n">length</span> <span class="n">is</span> <span class="mf">25.4</span> <span class="n">mm</span><span class="o">.</span>
-</span><span class="line"><span class="nc">The</span> <span class="n">length</span> <span class="n">is</span> <span class="mf">1001.0</span> <span class="n">mm</span><span class="o">.</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
+<figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div></pre></td><td class="main  plain"><pre><div class="line">The length is 25.4 mm.
+</div><div class="line">The length is 1001.0 mm.</div></pre></td></tr></table></div></figure>
 
 <h3 id="implementation">Implementation</h3>
 
@@ -230,83 +177,46 @@ MathJax.Hub.Config({
 
 <p>I’ll focus here on integers, because they’re simple enough to explain. Here’s the code (slightly simplified):</p>
 
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-<span class="line-number">14</span>
-<span class="line-number">15</span>
-<span class="line-number">16</span>
-<span class="line-number">17</span>
-<span class="line-number">18</span>
-<span class="line-number">19</span>
-<span class="line-number">20</span>
-<span class="line-number">21</span>
-<span class="line-number">22</span>
-<span class="line-number">23</span>
-<span class="line-number">24</span>
-<span class="line-number">25</span>
-<span class="line-number">26</span>
-<span class="line-number">27</span>
-<span class="line-number">28</span>
-<span class="line-number">29</span>
-<span class="line-number">30</span>
-<span class="line-number">31</span>
-<span class="line-number">32</span>
-<span class="line-number">33</span>
-<span class="line-number">34</span>
-<span class="line-number">35</span>
-<span class="line-number">36</span>
-<span class="line-number">37</span>
-<span class="line-number">38</span>
-</pre></td><td class="code"><pre><code class="scala"><span class="line"><span class="k">sealed</span> <span class="k">trait</span> <span class="nc">TInteger</span> <span class="o">{</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">Succ</span> <span class="k">&lt;:</span> <span class="kt">TInteger</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">Pred</span> <span class="k">&lt;:</span> <span class="kt">TInteger</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">Negate</span> <span class="k">&lt;:</span> <span class="kt">TInteger</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="nc">TInteger</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">Mul</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="nc">TInteger</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">ZeroNegPos</span><span class="o">[</span><span class="kt">IfZero</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfNeg</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfPos</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">ResultType</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="nc">ResultType</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">Equal</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="nc">TBool</span>
-</span><span class="line"><span class="o">}</span>
-</span><span class="line"><span class="k">type</span> <span class="kt">LambdaNatFalse</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="nc">False</span>
-</span><span class="line"><span class="k">sealed</span> <span class="k">trait</span> <span class="nc">_0</span> <span class="k">extends</span> <span class="nc">TInteger</span> <span class="o">{</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">Succ</span> <span class="o">=</span> <span class="nc">Inc</span><span class="o">[</span><span class="k">_</span><span class="err">0</span><span class="o">]</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">Pred</span> <span class="o">=</span> <span class="nc">Dec</span><span class="o">[</span><span class="k">_</span><span class="err">0</span><span class="o">]</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">Negate</span> <span class="o">=</span> <span class="n">_0</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="n">X</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">Mul</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="n">_0</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">ZeroNegPos</span><span class="o">[</span><span class="kt">IfZero</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfNeg</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfPos</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">ResultType</span><span class="o">]</span> <span class="k">=</span> <span class="nc">IfZero</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">Equal</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="n">X</span><span class="k">#</span><span class="nc">ZeroNegPos</span><span class="o">[</span><span class="kt">True</span>, <span class="kt">LambdaNatFalse</span>, <span class="kt">LambdaNatFalse</span>, <span class="kt">TBool</span><span class="o">]</span>
-</span><span class="line"><span class="o">}</span>
-</span><span class="line"><span class="k">sealed</span> <span class="k">trait</span> <span class="nc">Inc</span><span class="o">[</span><span class="kt">N</span> <span class="k">&lt;:</span> <span class="kt">TInteger</span><span class="o">]</span> <span class="nc">extends</span> <span class="nc">TInteger</span> <span class="o">{</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">Succ</span> <span class="o">=</span> <span class="nc">Inc</span><span class="o">[</span><span class="kt">Inc</span><span class="o">[</span><span class="kt">N</span><span class="o">]]</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">Pred</span> <span class="o">=</span> <span class="n">N</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">Negate</span> <span class="o">=</span> <span class="nc">Dec</span><span class="o">[</span><span class="kt">N</span><span class="k">#</span><span class="kt">Negate</span><span class="o">]</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="n">N</span><span class="k">#</span><span class="nc">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">#</span><span class="kt">Succ</span><span class="o">]</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">Mul</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="n">N</span><span class="k">#</span><span class="nc">Mul</span><span class="o">[</span><span class="kt">X</span><span class="o">]</span><span class="k">#</span><span class="nc">Add</span><span class="o">[</span><span class="kt">X</span><span class="o">]</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">ZeroNegPos</span><span class="o">[</span><span class="kt">IfZero</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfNeg</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfPos</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">ResultType</span><span class="o">]</span> <span class="k">=</span> <span class="nc">IfPos</span><span class="o">[</span><span class="kt">N</span><span class="o">]</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">Equal</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="n">X</span><span class="k">#</span><span class="nc">ZeroNegPos</span><span class="o">[</span><span class="kt">False</span>, <span class="kt">LambdaNatFalse</span>, <span class="kt">N</span><span class="k">#</span><span class="kt">Equal</span>, <span class="kt">TBool</span><span class="o">]</span>
-</span><span class="line"><span class="o">}</span>
-</span><span class="line"><span class="k">sealed</span> <span class="k">trait</span> <span class="nc">Dec</span><span class="o">[</span><span class="kt">N</span> <span class="k">&lt;:</span> <span class="kt">TInteger</span><span class="o">]</span> <span class="nc">extends</span> <span class="nc">TInteger</span> <span class="o">{</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">Succ</span> <span class="o">=</span> <span class="n">N</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">Pred</span> <span class="o">=</span> <span class="nc">Dec</span><span class="o">[</span><span class="kt">Dec</span><span class="o">[</span><span class="kt">N</span><span class="o">]]</span>
-</span><span class="line">    <span class="nc">TInteger</span><span class="err">]</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">Negate</span> <span class="o">=</span> <span class="nc">Inc</span><span class="o">[</span><span class="kt">N</span><span class="k">#</span><span class="kt">Negate</span><span class="o">]</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="n">N</span><span class="k">#</span><span class="nc">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">#</span><span class="kt">Pred</span><span class="o">]</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">Mul</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="n">N</span><span class="k">#</span><span class="nc">Mul</span><span class="o">[</span><span class="kt">X</span><span class="o">]</span><span class="k">#</span><span class="nc">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">#</span><span class="kt">Negate</span><span class="o">]</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">ZeroNegPos</span><span class="o">[</span><span class="kt">IfZero</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfNeg</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfPos</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">ResultType</span><span class="o">]</span> <span class="k">=</span> <span class="nc">IfNeg</span><span class="o">[</span><span class="kt">N</span><span class="o">]</span>
-</span><span class="line">    <span class="k">type</span> <span class="kt">Equal</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="n">X</span><span class="k">#</span><span class="nc">ZeroNegPos</span><span class="o">[</span><span class="kt">False</span>, <span class="kt">N</span><span class="k">#</span><span class="kt">Equal</span>, <span class="kt">LambdaNatFalse</span>, <span class="kt">TBool</span><span class="o">]</span>
-</span><span class="line"><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
+<figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div><div data-line="9" class="line-number"></div><div data-line="10" class="line-number"></div><div data-line="11" class="line-number"></div><div data-line="12" class="line-number"></div><div data-line="13" class="line-number"></div><div data-line="14" class="line-number"></div><div data-line="15" class="line-number"></div><div data-line="16" class="line-number"></div><div data-line="17" class="line-number"></div><div data-line="18" class="line-number"></div><div data-line="19" class="line-number"></div><div data-line="20" class="line-number"></div><div data-line="21" class="line-number"></div><div data-line="22" class="line-number"></div><div data-line="23" class="line-number"></div><div data-line="24" class="line-number"></div><div data-line="25" class="line-number"></div><div data-line="26" class="line-number"></div><div data-line="27" class="line-number"></div><div data-line="28" class="line-number"></div><div data-line="29" class="line-number"></div><div data-line="30" class="line-number"></div><div data-line="31" class="line-number"></div><div data-line="32" class="line-number"></div><div data-line="33" class="line-number"></div><div data-line="34" class="line-number"></div><div data-line="35" class="line-number"></div><div data-line="36" class="line-number"></div><div data-line="37" class="line-number"></div><div data-line="38" class="line-number"></div></pre></td><td class="main  scala"><pre><div class="line"><span class="k">sealed</span> <span class="k">trait</span> <span class="nc">TInteger</span> <span class="o">{</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">Succ</span> <span class="k">&lt;:</span> <span class="kt">TInteger</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">Pred</span> <span class="k">&lt;:</span> <span class="kt">TInteger</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">Negate</span> <span class="k">&lt;:</span> <span class="kt">TInteger</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="nc">TInteger</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">Mul</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="nc">TInteger</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">ZeroNegPos</span><span class="o">[</span><span class="kt">IfZero</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfNeg</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfPos</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">ResultType</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="nc">ResultType</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">Equal</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="nc">TBool</span>
+</div><div class="line"><span class="o">}</span>
+</div><div class="line"><span class="k">type</span> <span class="kt">LambdaNatFalse</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="nc">False</span>
+</div><div class="line"><span class="k">sealed</span> <span class="k">trait</span> <span class="nc">_0</span> <span class="k">extends</span> <span class="nc">TInteger</span> <span class="o">{</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">Succ</span> <span class="o">=</span> <span class="nc">Inc</span><span class="o">[</span><span class="k">_</span><span class="err">0</span><span class="o">]</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">Pred</span> <span class="o">=</span> <span class="nc">Dec</span><span class="o">[</span><span class="k">_</span><span class="err">0</span><span class="o">]</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">Negate</span> <span class="o">=</span> <span class="n">_0</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="n">X</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">Mul</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="n">_0</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">ZeroNegPos</span><span class="o">[</span><span class="kt">IfZero</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfNeg</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfPos</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">ResultType</span><span class="o">]</span> <span class="k">=</span> <span class="nc">IfZero</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">Equal</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="n">X</span><span class="k">#</span><span class="nc">ZeroNegPos</span><span class="o">[</span><span class="kt">True</span>, <span class="kt">LambdaNatFalse</span>, <span class="kt">LambdaNatFalse</span>, <span class="kt">TBool</span><span class="o">]</span>
+</div><div class="line"><span class="o">}</span>
+</div><div class="line"><span class="k">sealed</span> <span class="k">trait</span> <span class="nc">Inc</span><span class="o">[</span><span class="kt">N</span> <span class="k">&lt;:</span> <span class="kt">TInteger</span><span class="o">]</span> <span class="nc">extends</span> <span class="nc">TInteger</span> <span class="o">{</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">Succ</span> <span class="o">=</span> <span class="nc">Inc</span><span class="o">[</span><span class="kt">Inc</span><span class="o">[</span><span class="kt">N</span><span class="o">]]</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">Pred</span> <span class="o">=</span> <span class="n">N</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">Negate</span> <span class="o">=</span> <span class="nc">Dec</span><span class="o">[</span><span class="kt">N</span><span class="k">#</span><span class="kt">Negate</span><span class="o">]</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="n">N</span><span class="k">#</span><span class="nc">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">#</span><span class="kt">Succ</span><span class="o">]</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">Mul</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="n">N</span><span class="k">#</span><span class="nc">Mul</span><span class="o">[</span><span class="kt">X</span><span class="o">]</span><span class="k">#</span><span class="nc">Add</span><span class="o">[</span><span class="kt">X</span><span class="o">]</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">ZeroNegPos</span><span class="o">[</span><span class="kt">IfZero</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfNeg</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfPos</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">ResultType</span><span class="o">]</span> <span class="k">=</span> <span class="nc">IfPos</span><span class="o">[</span><span class="kt">N</span><span class="o">]</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">Equal</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="n">X</span><span class="k">#</span><span class="nc">ZeroNegPos</span><span class="o">[</span><span class="kt">False</span>, <span class="kt">LambdaNatFalse</span>, <span class="kt">N</span><span class="k">#</span><span class="kt">Equal</span>, <span class="kt">TBool</span><span class="o">]</span>
+</div><div class="line"><span class="o">}</span>
+</div><div class="line"><span class="k">sealed</span> <span class="k">trait</span> <span class="nc">Dec</span><span class="o">[</span><span class="kt">N</span> <span class="k">&lt;:</span> <span class="kt">TInteger</span><span class="o">]</span> <span class="nc">extends</span> <span class="nc">TInteger</span> <span class="o">{</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">Succ</span> <span class="o">=</span> <span class="n">N</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">Pred</span> <span class="o">=</span> <span class="nc">Dec</span><span class="o">[</span><span class="kt">Dec</span><span class="o">[</span><span class="kt">N</span><span class="o">]]</span>
+</div><div class="line">    <span class="nc">TInteger</span><span class="err">]</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">Negate</span> <span class="o">=</span> <span class="nc">Inc</span><span class="o">[</span><span class="kt">N</span><span class="k">#</span><span class="kt">Negate</span><span class="o">]</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="n">N</span><span class="k">#</span><span class="nc">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">#</span><span class="kt">Pred</span><span class="o">]</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">Mul</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">=</span> <span class="n">N</span><span class="k">#</span><span class="nc">Mul</span><span class="o">[</span><span class="kt">X</span><span class="o">]</span><span class="k">#</span><span class="nc">Add</span><span class="o">[</span><span class="kt">X</span><span class="k">#</span><span class="kt">Negate</span><span class="o">]</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">ZeroNegPos</span><span class="o">[</span><span class="kt">IfZero</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfNeg</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">IfPos</span><span class="o">[</span><span class="kt">N</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span><span class="k">&lt;:</span><span class="kt">ResultType</span>, <span class="kt">ResultType</span><span class="o">]</span> <span class="k">=</span> <span class="nc">IfNeg</span><span class="o">[</span><span class="kt">N</span><span class="o">]</span>
+</div><div class="line">    <span class="k">type</span> <span class="kt">Equal</span><span class="o">[</span><span class="kt">X</span><span class="k">&lt;:</span><span class="kt">TInteger</span><span class="o">]</span> <span class="k">&lt;:</span> <span class="n">X</span><span class="k">#</span><span class="nc">ZeroNegPos</span><span class="o">[</span><span class="kt">False</span>, <span class="kt">N</span><span class="k">#</span><span class="kt">Equal</span>, <span class="kt">LambdaNatFalse</span>, <span class="kt">TBool</span><span class="o">]</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
 <p>As you can see:</p>
 
 <ul>
@@ -367,31 +277,19 @@ MathJax.Hub.Config({
 
 <p>Defining your own units is quite easy. The most basic thing you have to do is to define a unit and its type-level string. The string will be used to display the name of the unit (so better pick something that makes sense), but also to distinguish units themselves (so better pick something unique).</p>
 
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-</pre></td><td class="code"><pre><code class="scala"><span class="line"><span class="k">import</span> <span class="nn">io.github.karols.units._</span>
-</span><span class="line"><span class="k">import</span> <span class="nn">io.github.karols.units.defining._</span>
-</span><span class="line">
-</span><span class="line"><span class="k">type</span> <span class="kt">fortnight</span> <span class="o">=</span> <span class="nc">DefineUnit</span><span class="o">[</span><span class="k">_</span><span class="kt">f</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">o</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">r</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">t</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">n</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">i</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">g</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">h</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">t</span><span class="o">]</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
+<figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div></pre></td><td class="main  scala"><pre><div class="line"><span class="k">import</span> <span class="nn">io.github.karols.units._</span>
+</div><div class="line"><span class="k">import</span> <span class="nn">io.github.karols.units.defining._</span>
+</div><div class="line"> </div><div class="line"><span class="k">type</span> <span class="kt">fortnight</span> <span class="o">=</span> <span class="nc">DefineUnit</span><span class="o">[</span><span class="k">_</span><span class="kt">f</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">o</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">r</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">t</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">n</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">i</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">g</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">h</span> <span class="kt">~:</span> <span class="k">_</span><span class="kt">t</span><span class="o">]</span>
+</div></pre></td></tr></table></div></figure>
 
 <p>That’s it!</p>
 
 <p>You can also define some conversions:</p>
 
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-</pre></td><td class="code"><pre><code class="scala"><span class="line"><span class="k">import</span> <span class="nn">io.github.karols.units.SI._</span>
-</span><span class="line">
-</span><span class="line"><span class="k">implicit</span> <span class="k">val</span> <span class="n">fortnight_to_day</span> <span class="k">=</span> <span class="n">one</span><span class="o">[</span><span class="kt">fortnight</span><span class="o">].</span><span class="n">contains</span><span class="o">(</span><span class="mi">14</span><span class="o">)[</span><span class="kt">day</span><span class="o">]</span>
-</span><span class="line">
-</span><span class="line"><span class="n">println</span><span class="o">((</span><span class="mf">1.</span><span class="n">of</span><span class="o">[</span><span class="kt">fortnight</span><span class="o">]</span> <span class="o">+</span> <span class="mf">3.</span><span class="n">of</span><span class="o">[</span><span class="kt">day</span><span class="o">]).</span><span class="n">mkString</span><span class="o">)</span> <span class="c1">// prints &quot;17 d&quot;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
+<figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div></pre></td><td class="main  scala"><pre><div class="line"><span class="k">import</span> <span class="nn">io.github.karols.units.SI._</span>
+</div><div class="line"> </div><div class="line"><span class="k">implicit</span> <span class="k">val</span> <span class="n">fortnight_to_day</span> <span class="k">=</span> <span class="n">one</span><span class="o">[</span><span class="kt">fortnight</span><span class="o">].</span><span class="n">contains</span><span class="o">(</span><span class="mi">14</span><span class="o">)[</span><span class="kt">day</span><span class="o">]</span>
+</div><div class="line"> </div><div class="line"><span class="n">println</span><span class="o">((</span><span class="mf">1.</span><span class="n">of</span><span class="o">[</span><span class="kt">fortnight</span><span class="o">]</span> <span class="o">+</span> <span class="mf">3.</span><span class="n">of</span><span class="o">[</span><span class="kt">day</span><span class="o">]).</span><span class="n">mkString</span><span class="o">)</span> <span class="c1">// prints &quot;17 d&quot;</span>
+</div></pre></td></tr></table></div></figure>
 
 <p>Sadly, you need to define conversions from fortnights to other units manually, and then you’ll have to define conversions of compound units, like from <em>mile/fortnight</em> to <em>kilometre/day</em>. The ratios have several operators defined to help with this, consult the documentation and source for more info.</p>
 
@@ -435,19 +333,11 @@ MathJax.Hub.Config({
 
 <p>All of these array classes provide an <code>avg</code> method, so you can write:</p>
 
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-</pre></td><td class="code"><pre><code class="scala"><span class="line"><span class="k">val</span> <span class="n">t1</span> <span class="k">=</span> <span class="mf">3.</span><span class="n">at</span><span class="o">[</span><span class="kt">CelsiusScale</span><span class="o">]</span>
-</span><span class="line"><span class="k">val</span> <span class="n">t2</span> <span class="k">=</span> <span class="mf">8.</span><span class="n">at</span><span class="o">[</span><span class="kt">CelsiusScale</span><span class="o">]</span>
-</span><span class="line">
-</span><span class="line"><span class="k">val</span> <span class="n">average</span> <span class="k">=</span> <span class="nc">IntAArray</span><span class="o">(</span><span class="n">t1</span><span class="o">,</span><span class="n">t2</span><span class="o">).</span><span class="n">avg</span>
-</span><span class="line">
-</span><span class="line"><span class="n">println</span><span class="o">(</span><span class="n">average</span><span class="o">.</span><span class="n">mkString</span><span class="o">)</span> <span class="c1">// prints 5.5 °C</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
+<figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div></pre></td><td class="main  scala"><pre><div class="line"><span class="k">val</span> <span class="n">t1</span> <span class="k">=</span> <span class="mf">3.</span><span class="n">at</span><span class="o">[</span><span class="kt">CelsiusScale</span><span class="o">]</span>
+</div><div class="line"><span class="k">val</span> <span class="n">t2</span> <span class="k">=</span> <span class="mf">8.</span><span class="n">at</span><span class="o">[</span><span class="kt">CelsiusScale</span><span class="o">]</span>
+</div><div class="line"> </div><div class="line"><span class="k">val</span> <span class="n">average</span> <span class="k">=</span> <span class="nc">IntAArray</span><span class="o">(</span><span class="n">t1</span><span class="o">,</span><span class="n">t2</span><span class="o">).</span><span class="n">avg</span>
+</div><div class="line"> </div><div class="line"><span class="n">println</span><span class="o">(</span><span class="n">average</span><span class="o">.</span><span class="n">mkString</span><span class="o">)</span> <span class="c1">// prints 5.5 °C</span>
+</div></pre></td></tr></table></div></figure>
 
 <h3 id="and-theres-more">And there’s more!</h3>
 
@@ -491,10 +381,8 @@ MathJax.Hub.Config({
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://KarolS.github.io/blog/2014/01/02/units-0-1-released/" data-via="" data-counturl="http://KarolS.github.io/blog/2014/01/02/units-0-1-released/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://KarolS.github.io/blog/2014/01/02/units-0-1-released/" data-via="" data-counturl="http://KarolS.github.io/blog/2014/01/02/units-0-1-released/" >Tweet</a>
   
-  
-  <div class="g-plusone" data-size="medium"></div>
   
   
 </div>
@@ -510,12 +398,6 @@ MathJax.Hub.Config({
     </p>
   </footer>
 </article>
-
-  <section>
-    <h1>Comments</h1>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-</div>
-  </section>
 
 </div>
 
@@ -545,7 +427,7 @@ MathJax.Hub.Config({
 </section>
 <section>
   <h1>Category Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/hocr4j' style='font-size: 130.0%'>hOCR4J(1)</a> <a href='/blog/categories/java' style='font-size: 130.0%'>Java(1)</a> <a href='/blog/categories/keyboard' style='font-size: 130.0%'>keyboard(1)</a> <a href='/blog/categories/linux' style='font-size: 130.0%'>Linux(1)</a> <a href='/blog/categories/ocr' style='font-size: 130.0%'>OCR(1)</a> <a href='/blog/categories/personal-project' style='font-size: 160.0%'>personal project(2)</a> <a href='/blog/categories/programming' style='font-size: 160.0%'>programming(2)</a> <a href='/blog/categories/scala' style='font-size: 130.0%'>scala(1)</a> <a href='/blog/categories/unicode' style='font-size: 130.0%'>Unicode(1)</a> <a href='/blog/categories/units' style='font-size: 130.0%'>units(1)</a> <a href='/blog/categories/units-of-measurement' style='font-size: 130.0%'>units of measurement(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/hocr4j' style='font-size: 130.0%'>hocr4j(1)</a> <a href='/blog/categories/java' style='font-size: 130.0%'>java(1)</a> <a href='/blog/categories/keyboard' style='font-size: 130.0%'>keyboard(1)</a> <a href='/blog/categories/linux' style='font-size: 130.0%'>linux(1)</a> <a href='/blog/categories/ocr' style='font-size: 130.0%'>ocr(1)</a> <a href='/blog/categories/personal-project' style='font-size: 160.0%'>personal project(2)</a> <a href='/blog/categories/programming' style='font-size: 160.0%'>programming(2)</a> <a href='/blog/categories/scala' style='font-size: 130.0%'>scala(1)</a> <a href='/blog/categories/unicode' style='font-size: 130.0%'>unicode(1)</a> <a href='/blog/categories/units' style='font-size: 130.0%'>units(1)</a> <a href='/blog/categories/units-of-measurement' style='font-size: 130.0%'>units of measurement(1)</a> </span>
 </section>
 
   
@@ -562,33 +444,9 @@ MathJax.Hub.Config({
 </footer>
   
 
-<script type="text/javascript">
-      var disqus_shortname = 'codingfromanelevator';
-      
-        
-        // var disqus_developer = 1;
-        var disqus_identifier = 'http://KarolS.github.io/blog/2014/01/02/units-0-1-released/';
-        var disqus_url = 'http://KarolS.github.io/blog/2014/01/02/units-0-1-released/';
-        var disqus_script = 'embed.js';
-      
-    (function () {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    }());
-</script>
 
 
 
-
-
-  <script type="text/javascript">
-    (function() {
-      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
-      script.src = 'https://apis.google.com/js/plusone.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
-    })();
-  </script>
 
 
 
@@ -597,7 +455,7 @@ MathJax.Hub.Config({
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>

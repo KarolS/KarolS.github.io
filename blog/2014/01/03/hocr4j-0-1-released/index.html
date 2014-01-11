@@ -30,35 +30,7 @@
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
-<!-- mathjax config similar to math.stackexchange -->
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  jax: ["input/TeX", "output/HTML-CSS"],
-  tex2jax: {
-    inlineMath: [ ['$', '$'] ],
-    displayMath: [ ['$$', '$$']],
-    processEscapes: true,
-    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-  },
-  messageStyle: "none",
-  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
-});
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
-
   
-  <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-45876308-1']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-  </script>
-
 
 </head>
 
@@ -133,121 +105,63 @@ MathJax.Hub.Config({
 
 <p>Using hOCR4J is also simple. First, we need to get our hOCR file and read the hOCR into a string. Then we can parse it:</p>
 
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="n">String</span> <span class="n">hocr</span> <span class="o">=</span> <span class="o">...</span> <span class="o">;</span> <span class="c1">// load hOCR here</span>
-</span><span class="line">
-</span><span class="line"><span class="n">List</span><span class="o">&lt;</span><span class="n">Page</span><span class="o">&gt;</span> <span class="n">pages</span> <span class="o">=</span> <span class="n">HocrParser</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">hocr</span><span class="o">);</span>
-</span><span class="line">
-</span><span class="line"><span class="n">Page</span> <span class="n">page0</span> <span class="o">=</span> <span class="n">pages</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
+<figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="n">String</span> <span class="n">hocr</span> <span class="o">=</span> <span class="o">...</span> <span class="o">;</span> <span class="c1">// load hOCR here</span>
+</div><div class="line"> </div><div class="line"><span class="n">List</span><span class="o">&lt;</span><span class="n">Page</span><span class="o">&gt;</span> <span class="n">pages</span> <span class="o">=</span> <span class="n">HocrParser</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">hocr</span><span class="o">);</span>
+</div><div class="line"> </div><div class="line"><span class="n">Page</span> <span class="n">page0</span> <span class="o">=</span> <span class="n">pages</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+</div></pre></td></tr></table></div></figure>
 
 <p>We can now extract some text:</p>
 
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">textLines</span> <span class="o">=</span> <span class="n">page0</span><span class="o">.</span><span class="na">getAllLinesAsStrings</span><span class="o">();</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
+<figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">textLines</span> <span class="o">=</span> <span class="n">page0</span><span class="o">.</span><span class="na">getAllLinesAsStrings</span><span class="o">();</span>
+</div></pre></td></tr></table></div></figure>
 
 <p>We can only extract lines that satisfy some conditions:</p>
 
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="n">List</span><span class="o">&lt;</span><span class="n">Line</span><span class="o">&gt;</span> <span class="n">lines</span> <span class="o">=</span> <span class="n">page0</span><span class="o">.</span><span class="na">findAllLines</span><span class="o">(</span><span class="n">LineThat</span><span class="o">.</span><span class="na">matchesRegex</span><span class="o">(</span><span class="s">&quot;^IMPORTANT:&quot;</span><span class="o">));</span>
-</span><span class="line">
-</span><span class="line"><span class="k">for</span> <span class="o">(</span><span class="n">Line</span> <span class="nl">line:</span> <span class="n">lines</span><span class="o">){</span>
-</span><span class="line">  <span class="n">String</span> <span class="n">text</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">mkString</span><span class="o">();</span>
-</span><span class="line">  <span class="c1">// ...</span>
-</span><span class="line"><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
+<figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="n">List</span><span class="o">&lt;</span><span class="n">Line</span><span class="o">&gt;</span> <span class="n">lines</span> <span class="o">=</span> <span class="n">page0</span><span class="o">.</span><span class="na">findAllLines</span><span class="o">(</span><span class="n">LineThat</span><span class="o">.</span><span class="na">matchesRegex</span><span class="o">(</span><span class="s">&quot;^IMPORTANT:&quot;</span><span class="o">));</span>
+</div><div class="line"> </div><div class="line"><span class="k">for</span> <span class="o">(</span><span class="n">Line</span> <span class="nl">line:</span> <span class="n">lines</span><span class="o">){</span>
+</div><div class="line">  <span class="n">String</span> <span class="n">text</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">mkString</span><span class="o">();</span>
+</div><div class="line">  <span class="c1">// ...</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
 
 <p>We can look for words in italics:</p>
 
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="n">List</span><span class="o">&lt;</span><span class="n">Word</span><span class="o">&gt;</span> <span class="n">words</span> <span class="o">=</span> <span class="n">page0</span><span class="o">.</span><span class="na">getAllWords</span><span class="o">();</span>
-</span><span class="line">
-</span><span class="line"><span class="k">for</span> <span class="o">(</span><span class="n">Word</span> <span class="nl">word:</span> <span class="n">words</span><span class="o">){</span>
-</span><span class="line">  <span class="k">if</span> <span class="o">(</span><span class="n">word</span><span class="o">.</span><span class="na">isItalic</span><span class="o">()){</span>
-</span><span class="line">    <span class="n">String</span> <span class="n">w</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="na">getText</span><span class="o">();</span>
-</span><span class="line">    <span class="c1">// ...</span>
-</span><span class="line">  <span class="o">}</span>
-</span><span class="line"><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
+<figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="n">List</span><span class="o">&lt;</span><span class="n">Word</span><span class="o">&gt;</span> <span class="n">words</span> <span class="o">=</span> <span class="n">page0</span><span class="o">.</span><span class="na">getAllWords</span><span class="o">();</span>
+</div><div class="line"> </div><div class="line"><span class="k">for</span> <span class="o">(</span><span class="n">Word</span> <span class="nl">word:</span> <span class="n">words</span><span class="o">){</span>
+</div><div class="line">  <span class="k">if</span> <span class="o">(</span><span class="n">word</span><span class="o">.</span><span class="na">isItalic</span><span class="o">()){</span>
+</div><div class="line">    <span class="n">String</span> <span class="n">w</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="na">getText</span><span class="o">();</span>
+</div><div class="line">    <span class="c1">// ...</span>
+</div><div class="line">  <span class="o">}</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
 
 <p>We can look for location of a word or phrase (spaces are ignored, as OCR sometimes inserts more or less of them):</p>
 
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-<span class="line-number">14</span>
-<span class="line-number">15</span>
-<span class="line-number">16</span>
-<span class="line-number">17</span>
-<span class="line-number">18</span>
-<span class="line-number">19</span>
-<span class="line-number">20</span>
-<span class="line-number">21</span>
-<span class="line-number">22</span>
-<span class="line-number">23</span>
-<span class="line-number">24</span>
-<span class="line-number">25</span>
-<span class="line-number">26</span>
-<span class="line-number">27</span>
-<span class="line-number">28</span>
-<span class="line-number">29</span>
-</pre></td><td class="code"><pre><code class="java"><span class="line"><span class="c1">// let&#39;s censor the name of the culprit</span>
-</span><span class="line"><span class="n">Page</span> <span class="n">censoredPage</span> <span class="o">=</span> <span class="n">page0</span><span class="o">.</span><span class="na">mapLines</span><span class="o">(</span><span class="k">new</span> <span class="n">Function</span><span class="o">&lt;</span><span class="n">Line</span><span class="o">,</span><span class="n">Line</span><span class="o">&gt;(){</span>
-</span><span class="line">  <span class="kd">public</span> <span class="n">Line</span> <span class="nf">apply</span><span class="o">(</span><span class="n">Line</span> <span class="n">line</span><span class="o">){</span>
-</span><span class="line">
-</span><span class="line">    <span class="c1">// we check if the line mentions culprit&#39;s name</span>
-</span><span class="line">    <span class="kd">final</span> <span class="n">Bounds</span> <span class="n">theCulpritIs</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">findBoundsOfWord</span><span class="o">(</span><span class="s">&quot;The culprit is&quot;</span><span class="o">);</span>
-</span><span class="line">
-</span><span class="line">    <span class="k">if</span> <span class="o">(</span><span class="n">theCulpritIs</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-</span><span class="line">      <span class="c1">// we take bounds of the entire line</span>
-</span><span class="line">      <span class="n">Bounds</span> <span class="n">full</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">getBounds</span><span class="o">();</span>
-</span><span class="line">
-</span><span class="line">      <span class="c1">// and we calculate bounds of a line</span>
-</span><span class="line">      <span class="c1">// that doesn&#39;t extend beyond words &quot;The culprit is&quot;</span>
-</span><span class="line">      <span class="n">Bounds</span> <span class="n">remain</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Bounds</span><span class="o">(</span>
-</span><span class="line">        <span class="n">full</span><span class="o">.</span><span class="na">getLeft</span><span class="o">(),</span>
-</span><span class="line">        <span class="n">full</span><span class="o">.</span><span class="na">getTop</span><span class="o">(),</span>
-</span><span class="line">        <span class="n">theCulpritIs</span><span class="o">.</span><span class="na">getRight</span><span class="o">(),</span>
-</span><span class="line">        <span class="n">full</span><span class="o">.</span><span class="na">getBottom</span><span class="o">());</span>
-</span><span class="line">
-</span><span class="line">      <span class="c1">// finally, we trim our line</span>
-</span><span class="line">      <span class="k">return</span> <span class="n">line</span><span class="o">.</span><span class="na">createBounded</span><span class="o">(</span><span class="n">remain</span><span class="o">);</span>
-</span><span class="line">    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class="line">      <span class="c1">// all the other lines are left unmodified</span>
-</span><span class="line">      <span class="k">return</span> <span class="n">line</span><span class="o">;</span>
-</span><span class="line">    <span class="o">}</span>
-</span><span class="line">  <span class="o">}</span>
-</span><span class="line"><span class="o">});</span>
-</span><span class="line">
-</span><span class="line"><span class="k">return</span> <span class="n">censoredPage</span><span class="o">;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
+<figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div><div data-line="9" class="line-number"></div><div data-line="10" class="line-number"></div><div data-line="11" class="line-number"></div><div data-line="12" class="line-number"></div><div data-line="13" class="line-number"></div><div data-line="14" class="line-number"></div><div data-line="15" class="line-number"></div><div data-line="16" class="line-number"></div><div data-line="17" class="line-number"></div><div data-line="18" class="line-number"></div><div data-line="19" class="line-number"></div><div data-line="20" class="line-number"></div><div data-line="21" class="line-number"></div><div data-line="22" class="line-number"></div><div data-line="23" class="line-number"></div><div data-line="24" class="line-number"></div><div data-line="25" class="line-number"></div><div data-line="26" class="line-number"></div><div data-line="27" class="line-number"></div><div data-line="28" class="line-number"></div><div data-line="29" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="c1">// let&#39;s censor the name of the culprit</span>
+</div><div class="line"><span class="n">Page</span> <span class="n">censoredPage</span> <span class="o">=</span> <span class="n">page0</span><span class="o">.</span><span class="na">mapLines</span><span class="o">(</span><span class="k">new</span> <span class="n">Function</span><span class="o">&lt;</span><span class="n">Line</span><span class="o">,</span><span class="n">Line</span><span class="o">&gt;(){</span>
+</div><div class="line">  <span class="kd">public</span> <span class="n">Line</span> <span class="nf">apply</span><span class="o">(</span><span class="n">Line</span> <span class="n">line</span><span class="o">){</span>
+</div><div class="line"> </div><div class="line">    <span class="c1">// we check if the line mentions culprit&#39;s name</span>
+</div><div class="line">    <span class="kd">final</span> <span class="n">Bounds</span> <span class="n">theCulpritIs</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">findBoundsOfWord</span><span class="o">(</span><span class="s">&quot;The culprit is&quot;</span><span class="o">);</span>
+</div><div class="line"> </div><div class="line">    <span class="k">if</span> <span class="o">(</span><span class="n">theCulpritIs</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</div><div class="line">      <span class="c1">// we take bounds of the entire line</span>
+</div><div class="line">      <span class="n">Bounds</span> <span class="n">full</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="na">getBounds</span><span class="o">();</span>
+</div><div class="line"> </div><div class="line">      <span class="c1">// and we calculate bounds of a line</span>
+</div><div class="line">      <span class="c1">// that doesn&#39;t extend beyond words &quot;The culprit is&quot;</span>
+</div><div class="line">      <span class="n">Bounds</span> <span class="n">remain</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Bounds</span><span class="o">(</span>
+</div><div class="line">        <span class="n">full</span><span class="o">.</span><span class="na">getLeft</span><span class="o">(),</span>
+</div><div class="line">        <span class="n">full</span><span class="o">.</span><span class="na">getTop</span><span class="o">(),</span>
+</div><div class="line">        <span class="n">theCulpritIs</span><span class="o">.</span><span class="na">getRight</span><span class="o">(),</span>
+</div><div class="line">        <span class="n">full</span><span class="o">.</span><span class="na">getBottom</span><span class="o">());</span>
+</div><div class="line"> </div><div class="line">      <span class="c1">// finally, we trim our line</span>
+</div><div class="line">      <span class="k">return</span> <span class="n">line</span><span class="o">.</span><span class="na">createBounded</span><span class="o">(</span><span class="n">remain</span><span class="o">);</span>
+</div><div class="line">    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</div><div class="line">      <span class="c1">// all the other lines are left unmodified</span>
+</div><div class="line">      <span class="k">return</span> <span class="n">line</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line">  <span class="o">}</span>
+</div><div class="line"><span class="o">});</span>
+</div><div class="line"> </div><div class="line"><span class="k">return</span> <span class="n">censoredPage</span><span class="o">;</span>
+</div></pre></td></tr></table></div></figure>
 
 <p>In the near future, I’m planning a tutorial on extracting text columns from hOCR using hOCR4J.</p>
 </div>
@@ -277,7 +191,7 @@ MathJax.Hub.Config({
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/java/'>Java</a>, <a class='category' href='/blog/categories/ocr/'>OCR</a>, <a class='category' href='/blog/categories/hocr4j/'>hOCR4J</a>, <a class='category' href='/blog/categories/personal-project/'>personal project</a>, <a class='category' href='/blog/categories/programming/'>programming</a>
+    <a class='category' href='/blog/categories/hocr4j/'>hocr4j</a>, <a class='category' href='/blog/categories/java/'>java</a>, <a class='category' href='/blog/categories/ocr/'>ocr</a>, <a class='category' href='/blog/categories/personal-project/'>personal project</a>, <a class='category' href='/blog/categories/programming/'>programming</a>
   
 </span>
 
@@ -286,10 +200,8 @@ MathJax.Hub.Config({
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://KarolS.github.io/blog/2014/01/03/hocr4j-0-1-released/" data-via="" data-counturl="http://KarolS.github.io/blog/2014/01/03/hocr4j-0-1-released/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://KarolS.github.io/blog/2014/01/03/hocr4j-0-1-released/" data-via="" data-counturl="http://KarolS.github.io/blog/2014/01/03/hocr4j-0-1-released/" >Tweet</a>
   
-  
-  <div class="g-plusone" data-size="medium"></div>
   
   
 </div>
@@ -303,12 +215,6 @@ MathJax.Hub.Config({
     </p>
   </footer>
 </article>
-
-  <section>
-    <h1>Comments</h1>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-</div>
-  </section>
 
 </div>
 
@@ -338,7 +244,7 @@ MathJax.Hub.Config({
 </section>
 <section>
   <h1>Category Cloud</h1>
-    <span id="tag-cloud"><a href='/blog/categories/hocr4j' style='font-size: 130.0%'>hOCR4J(1)</a> <a href='/blog/categories/java' style='font-size: 130.0%'>Java(1)</a> <a href='/blog/categories/keyboard' style='font-size: 130.0%'>keyboard(1)</a> <a href='/blog/categories/linux' style='font-size: 130.0%'>Linux(1)</a> <a href='/blog/categories/ocr' style='font-size: 130.0%'>OCR(1)</a> <a href='/blog/categories/personal-project' style='font-size: 160.0%'>personal project(2)</a> <a href='/blog/categories/programming' style='font-size: 160.0%'>programming(2)</a> <a href='/blog/categories/scala' style='font-size: 130.0%'>scala(1)</a> <a href='/blog/categories/unicode' style='font-size: 130.0%'>Unicode(1)</a> <a href='/blog/categories/units' style='font-size: 130.0%'>units(1)</a> <a href='/blog/categories/units-of-measurement' style='font-size: 130.0%'>units of measurement(1)</a> </span>
+    <span id="tag-cloud"><a href='/blog/categories/hocr4j' style='font-size: 130.0%'>hocr4j(1)</a> <a href='/blog/categories/java' style='font-size: 130.0%'>java(1)</a> <a href='/blog/categories/keyboard' style='font-size: 130.0%'>keyboard(1)</a> <a href='/blog/categories/linux' style='font-size: 130.0%'>linux(1)</a> <a href='/blog/categories/ocr' style='font-size: 130.0%'>ocr(1)</a> <a href='/blog/categories/personal-project' style='font-size: 160.0%'>personal project(2)</a> <a href='/blog/categories/programming' style='font-size: 160.0%'>programming(2)</a> <a href='/blog/categories/scala' style='font-size: 130.0%'>scala(1)</a> <a href='/blog/categories/unicode' style='font-size: 130.0%'>unicode(1)</a> <a href='/blog/categories/units' style='font-size: 130.0%'>units(1)</a> <a href='/blog/categories/units-of-measurement' style='font-size: 130.0%'>units of measurement(1)</a> </span>
 </section>
 
   
@@ -355,33 +261,9 @@ MathJax.Hub.Config({
 </footer>
   
 
-<script type="text/javascript">
-      var disqus_shortname = 'codingfromanelevator';
-      
-        
-        // var disqus_developer = 1;
-        var disqus_identifier = 'http://KarolS.github.io/blog/2014/01/03/hocr4j-0-1-released/';
-        var disqus_url = 'http://KarolS.github.io/blog/2014/01/03/hocr4j-0-1-released/';
-        var disqus_script = 'embed.js';
-      
-    (function () {
-      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    }());
-</script>
 
 
 
-
-
-  <script type="text/javascript">
-    (function() {
-      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
-      script.src = 'https://apis.google.com/js/plusone.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
-    })();
-  </script>
 
 
 
@@ -390,7 +272,7 @@ MathJax.Hub.Config({
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>
