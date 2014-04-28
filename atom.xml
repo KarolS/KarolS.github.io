@@ -4,7 +4,7 @@
   <title><![CDATA[Karol Stasiak's Blog]]></title>
   <link href="http://KarolS.github.io/atom.xml" rel="self"/>
   <link href="http://KarolS.github.io/"/>
-  <updated>2014-04-29T01:11:13+02:00</updated>
+  <updated>2014-04-29T01:12:34+02:00</updated>
   <id>http://KarolS.github.io/</id>
   <author>
     <name><![CDATA[Karol Stasiak]]></name>
@@ -649,6 +649,8 @@ https://www.fpcomplete.com/user/bartosz/understanding-algebras1111</p>
 <p>This code is quite ugly. The especially jarring were the <code>return $ map</code> combination and <code>concat</code>s in the final line.</p>
 
 <p>After a while, I noticed that all the functions I call from the <code>getData</code> function are of type <code>a -&gt; IO [b]</code>. A double monad. So, I added <code>transformers</code> library to my project and rewritten that function as:</p>
+
+<!-- more -->
 
 <figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div><div data-line="9" class="line-number"></div><div data-line="10" class="line-number"></div></pre></td><td class="main  haskell"><pre><div class="line"><span class="nf">getAllData</span> <span class="n">subDirs</span> <span class="ow">=</span> <span class="kr">do</span>
 </div><div class="line">	<span class="n">correctData</span> <span class="ow">&lt;-</span> <span class="n">runListT</span> <span class="o">$</span> <span class="kr">do</span>

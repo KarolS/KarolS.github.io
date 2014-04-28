@@ -4,7 +4,7 @@
   <title><![CDATA[Category: programming | Karol Stasiak's Blog]]></title>
   <link href="http://KarolS.github.io/categories/programming/atom.xml" rel="self"/>
   <link href="http://KarolS.github.io/"/>
-  <updated>2014-04-29T01:11:13+02:00</updated>
+  <updated>2014-04-29T01:12:34+02:00</updated>
   <id>http://KarolS.github.io/</id>
   <author>
     <name><![CDATA[Karol Stasiak]]></name>
@@ -732,6 +732,8 @@ getAllData subDirs = do
 <p>This code is quite ugly. The especially jarring were the <code>return $ map</code> combination and <code>concat</code>s in the final line.</p>
 
 <p>After a while, I noticed that all the functions I call from the <code>getData</code> function are of type <code>a -&gt; IO [b]</code>. A double monad. So, I added <code>transformers</code> library to my project and rewritten that function as:</p>
+
+<!-- more -->
 
 <p><code>haskell
 getAllData subDirs = do
