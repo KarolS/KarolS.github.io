@@ -4,7 +4,7 @@
   <title><![CDATA[Karol Stasiak's Blog]]></title>
   <link href="http://KarolS.github.io/atom.xml" rel="self"/>
   <link href="http://KarolS.github.io/"/>
-  <updated>2014-01-11T23:56:58+01:00</updated>
+  <updated>2014-04-29T01:07:10+02:00</updated>
   <id>http://KarolS.github.io/</id>
   <author>
     <name><![CDATA[Karol Stasiak]]></name>
@@ -12,6 +12,141 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[From explicit nested monads to Kleisli arrows over monad transformers]]></title>
+    <link href="http://KarolS.github.io/blog/2014/04/29/from-nested-monads-to-kleisli-arrows-over-monad-transformers/"/>
+    <updated>2014-04-29T01:15:00+02:00</updated>
+    <id>http://KarolS.github.io/blog/2014/04/29/from-nested-monads-to-kleisli-arrows-over-monad-transformers</id>
+    <content type="html"><![CDATA[<p>Recently at work I had a task of developing a small tool that could display charts with progress of our data extraction over time. </p>
+
+<p>After each iteration, results of data extraction were stored in several directories and compared against a handwritten reference set.</p>
+
+<p>In short, this is the directory structure:</p>
+
+<figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div><div data-line="9" class="line-number"></div><div data-line="10" class="line-number"></div><div data-line="11" class="line-number"></div><div data-line="12" class="line-number"></div><div data-line="13" class="line-number"></div><div data-line="14" class="line-number"></div><div data-line="15" class="line-number"></div><div data-line="16" class="line-number"></div><div data-line="17" class="line-number"></div><div data-line="18" class="line-number"></div><div data-line="19" class="line-number"></div><div data-line="20" class="line-number"></div></pre></td><td class="main  plain"><pre><div class="line">|--+ batch1
+</div><div class="line">|  |--+ correct
+</div><div class="line">|  |  `--- data.txt
+</div><div class="line">|  |--+ guessed
+</div><div class="line">|  |  |--- data.00000145a8ab68b9.txt
+</div><div class="line">|  |  |--- data.00000145a92a530f.txt
+</div><div class="line">|  |  `--- data.0000014594039f5b.txt
+</div><div class="line">|  |--- input1.pdf
+</div><div class="line">|  |--- input2.pdf
+</div><div class="line">|  `--- input3.pdf
+</div><div class="line">`--+ batch2
+</div><div class="line">   |--+ correct
+</div><div class="line">   |  `--- data.txt
+</div><div class="line">   |--+ guessed
+</div><div class="line">   |  |--- data.00000145a8ab68b9.txt
+</div><div class="line">   |  |--- data.00000145a92a530f.txt
+</div><div class="line">   |  `--- data.0000014594039f5b.txt
+</div><div class="line">   |--- input4.pdf
+</div><div class="line">   |--- input5.pdf
+</div><div class="line">   `--- input6.pdf</div></pre></td></tr></table></div></figure>
+
+<p>The hexadecimal numbers are timestamps in milliseconds since Unix epoch.</p>
+
+<p>Each file consisted of records in the format:</p>
+
+<figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div></pre></td><td class="main  plain"><pre><div class="line">input1.pdf value from the first file
+</div><div class="line">input2.pdf value from the second file
+</div><div class="line">input3.pdf value from the third file</div></pre></td></tr></table></div></figure>
+
+<p>Long story short, there was no difference what programming language I would write the tool in, so I picked Haskell. Let’s ignore most details of the implementation. What’s important for this entry, is that I implemented the following functions:</p>
+
+<figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div></pre></td><td class="main  haskell"><pre><div class="line"><span class="nf">allCorrectFiles</span> <span class="ow">::</span> <span class="p">[</span><span class="kt">FilePath</span><span class="p">]</span>  <span class="ow">-&gt;</span> <span class="kt">IO</span> <span class="p">[</span><span class="kt">FilePath</span><span class="p">]</span>
+</div><div class="line"><span class="nf">allGuessedFiles</span> <span class="ow">::</span> <span class="p">[</span><span class="kt">FilePath</span><span class="p">]</span>  <span class="ow">-&gt;</span> <span class="kt">IO</span> <span class="p">[(</span><span class="kt">LocalTime</span><span class="p">,</span> <span class="kt">FilePath</span><span class="p">)]</span>
+</div><div class="line"><span class="nf">readDataFile</span> <span class="ow">::</span> <span class="kt">FilePath</span> <span class="ow">-&gt;</span> <span class="kt">IO</span> <span class="p">[(</span><span class="kt">Entry</span><span class="p">,</span> <span class="kt">String</span><span class="p">)]</span>
+</div><div class="line"><span class="nf">getAllData</span> <span class="ow">::</span> <span class="p">[</span><span class="kt">FilePath</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="kt">IO</span> <span class="p">([(</span><span class="kt">Entry</span><span class="p">,</span> <span class="kt">String</span><span class="p">)],</span> <span class="p">[(</span><span class="kt">LocalTime</span><span class="p">,</span> <span class="kt">Entry</span><span class="p">,</span> <span class="kt">String</span><span class="p">)])</span>
+</div></pre></td></tr></table></div></figure>
+
+<p>The initial implementation of the <code>getAllData</code> function was straightforward, yet a bit clunky:</p>
+
+<figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div></pre></td><td class="main  haskell"><pre><div class="line"><span class="nf">getAllData</span> <span class="n">subDirs</span> <span class="ow">=</span> <span class="kr">do</span>
+</div><div class="line">	<span class="n">correctFiles</span> <span class="ow">&lt;-</span> <span class="n">allCorrectFiles</span> <span class="n">subDirs</span>
+</div><div class="line">	<span class="n">guessedFiles</span> <span class="ow">&lt;-</span> <span class="n">allGuessedFiles</span> <span class="n">subDirs</span>
+</div><div class="line">	<span class="n">correctData</span> <span class="ow">&lt;-</span> <span class="n">mapM</span> <span class="n">readDataFile</span> <span class="n">correctFiles</span>
+</div><div class="line">	<span class="n">guessedData</span> <span class="ow">&lt;-</span> <span class="n">forM</span> <span class="n">guessedFiles</span> <span class="o">$</span> <span class="nf">\</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">f</span><span class="p">)</span> <span class="ow">-&gt;</span>
+</div><div class="line">		<span class="n">x</span> <span class="ow">&lt;-</span> <span class="n">readDataFile</span> <span class="n">f</span>
+</div><div class="line">		<span class="n">return</span> <span class="o">$</span> <span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="p">(</span><span class="n">e</span><span class="p">,</span><span class="n">s</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">e</span><span class="p">,</span><span class="n">s</span><span class="p">))</span> <span class="n">x</span>
+</div><div class="line">	<span class="n">return</span> <span class="p">(</span><span class="n">concat</span> <span class="n">correctData</span><span class="p">,</span> <span class="n">concat</span> <span class="n">guessedData</span><span class="p">)</span>
+</div></pre></td></tr></table></div></figure>
+
+<p>This code is quite ugly. The especially jarring were the <code>return $ map</code> combination and <code>concat</code>s in the final line.</p>
+
+<p>After a while, I noticed that all the functions I call from the <code>getData</code> function are of type <code>a -&gt; IO [b]</code>. A double monad. So, I added <code>transformers</code> library to my project and rewritten that function as:</p>
+
+<figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div><div data-line="9" class="line-number"></div><div data-line="10" class="line-number"></div></pre></td><td class="main  haskell"><pre><div class="line"><span class="nf">getAllData</span> <span class="n">subDirs</span> <span class="ow">=</span> <span class="kr">do</span>
+</div><div class="line">	<span class="n">correctData</span> <span class="ow">&lt;-</span> <span class="n">runListT</span> <span class="o">$</span> <span class="kr">do</span>
+</div><div class="line">		<span class="n">f</span> <span class="ow">&lt;-</span> <span class="kt">ListT</span> <span class="o">$</span> <span class="n">allCorrectFiles</span> <span class="n">subDirs</span>
+</div><div class="line">		<span class="n">x</span> <span class="ow">&lt;-</span> <span class="kt">ListT</span> <span class="o">$</span> <span class="n">readDataFile</span> <span class="n">f</span>
+</div><div class="line">		<span class="n">return</span> <span class="n">x</span>	
+</div><div class="line">	<span class="n">guessedData</span> <span class="ow">&lt;-</span> <span class="n">runListT</span> <span class="o">$</span> <span class="kr">do</span>
+</div><div class="line">		<span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">f</span><span class="p">)</span> <span class="ow">&lt;-</span> <span class="kt">ListT</span> <span class="o">$</span> <span class="n">allGuessedFiles</span> <span class="n">subDirs</span>
+</div><div class="line">		<span class="n">x</span> <span class="ow">&lt;-</span> <span class="kt">ListT</span> <span class="o">$</span> <span class="n">readDataFile</span> <span class="n">f</span>
+</div><div class="line">		<span class="n">return</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">fst</span> <span class="n">x</span><span class="p">,</span> <span class="n">snd</span> <span class="n">x</span><span class="p">)</span>
+</div><div class="line">	<span class="n">return</span> <span class="p">(</span><span class="n">correctData</span><span class="p">,</span> <span class="n">guessedData</span><span class="p">)</span>
+</div></pre></td></tr></table></div></figure>
+
+<p>Now it looks way more uniform.</p>
+
+<p>This was my first piece of code using monad transformers, so I will explain what’s going on to everyone who was in the same situation as me before understanding it.</p>
+
+<p><code>IO</code> is a monad, so is <code>[]</code>. For some monads, if you wrap them in another monad, you still get something that can be used like a monad. One of such monads is <code>[]</code>.</p>
+
+<p>For every monad <code>m</code> and type <code>a</code>, <code>m [a]</code> is a monad over <code>a</code>. But in order for Haskell to treat it as one singular monad, we need to wrap it. And that’s what <code>ListT</code> is for. </p>
+
+<p>So <code>allCorrectFiles subDirs</code> returns <code>IO [FilePath]</code>, and after wrapping it with <code>ListT</code> we get <code>ListT IO FilePath</code>.</p>
+
+<p>This way, we stack our monadic effects: we both iterate over elements of a list, and track impure side effects. If the <code>readDataFile</code> or <code>allGuessedFiles</code> were pure, we would use <code>[]</code> monad. If they were impure, but returned only one element, we’d use <code>IO</code> monad. By wrapping <code>IO [a]</code> into <code>ListT</code>, we can use them both.</p>
+
+<p>Since the results of inner <code>do</code> blocks are now of type <code>ListT IO a</code>, we unwrap them with <code>runListT</code>.</p>
+
+<p>Note that since <code>ListT</code> allowed <code>&lt;-</code> operator to unwrap not only the <code>IO</code> monad, but also the list monad, we didn’t end up with lists of lists and we no longer needed to <code>concat</code> those lists together.</p>
+
+<p>The code got less ugly, but it also got a bit longer. Could I get it shorter?</p>
+
+<p>The answer was yes, but only a teeny tiny bit, and involved some more complicated machinery. Arrows.</p>
+
+<p>The trivial arrow instance for functions is easy to understand: <code>&gt;&gt;&gt;</code> behaves like flipped function composition, and there are several combinators, like <code>&amp;&amp;&amp;</code>, <code>***</code>, <code>first</code> and <code>second</code> that make it easier to work with 2-element tuples. </p>
+
+<p>Since the return value from the <code>allGuessedFiles</code> was a list of 2-element tuples in an IO monad, and I only operated on the second element before fusing them together, I decided to use arrows. Luckily, the <code>base</code> library contains definitions for monadic arrows, which are to <code>&gt;&gt;=</code> as trivial arrows are to <code>.</code>.</p>
+
+<p>The code had to involve even more wrapping and unwrapping. Here it is:</p>
+
+<figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div><div data-line="9" class="line-number"></div></pre></td><td class="main  haskell"><pre><div class="line"><span class="nf">getAllData</span> <span class="n">subDirs</span> <span class="ow">=</span> <span class="kr">do</span>
+</div><div class="line">	<span class="n">correctData</span> <span class="ow">&lt;-</span> <span class="n">runKL</span> <span class="n">subDirs</span> <span class="o">$</span>
+</div><div class="line">		<span class="n">kl</span> <span class="n">allCorrectFiles</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">kl</span> <span class="n">readDataFile</span>
+</div><div class="line">	<span class="n">guessedData</span> <span class="ow">&lt;-</span> <span class="n">runKL</span> <span class="n">subDirs</span> <span class="o">$</span>
+</div><div class="line">		<span class="n">kl</span> <span class="n">allGuessedFiles</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">second</span> <span class="p">(</span><span class="n">kl</span> <span class="n">readDataFile</span><span class="p">)</span> <span class="o">&gt;&gt;^</span> <span class="nf">\</span><span class="p">(</span><span class="n">a</span><span class="p">,(</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">))</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">)</span>
+</div><div class="line">	<span class="n">return</span> <span class="p">(</span><span class="n">correctData</span><span class="p">,</span> <span class="n">guessedData</span><span class="p">)</span>
+</div><div class="line">	<span class="kr">where</span>
+</div><div class="line">		<span class="n">kl</span> <span class="n">f</span> <span class="ow">=</span> <span class="kt">Kleisli</span> <span class="o">$</span> <span class="kt">ListT</span> <span class="o">.</span> <span class="n">f</span>
+</div><div class="line">		<span class="n">runKL</span> <span class="n">x</span> <span class="n">ar</span> <span class="ow">=</span> <span class="n">runListT</span> <span class="o">$</span> <span class="n">runKleisli</span> <span class="n">ar</span> <span class="n">x</span>
+</div></pre></td></tr></table></div></figure>
+
+<p>Now I do believe I owe you some explanations.</p>
+
+<p>Let’s start with the definition of <code>kl</code>. <code>f</code> is of type <code>a -&gt; m [b]</code>, where <code>m</code> is a monad. After composing it with <code>ListT</code>, we get <code>ListT . f</code> of type <code>a -&gt; ListT m b</code>, where <code>ListT m</code> is a monad now.</p>
+
+<p><code>Kleisli</code> wraps our function into a Kleisli arrow (of type <code>Kleisli (ListT m) a b</code>), so Haskell knows that when we join arrows together, we don’t want to abstract <code>.</code> but <code>&gt;&gt;=</code>. This way, <code>kl f &gt;&gt;&gt; kl g</code> means the same as <code>\x -&gt; f x &gt;&gt;= g</code>, where <code>f &gt;&gt;&gt; g</code> would mean  <code>\x -&gt; (g . f) x</code>.</p>
+
+<p><code>runKL</code> applies our arrow and unwraps the <code>ListT</code> transformer. I reversed the argument order of <code>runKleisli</code> for convenience.</p>
+
+<p>So how is the <code>guessedData</code> calculated? <code>allGuessedFiles</code> returns <code>IO [(LocalTime, FilePath)]</code>. <code>second</code> makes its argument to be applied only to the second argument of the input tuple, so <code>second readDataFile</code> would be of type <code>(a, FilePath) -&gt; IO[(a,(Entry, String))]</code>*, but since we used <code>kl</code>, it’s actually <code>Kleisli (ListT IO) (a, FilePath) (a,(Entry, String))</code>.</p>
+
+<p><em>* Note: I kinda simplified here a bit and technically this type is wrong.</em></p>
+
+<p>The last function, which is a lambda expression, was lifted into a Kleisli arrow with the <code>&gt;&gt;^</code> operator. In case of Kleisli arrows, such lifting is equivalent to <code>\f -&gt; (return . f)</code>. It turns a function of type <code>a-&gt;b</code> into a function of type <code>a -&gt; m b</code> wrapped into a Kleisli.</p>
+
+<p>I also took a peek at the <code>arrow-list</code> package, which provides its own definitions of equivalents for <code>kl</code> and <code>runKL</code>, but I decided to not use it, since it would give little value.</p>
+
+<p><strong>So, was it worth it?</strong></p>
+
+<p>In some sense, yes. I have learnt what monad transformers and Kleisli arrows can be used for. The main problem is that the problem I had to solve was too small for such complex machinery. The transformers made the code more uniform, which allowed application of arrows, while arrows would have made code mode compact if it was more complex.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[hOCR4J 0.1 released]]></title>

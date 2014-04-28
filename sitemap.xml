@@ -19,8 +19,14 @@
         <lastmod>2014-01-11T23:49:40+01:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://KarolS.github.io/blog/2014/04/29/from-nested-monads-to-kleisli-arrows-over-monad-transformers/
+        </loc>
+        <lastmod>2014-04-29T01:06:21+02:00</lastmod>
+    </url>
+    <url>
         <loc>http://KarolS.github.io/</loc>
-        <lastmod>2014-01-11T23:49:40+01:00</lastmod>
+        <lastmod>2014-04-29T01:06:21+02:00</lastmod>
     </url>
     <url>
         <loc>http://KarolS.github.io/robots.txt</loc>
@@ -28,6 +34,6 @@
     </url>
     <url>
         <loc>http://KarolS.github.io/blog/archives/blog/archives/</loc>
-        <lastmod>2014-01-11T23:49:40+01:00</lastmod>
+        <lastmod>2014-04-29T01:06:21+02:00</lastmod>
     </url>
 </urlset>
