@@ -4,7 +4,7 @@
   <title><![CDATA[Category: programming | Karol Stasiak's Blog]]></title>
   <link href="http://KarolS.github.io/categories/programming/atom.xml" rel="self"/>
   <link href="http://KarolS.github.io/"/>
-  <updated>2014-04-29T01:12:34+02:00</updated>
+  <updated>2014-04-29T01:21:22+02:00</updated>
   <id>http://KarolS.github.io/</id>
   <author>
     <name><![CDATA[Karol Stasiak]]></name>
@@ -12,6 +12,206 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Random ideas for Scala 3.0]]></title>
+    <link href="http://KarolS.github.io/blog/2014/04/29/random-ideas-for-scala-3-0/"/>
+    <updated>2014-04-29T01:22:00+02:00</updated>
+    <id>http://KarolS.github.io/blog/2014/04/29/random-ideas-for-scala-3-0</id>
+    <content type="html"><![CDATA[<p>Here comes a list of things that I would love to see in Scala 3.0. Some of them are breaking changes, hence 3.0 not 2.13 or anything like that. Some of them are about the compiler, some of them are about the library, some of them are about the external tools. Some of those ideas are different solutions for the same problem.</p>
+
+<!-- more -->
+
+<h3 id="syntax">Syntax</h3>
+
+<ul>
+  <li>
+    <p>Treating number literals with leading zeroes as decimal (with a warning for a version or two).</p>
+  </li>
+  <li>
+    <p>Binary and octal literals in forms of <code>0b01010101</code> and <code>0o037</code>.</p>
+  </li>
+  <li>
+    <p>Underscores in numeric literals: <code>1_000_000</code>.</p>
+  </li>
+  <li>
+    <p>Some kind of byte array literal.</p>
+  </li>
+  <li>
+    <p><code>BigInt</code> and <code>BigDecimal</code> literals: <code>100000000000000000000000000000000000N</code>, <code>0.01m</code></p>
+  </li>
+  <li>
+    <p><code>Short</code> and <code>Byte</code> literals, both accepting both signed and unsigned values: <code>20000s</code>, <code>255y</code></p>
+  </li>
+  <li>
+    <p>Removal of XML literals and an <code>xml</code> macro string context as a replacement: <code>xml"&lt;p&gt;Hello $world&lt;/p&gt;"</code></p>
+  </li>
+  <li>
+    <p>Introducing true <code>break</code>, <code>continue</code> and <code>goto</code>.</p>
+  </li>
+  <li>
+    <p>A special syntax for monads, like Haskell’s <code>do</code>.</p>
+
+    <ul>
+      <li>
+        <p><code>do</code> is already a keyword, it can cause problems with <code>do...while</code> loops.</p>
+      </li>
+      <li>
+        <p><code>for</code> is clunky, especially when it comes to <code>if...else</code>. Maybe fix <code>for</code>?</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="standard-library">Standard library</h3>
+
+<ul>
+  <li>
+    <p>Clean-up of the collections. Currently, the standard collections are a little mess. I think <a href="http://www.slideshare.net/extempore/a-scala-corrections-library">Paul Phillips sums it up nicely</a>.</p>
+  </li>
+  <li>
+    <p>Standard <code>scala-time</code> library, being a wrapper for both Joda Time and Java 8 Time API.</p>
+
+    <ul>
+      <li>There would be two functionally identical implementations.</li>
+    </ul>
+  </li>
+  <li>
+    <p>HLists.</p>
+  </li>
+  <li>
+    <p>Vectors with length known at compile-time.</p>
+  </li>
+  <li>
+    <p>A macro that includes C header files on compile time and generates corresponding JNA interfaces.</p>
+  </li>
+  <li>
+    <p>Removal of <code>/:</code> and <code>:\</code> methods.</p>
+  </li>
+  <li>
+    <p>A clone of .NET’s <code>dynamic</code> type.</p>
+  </li>
+  <li>
+    <p><code>String.toInt</code> and friends accepting a base.</p>
+  </li>
+  <li>
+    <p>A <code>^</code> operator for sets, returning the symmetric difference.</p>
+  </li>
+</ul>
+
+<h3 id="value-classes">Value classes</h3>
+
+<ul>
+  <li>
+    <p>Specialization for custom value classes.</p>
+  </li>
+  <li>
+    <p>Generating specialized classes on the fly by the compiler (so the compiler would take an existing class, either ours or from an external library, and specialize it).</p>
+
+    <ul>
+      <li>This would allow to specialize collections.</li>
+    </ul>
+  </li>
+  <li>
+    <p>Unboxed arrays for custom value classes.</p>
+  </li>
+  <li>
+    <p>Different name mangling for methods taking value classes.</p>
+
+    <ul>
+      <li>Currently, if you have <code>class A(x: Int) extends AnyVal</code>, <code>class B(x: Int) extends AnyVal</code> and try to write both <code>def method(a: A)</code> and <code>def method(b: B)</code>, you get an error.</li>
+    </ul>
+  </li>
+  <li>
+    <p>Multi-field value classes.</p>
+
+    <ul>
+      <li>
+        <p>This could work as following: if the value is a field, a local variable, or a parameter, use several variables. If it’s a return value, box it.</p>
+      </li>
+      <li>
+        <p>This of course wouldn’t improve performance much, unless there would be an alternative way to return such values.</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="type-system">Type system</h3>
+
+<ul>
+  <li>
+    <p>Almost full type inference for private and local functions and variables.</p>
+  </li>
+  <li>
+    <p>Built-in type-level integers, booleans and strings, with some operations on them.</p>
+  </li>
+  <li>
+    <p>Compile-time null safety – detection of provable paths that could potentially lead to NPE’s.</p>
+  </li>
+  <li>
+    <p>Multimethods.</p>
+  </li>
+</ul>
+
+<h3 id="fixing-minor-annoyances">Fixing minor annoyances</h3>
+
+<ul>
+  <li>
+    <p>Adding Scalaz’s <code>some</code> and <code>none</code>.</p>
+  </li>
+  <li>
+    <p>Adding Scalaz’s <code>Equal</code> and <code>Monoid</code> typeclasses.</p>
+  </li>
+  <li>
+    <p><code>@adt</code> annotation on a trait would make the generated <code>apply</code> method of companion objects of case classes that implement that trait return that trait.</p>
+
+    <ul>
+      <li>
+        <p>For example, annotating <code>Option</code> with <code>@adt</code> and writing <code>var x = Some(1)</code> would make <code>x</code> of type <code>Option[Int]</code>, not <code>Some[Int]</code>.</p>
+      </li>
+      <li>
+        <p>It would be nice to make it somehow work with case objects, especially in polymorphic cases, like with <code>Option</code> and <code>None</code>, or <code>Either</code> and either <code>Left</code> or <code>Right</code> (either of these fixes only one type parameter, not two).</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>Ignoring missing annotation definitions in external libraries.</p>
+  </li>
+  <li>
+    <p>Allowing for creating annotations with runtime retention in Scala.</p>
+  </li>
+</ul>
+
+<h3 id="tooling">Tooling</h3>
+
+<ul>
+  <li>
+    <p>A decent, officially supported Findbugs plugin.</p>
+  </li>
+  <li>
+    <p>A configurable style checker, preferably including <a href="http://www.scala-lang.org/old/node/8610">“powerlevels”</a>.</p>
+  </li>
+  <li>
+    <p>A Java-to-idiomatic-Scala converter.</p>
+  </li>
+  <li>
+    <p>A Scala-to-idiomatic-Java converter.</p>
+  </li>
+  <li>
+    <p>Easier developing for Android.</p>
+
+    <ul>
+      <li>
+        <p>Built-in Proguard-like optimizer?</p>
+      </li>
+      <li>
+        <p>Dalvik backend?</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Implementing catamorphisms in Java]]></title>
