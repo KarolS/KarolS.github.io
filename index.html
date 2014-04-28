@@ -9,7 +9,7 @@
   <meta name="author" content="Karol Stasiak">
 
   
-  <meta name="description" content="Recently at work I had a task of developing a small tool that could display charts with progress of our data extraction over time. After each &hellip;">
+  <meta name="description" content="Warning: I’m now going to wake up the ghosts of the past. The past which includes your undergraduate abstract algebra lectures. This post is mostly a &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,85 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/29/implementing-catamorphisms-in-java/">Implementing Catamorphisms in Java</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-29T01:20:00+02:00" pubdate data-updated="true">2014-04-29</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><em>Warning: I’m now going to wake up the ghosts of the past. The past which includes your undergraduate abstract algebra lectures.</em></p>
+
+<p>This post is mostly a result of my boredom and my willingness to show that you can shoehorn almost every abstraction into almost every programming language, but it’s not exactly the best idea to do so.</p>
+
+<p>Also, I simply wanted to say a word or two about several abstract mathematical concepts. It can be a worthwhile intellectual exercise.</p>
+
+<h2 id="algebras">Algebras</h2>
+
+<p>Before I talk about catamorphisms, mentioned in the title, I’d like to have a look at a very abstract and general mathematical structure: an algebra.</p>
+
+<p>An <strong>algebra</strong> is a tuple that contains:</p>
+
+<ul>
+  <li>
+    <p>some sets (called carrier sets), most often one</p>
+  </li>
+  <li>
+    <p>usually some operations, each of them from some Cartesian product of the carrier sets to one of the carrier sets</p>
+  </li>
+  <li>
+    <p>sometimes some distinguished elements from those sets (they’re often superfluous, but they will be required later; you can also think about them as of nullary operations)</p>
+  </li>
+</ul>
+
+<p>Examples: </p>
+
+<ul>
+  <li>
+    <p>a set of strings <code>Str</code> and the operation of concatenation <code>+: Str × Str → Str</code></p>
+  </li>
+  <li>
+    <p>a set of natural numbers <code>Nat</code> and the operation of addition: <code>+: Nat × Nat → Nat</code></p>
+  </li>
+  <li>
+    <p>a set of finite subsets of natural numbers <code>Nat</code> and a set of natural numbers <code>P(Nat)</code>, a distinguished empty set <code>Ø</code> and the operations of union and intersection <code>P(Nat) × P(Nat) → P(Nat)</code> and the largest element operation <code>max: P(Nat) → Nat</code> (with <code>max(Ø) = 0</code>)</p>
+  </li>
+</ul>
+
+<p><em>Note: I’m using the <code>+</code> operator for string concatenation because the article is supposed to end up with creating some Java code, and Java uses <code>+</code> for string concatenation.</em></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/04/29/implementing-catamorphisms-in-java/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -490,6 +569,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/04/29/implementing-catamorphisms-in-java/">Implementing Catamorphisms in Java</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/04/29/from-nested-monads-to-kleisli-arrows-over-monad-transformers/">From Explicit Nested Monads to Kleisli Arrows Over Monad Transformers</a>
       </li>
     
@@ -505,15 +588,11 @@
         <a href="/blog/2013/11/18/creating-custom-keyboard-layouts-for-linux/">Creating Custom Keyboard Layouts for Linux</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/10/21/test-post-please-ignore/">Test Post Please Ignore</a>
-      </li>
-    
   </ul>
 </section>
 <section>
   <h1>Category Cloud</h1>
-    <span id="tag-cloud"><a href='/categories/haskell' style='font-size: 120.0%'>haskell(1)</a> <a href='/categories/hocr4j' style='font-size: 120.0%'>hocr4j(1)</a> <a href='/categories/java' style='font-size: 120.0%'>java(1)</a> <a href='/categories/keyboard' style='font-size: 120.0%'>keyboard(1)</a> <a href='/categories/linux' style='font-size: 120.0%'>linux(1)</a> <a href='/categories/ocr' style='font-size: 120.0%'>ocr(1)</a> <a href='/categories/personal-project' style='font-size: 140.0%'>personal project(2)</a> <a href='/categories/programming' style='font-size: 160.0%'>programming(3)</a> <a href='/categories/scala' style='font-size: 120.0%'>scala(1)</a> <a href='/categories/unicode' style='font-size: 120.0%'>unicode(1)</a> <a href='/categories/units' style='font-size: 120.0%'>units(1)</a> <a href='/categories/units-of-measurement' style='font-size: 120.0%'>units of measurement(1)</a> </span>
+    <span id="tag-cloud"><a href='/categories/haskell' style='font-size: 115.0%'>haskell(1)</a> <a href='/categories/hocr4j' style='font-size: 115.0%'>hocr4j(1)</a> <a href='/categories/java' style='font-size: 130.0%'>java(2)</a> <a href='/categories/keyboard' style='font-size: 115.0%'>keyboard(1)</a> <a href='/categories/linux' style='font-size: 115.0%'>linux(1)</a> <a href='/categories/maths' style='font-size: 115.0%'>maths(1)</a> <a href='/categories/ocr' style='font-size: 115.0%'>ocr(1)</a> <a href='/categories/personal-project' style='font-size: 130.0%'>personal project(2)</a> <a href='/categories/programming' style='font-size: 160.0%'>programming(4)</a> <a href='/categories/scala' style='font-size: 115.0%'>scala(1)</a> <a href='/categories/unicode' style='font-size: 115.0%'>unicode(1)</a> <a href='/categories/units' style='font-size: 115.0%'>units(1)</a> <a href='/categories/units-of-measurement' style='font-size: 115.0%'>units of measurement(1)</a> </span>
 </section>
 
   

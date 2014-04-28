@@ -4,7 +4,7 @@
   <title><![CDATA[Karol Stasiak's Blog]]></title>
   <link href="http://KarolS.github.io/atom.xml" rel="self"/>
   <link href="http://KarolS.github.io/"/>
-  <updated>2014-04-29T01:07:10+02:00</updated>
+  <updated>2014-04-29T01:11:13+02:00</updated>
   <id>http://KarolS.github.io/</id>
   <author>
     <name><![CDATA[Karol Stasiak]]></name>
@@ -12,6 +12,579 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Implementing catamorphisms in Java]]></title>
+    <link href="http://KarolS.github.io/blog/2014/04/29/implementing-catamorphisms-in-java/"/>
+    <updated>2014-04-29T01:20:00+02:00</updated>
+    <id>http://KarolS.github.io/blog/2014/04/29/implementing-catamorphisms-in-java</id>
+    <content type="html"><![CDATA[<p><em>Warning: I’m now going to wake up the ghosts of the past. The past which includes your undergraduate abstract algebra lectures.</em></p>
+
+<p>This post is mostly a result of my boredom and my willingness to show that you can shoehorn almost every abstraction into almost every programming language, but it’s not exactly the best idea to do so.</p>
+
+<p>Also, I simply wanted to say a word or two about several abstract mathematical concepts. It can be a worthwhile intellectual exercise.</p>
+
+<h2 id="algebras">Algebras</h2>
+
+<p>Before I talk about catamorphisms, mentioned in the title, I’d like to have a look at a very abstract and general mathematical structure: an algebra.</p>
+
+<p>An <strong>algebra</strong> is a tuple that contains:</p>
+
+<ul>
+  <li>
+    <p>some sets (called carrier sets), most often one</p>
+  </li>
+  <li>
+    <p>usually some operations, each of them from some Cartesian product of the carrier sets to one of the carrier sets</p>
+  </li>
+  <li>
+    <p>sometimes some distinguished elements from those sets (they’re often superfluous, but they will be required later; you can also think about them as of nullary operations)</p>
+  </li>
+</ul>
+
+<p>Examples: </p>
+
+<ul>
+  <li>
+    <p>a set of strings <code>Str</code> and the operation of concatenation <code>+: Str × Str → Str</code></p>
+  </li>
+  <li>
+    <p>a set of natural numbers <code>Nat</code> and the operation of addition: <code>+: Nat × Nat → Nat</code></p>
+  </li>
+  <li>
+    <p>a set of finite subsets of natural numbers <code>Nat</code> and a set of natural numbers <code>P(Nat)</code>, a distinguished empty set <code>Ø</code> and the operations of union and intersection <code>P(Nat) × P(Nat) → P(Nat)</code> and the largest element operation <code>max: P(Nat) → Nat</code> (with <code>max(Ø) = 0</code>)</p>
+  </li>
+</ul>
+
+<p><em>Note: I’m using the <code>+</code> operator for string concatenation because the article is supposed to end up with creating some Java code, and Java uses <code>+</code> for string concatenation.</em></p>
+
+<!-- more -->
+
+<p>Usually when talking about an algebra, one specifies properties those operations have, for example concatenation is associative, addition is commutative and associative, and so on.</p>
+
+<p>When you look at it, an algebra can be considered equivalent to a program in a statically typed functional language. </p>
+
+<h2 id="homomorphisms">Homomorphisms</h2>
+
+<p>The second important thing we need are algebra homomorphisms. Let’s assume we have two algebras <code>A₁</code> and <code>A₂</code> with the following properties:</p>
+
+<ul>
+  <li>
+    <p>They have the same number of carrier sets, e.g. <code>X₁, Y₁, Z₁</code> and <code>X₂, Y₂, Z₂</code>.</p>
+  </li>
+  <li>
+    <p>They have the same number of distinguished elements from the corresponding carriers sets, e.g. <code>ε₁ ∈ X₁, α₁ ∈ Y₁, β₁ ∈ Y₁</code> and <code>ε₂ ∈ X₂, α₂ ∈ Y₂, β₂ ∈ Y₂</code>.</p>
+  </li>
+  <li>
+    <p>They have the same number of operations from the correspoding carriers sets to the corresponding carrier sets, e.g. <code>f₁: X₁×Y₁→Y₁, g₁: Y₁×Y₁→Y₁, h₁: X₁×X₁→X₁, k₁: Y₁→Z₁</code> and <code>f₂: X₂×Y₂→Y₂, g₂: Y₂×Y₂→Y₂, h₂: X₂×X₂→X₂, k₂: Y₂→Z₂</code>.</p>
+  </li>
+</ul>
+
+<p>I’ll be calling such pairs of algebras <strong>algebras with matching signatures</strong>.</p>
+
+<p>Now if we have a function <code>H</code> from carrier sets of one algebra to carriers sets of another algebra, and that function preserves the algebraic structure, e.g. in the example from above:</p>
+
+<ul>
+  <li>
+    <p><code>H: (X₁ ∪ Y₁ ∪ Z₁) → (X₂ ∪ Y₂ ∪ Z₂)</code></p>
+  </li>
+  <li>
+    <p><code>H(ε₁) = ε₂</code>, <code>H(α₁) = α₂</code>, <code>H(β₁) = β₂</code></p>
+  </li>
+  <li>
+    <p><code>H(f₁(x,y)) = f₂(H(x), H(y))</code>, <code>H(g₁(y,y')) = g₂(H(y), H(y'))</code>, <code>H(h₁(x,x')) = h₂(H(x), H(x'))</code>, <code>H(k₁(y)) = k₂(H(y))</code></p>
+  </li>
+</ul>
+
+<p>then we call <code>H</code> a <strong>homomorphism</strong>.</p>
+
+<p>You probably need an example. I’ll start with a simple one: the two first algebras I mentioned have a homomorphism between them: the length. Indeed, <code>length(str₁ + str2) = length(str₁) + length(str₂)</code>. </p>
+
+<p>There’s also a homomorphism back, let’s call it <code>aaaa</code>, which for a given natural number returns a string made of that number of a’s, e.g. <code>aaaa(3) = "aaa"</code>. You can easy see that <code>aaaa(n₁ + n₂) = aaaa(n₁) + aaaa(n₂)</code>.</p>
+
+<p><em>Note: You have probably noticed, that instead of performing calculations on some operands in one algebra and finally converting the result to another algebra using a homomorphism, we can first convert the result to the second algebra and then perform the calculations. Indeed that is correct and usually it’s useful, especially if the operations in the second algebra are easier to perform. Haskell library <a href="https://github.com/mikeizbicki/HLearn">HLearn</a> converts an algebra of data samples to an algebra of statistics, allowing for instantaneous recalculating of statistics after adding some data to an enormous sample.</em></p>
+
+<p>If the homomorphism is invertible, i.e. there is a homomorphism <code>K</code> from the second algebra back to the first, and <code>K(H(x)) = x</code> and <code>H(K(y)) = y</code>, then we call <code>H</code> an <strong>isomorphism</strong> and the two algebras <strong>isomorphic</strong>. Two isomorphic algebras can be considered equivalent for most purposes.</p>
+
+<p>Since <code>length</code> and <code>aaaa</code> don’t have that property (<code>aaaa(length("b")) = "a" ≠ "b"</code>), nor any other pair of homomorphisms does, the algebra of strings with concatenation and the algebra of natural numbers with addition are not isomorphic.</p>
+
+<h2 id="initial-algebras">Initial algebras</h2>
+
+<p>A special category of algebras are <strong>initial algebras</strong>. Their carrier sets are not given, but are defined from the given distinguished elements and operations. For example, the carrier set <code>X</code> for an initial algebra with distinguished element <code>Z ∈ X</code> and unary operation <code>S: X → X</code> is <code>{Z, S(Z), S(S(Z)), S(S(S(Z))), S(S(S(S(Z))))...}</code>. Operations in initial algebras are not commutative nor associative, but they are always injective. They’re sometimes called <strong>constructors</strong>, and like the constructors in programming languages, they always construct new, distinct values. When initial algebras are implemented, they’re usually called <strong>algebraic data structures</strong>.</p>
+
+<p>Let’s implement the above initial algebra in Java:</p>
+
+<figure class="code"><figcaption>X.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">X</span> <span class="o">{</span>
+</div><div class="line"> </div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<figure class="code"><figcaption>Z.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Z</span> <span class="kd">implements</span> <span class="n">X</span> <span class="o">{</span>
+</div><div class="line">    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">equals</span><span class="o">(</span><span class="n">Object</span> <span class="n">o</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">o</span> <span class="k">instanceof</span> <span class="n">Z</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<figure class="code"><figcaption>S.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div><div data-line="9" class="line-number"></div><div data-line="10" class="line-number"></div><div data-line="11" class="line-number"></div><div data-line="12" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">S</span> <span class="kd">implements</span> <span class="n">X</span> <span class="o">{</span>
+</div><div class="line"> </div><div class="line">  <span class="kd">public</span> <span class="kd">final</span> <span class="n">X</span> <span class="n">field1</span><span class="o">;</span>
+</div><div class="line"> </div><div class="line">  <span class="kd">public</span> <span class="nf">S</span><span class="o">(</span><span class="n">X</span> <span class="n">param1</span><span class="o">){</span>
+</div><div class="line">      <span class="k">this</span><span class="o">.</span><span class="na">field1</span> <span class="o">=</span> <span class="n">param1</span><span class="o">;</span>
+</div><div class="line">  <span class="o">}</span>
+</div><div class="line"> </div><div class="line">  <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">equals</span><span class="o">(</span><span class="n">Object</span> <span class="n">o</span><span class="o">){</span>
+</div><div class="line">      <span class="k">return</span> <span class="n">o</span> <span class="k">instanceof</span> <span class="n">S</span> <span class="o">&amp;&amp;</span> <span class="o">((</span><span class="n">S</span><span class="o">)</span><span class="n">o</span><span class="o">).</span><span class="na">field1</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">field1</span><span class="o">);</span>
+</div><div class="line">  <span class="o">}</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<p><em>Note: Implementing <code>hashCode</code>, providing null-safety and adding getters left as an exercise for the reader.</em></p>
+
+<h2 id="catamorphisms">Catamorphisms</h2>
+
+<p>The nice thing about the initial algebras is that for every algebra with a matching signature, there exists exactly one homomorphism from initial algebra to the given algebra. That unique homomorphism is called the <strong>catamorphism</strong>.</p>
+
+<p>For example, given the algebra above, we can uniquely map it onto an algebra with natural numbers, number <code>0</code>, and function <code>x → x + 1</code>: <code>H(Z) → 0</code>, <code>H(S(x)) → H(x) + 1</code>. While it may look tautological, keep in mind that the elements of the carrier set of an initial algebra are uniquely defined by the distinguished elements and operations that were used to create them.</p>
+
+<p>Let’s implement it in Java!</p>
+
+<figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div><div data-line="9" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">public</span> <span class="kt">int</span> <span class="nf">h</span><span class="o">(</span><span class="n">X</span> <span class="n">x</span><span class="o">){</span>
+</div><div class="line">    <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="k">instanceof</span> <span class="n">Z</span><span class="o">)</span> <span class="o">{</span>
+</div><div class="line">        <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="k">instanceof</span> <span class="n">S</span><span class="o">)</span> <span class="o">{</span>
+</div><div class="line">        <span class="k">return</span> <span class="nf">h</span><span class="o">(((</span><span class="n">S</span><span class="o">)</span><span class="n">x</span><span class="o">).</span><span class="na">field1</span><span class="o">)</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+</div><div class="line">    <span class="k">else</span> <span class="o">{</span>
+</div><div class="line">        <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">();</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<p>It works, but it’s ugly.</p>
+
+<h2 id="pattern-matching-sort-of">Pattern matching… sort of</h2>
+
+<p>Let’s take another look at our homomorphism in Java. The code has several issues:</p>
+
+<ul>
+  <li>
+    <p>it explicitly checks type and casts the parameter;</p>
+  </li>
+  <li>
+    <p>it calls itself recursively;</p>
+  </li>
+  <li>
+    <p>it has this ugly unreachable code that will suddenly start throwing exceptions when we add another constructor to our <code>X</code> algebra.</p>
+  </li>
+</ul>
+
+<p>Let’s address #1 and #3 first.</p>
+
+<p>If we were using a functional language with first-class support for algebraic data types, we could write our homomorphism using pattern matching:</p>
+
+<figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div></pre></td><td class="main  fsharp"><pre><div class="line"><span class="k">let</span> <span class="nv">h</span> <span class="n">x</span> <span class="o">=</span>
+</div><div class="line">  <span class="k">match</span> <span class="n">x</span> <span class="k">with</span>
+</div><div class="line">  <span class="o">|</span> <span class="n">Z</span> <span class="o">-&gt;</span> <span class="mi">0</span>
+</div><div class="line">  <span class="o">|</span> <span class="n">S</span> <span class="n">field1</span> <span class="o">-&gt;</span> <span class="n">h</span> <span class="n">field1</span> <span class="o">+</span> <span class="mi">1</span>
+</div></pre></td></tr></table></div></figure>
+
+<p>Java does not support pattern matching, that’s obvious and furthermore, the alternative solution using explicit casts is ugly and prone to bugs. To solve it in Java, the officially preferred way is to use the visitor pattern.</p>
+
+<figure class="code"><figcaption>XVisitor.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">interface</span> <span class="nc">XVisitor</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+</div><div class="line">      <span class="n">T</span> <span class="nf">visit</span><span class="o">(</span><span class="n">Z</span> <span class="n">z</span><span class="o">);</span>
+</div><div class="line">      <span class="n">T</span> <span class="nf">visit</span><span class="o">(</span><span class="n">S</span> <span class="n">s</span><span class="o">);</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<figure class="code"><figcaption>X.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">X</span> <span class="o">{</span>
+</div><div class="line">      <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="n">visit</span><span class="o">(</span><span class="n">XVisitor</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">visitor</span><span class="o">);</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<figure class="code"><figcaption>Z.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Z</span> <span class="kd">implements</span> <span class="n">X</span> <span class="o">{</span>
+</div><div class="line">    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">equals</span><span class="o">(</span><span class="n">Object</span> <span class="n">o</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">o</span> <span class="k">instanceof</span> <span class="n">Z</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line">    <span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="n">visit</span><span class="o">(</span><span class="n">XVisitor</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">visitor</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">visitor</span><span class="o">.</span><span class="na">visit</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<figure class="code"><figcaption>S.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div><div data-line="9" class="line-number"></div><div data-line="10" class="line-number"></div><div data-line="11" class="line-number"></div><div data-line="12" class="line-number"></div><div data-line="13" class="line-number"></div><div data-line="14" class="line-number"></div><div data-line="15" class="line-number"></div><div data-line="16" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">S</span> <span class="kd">implements</span> <span class="n">X</span> <span class="o">{</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="kd">final</span> <span class="n">X</span> <span class="n">field1</span><span class="o">;</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="nf">S</span><span class="o">(</span><span class="n">X</span> <span class="n">param1</span><span class="o">){</span>
+</div><div class="line">        <span class="k">this</span><span class="o">.</span><span class="na">field1</span> <span class="o">=</span> <span class="n">param1</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">equals</span><span class="o">(</span><span class="n">Object</span> <span class="n">o</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">o</span> <span class="k">instanceof</span> <span class="n">S</span> <span class="o">&amp;&amp;</span> <span class="o">((</span><span class="n">S</span><span class="o">)</span><span class="n">o</span><span class="o">).</span><span class="na">field1</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">field1</span><span class="o">);</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="n">visit</span><span class="o">(</span><span class="n">XVisitor</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">visitor</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">visitor</span><span class="o">.</span><span class="na">visit</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<figure class="code"><figcaption>H.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div><div data-line="9" class="line-number"></div><div data-line="10" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">class</span> <span class="nc">H</span> <span class="kd">implements</span> <span class="n">XVisitor</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="o">{</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">visitZ</span><span class="o">(</span><span class="n">Z</span> <span class="n">z</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">visit</span><span class="o">(</span><span class="n">S</span> <span class="n">s</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="na">field1</span><span class="o">.</span><span class="na">visit</span><span class="o">(</span><span class="k">this</span><span class="o">)</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<p><em>Note: As you can see, it’s not the typical Visitor pattern as described by the Gang of Four. First, here the <code>visit</code> methods actually return something instead of returning <code>void</code>, second, GoF suggests that the branching classes, like <code>S</code> here, always had the visitor visit their children and express that in the <code>S.visit</code> method.</em></p>
+
+<p>Since the only thing we need from the instances of our classes is values of their fields, we can simplify it further:</p>
+
+<figure class="code"><figcaption>XVisitor.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">interface</span> <span class="nc">XVisitor</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+</div><div class="line">    <span class="n">T</span> <span class="nf">visitZ</span><span class="o">();</span>
+</div><div class="line">    <span class="n">T</span> <span class="nf">visitS</span><span class="o">(</span><span class="n">X</span> <span class="n">field1</span><span class="o">);</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<figure class="code"><figcaption>X.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">X</span> <span class="o">{</span>
+</div><div class="line">    <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="n">visit</span><span class="o">(</span><span class="n">XVisitor</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">visitor</span><span class="o">);</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<figure class="code"><figcaption>Z.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Z</span> <span class="kd">implements</span> <span class="n">X</span> <span class="o">{</span>
+</div><div class="line">    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">equals</span><span class="o">(</span><span class="n">Object</span> <span class="n">o</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">o</span> <span class="k">instanceof</span> <span class="n">Z</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line">    <span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="n">visit</span><span class="o">(</span><span class="n">XVisitor</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">visitor</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">visitor</span><span class="o">.</span><span class="na">visitZ</span><span class="o">();</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<figure class="code"><figcaption>S.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div><div data-line="9" class="line-number"></div><div data-line="10" class="line-number"></div><div data-line="11" class="line-number"></div><div data-line="12" class="line-number"></div><div data-line="13" class="line-number"></div><div data-line="14" class="line-number"></div><div data-line="15" class="line-number"></div><div data-line="16" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">S</span> <span class="kd">implements</span> <span class="n">X</span> <span class="o">{</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="kd">final</span> <span class="n">X</span> <span class="n">field1</span><span class="o">;</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="nf">S</span><span class="o">(</span><span class="n">X</span> <span class="n">param1</span><span class="o">){</span>
+</div><div class="line">        <span class="k">this</span><span class="o">.</span><span class="na">field1</span> <span class="o">=</span> <span class="n">param1</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">equals</span><span class="o">(</span><span class="n">Object</span> <span class="n">o</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">o</span> <span class="k">instanceof</span> <span class="n">S</span> <span class="o">&amp;&amp;</span> <span class="o">((</span><span class="n">S</span><span class="o">)</span><span class="n">o</span><span class="o">).</span><span class="na">field1</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">field1</span><span class="o">);</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="n">visit</span><span class="o">(</span><span class="n">XVisitor</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">visitor</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">visitor</span><span class="o">.</span><span class="na">visitS</span><span class="o">(</span><span class="n">field1</span><span class="o">);</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<figure class="code"><figcaption>H.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div><div data-line="9" class="line-number"></div><div data-line="10" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">class</span> <span class="nc">H</span> <span class="kd">implements</span> <span class="n">XVisitor</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="o">{</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">visitZ</span><span class="o">(){</span>
+</div><div class="line">        <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">visitS</span><span class="o">(</span><span class="n">X</span> <span class="n">field1</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">field1</span><span class="o">.</span><span class="na">visit</span><span class="o">(</span><span class="k">this</span><span class="o">)</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<p>Looks way better. Too enterprisy for my taste, but hey, it’s Java.</p>
+
+<p>The upside of this new approach is that whenever we add a new class implementing our base interface, the compiler will kick and scream until we fix our visitors.</p>
+
+<p>The downside is that we still have to call <code>visit</code> in <code>visitS</code>. The burden of converting <code>field1</code> to <code>T</code> should be on the <code>S</code> class. The visitor interface should be decoupled from the <code>X</code> interface. Let’s try a bit harder.</p>
+
+<h2 id="catamorphisms-and-visitors-take-two">Catamorphisms and visitors, take two</h2>
+
+<p>Let’s have a look at our simple algebra so far:</p>
+
+<figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">interface</span> <span class="nc">X</span><span class="o">:</span>
+</div><div class="line">    <span class="n">Z</span><span class="o">()</span>
+</div><div class="line">    <span class="n">S</span><span class="o">(</span><span class="n">X</span> <span class="n">param1</span><span class="o">)</span>
+</div></pre></td></tr></table></div></figure>
+
+<p>As you can see, it’s recursive. That means it’s also infinite.</p>
+
+<p>Let’s get rid of the recursion somehow. What happens if we replace X with some type parameter T?</p>
+
+<figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">interface</span> <span class="nc">XPrecursor</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;:</span>
+</div><div class="line">    <span class="n">ZPrecursor</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;()</span>
+</div><div class="line">    <span class="n">SPrecursor</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;(</span><span class="n">T</span> <span class="n">param1</span><span class="o">)</span>
+</div></pre></td></tr></table></div></figure>
+
+<p>(Sorry for weird syntax.)</p>
+
+<p>As you can see, our algebra is no longer recursive. (It can still be infinite though, for example if some constructors use another infinite types.) Such family of non-recursive algebras is called the <strong>precursor</strong> of our initial algebra <code>X</code>. All algebras in this family are also initial.</p>
+
+<p><em>Note: <code>XPrecursor&lt;X&gt;</code> is isomorphic to <code>X</code>. Here are the homomorphisms both ways:</em></p>
+
+<figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div><div data-line="9" class="line-number"></div><div data-line="10" class="line-number"></div><div data-line="11" class="line-number"></div><div data-line="12" class="line-number"></div><div data-line="13" class="line-number"></div><div data-line="14" class="line-number"></div><div data-line="15" class="line-number"></div><div data-line="16" class="line-number"></div><div data-line="17" class="line-number"></div><div data-line="18" class="line-number"></div><div data-line="19" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="n">X</span> <span class="nf">fromPrecursor</span><span class="o">(</span><span class="n">XPrecursor</span><span class="o">&lt;</span><span class="n">X</span><span class="o">&gt;</span> <span class="n">p</span><span class="o">){</span>
+</div><div class="line">    <span class="k">if</span> <span class="o">(</span><span class="n">p</span> <span class="k">instanceof</span> <span class="n">ZPrecursor</span><span class="o">)</span> <span class="o">{</span>
+</div><div class="line">        <span class="k">return</span> <span class="k">new</span> <span class="nf">Z</span><span class="o">();</span>
+</div><div class="line">    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">p</span> <span class="k">instanceof</span> <span class="n">SPrecursor</span> <span class="o">{</span>
+</div><div class="line">        <span class="k">return</span> <span class="k">new</span> <span class="nf">S</span><span class="o">(((</span><span class="n">SPrecursor</span><span class="o">&lt;</span><span class="n">X</span><span class="o">&gt;)</span><span class="n">p</span><span class="o">).</span><span class="na">param1</span><span class="o">);</span>
+</div><div class="line">    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</div><div class="line">        <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">();</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"><span class="o">}</span>
+</div><div class="line"> </div><div class="line"><span class="n">XPrecursor</span> <span class="nf">toPrecursor</span><span class="o">(</span><span class="n">X</span> <span class="n">x</span><span class="o">){</span>
+</div><div class="line">    <span class="k">if</span><span class="o">(</span><span class="n">x</span> <span class="k">instanceof</span> <span class="n">Z</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="k">new</span> <span class="nf">ZPrecursor</span><span class="o">();</span>
+</div><div class="line">    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">x</span> <span class="k">instanceof</span> <span class="n">X</span><span class="o">)</span> <span class="o">{</span>
+</div><div class="line">        <span class="k">return</span> <span class="k">new</span> <span class="n">SPrecursor</span><span class="o">&lt;</span><span class="n">X</span><span class="o">&gt;(((</span><span class="n">S</span><span class="o">)</span><span class="n">x</span><span class="o">).</span><span class="na">param1</span><span class="o">);</span>
+</div><div class="line">    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</div><div class="line">        <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">();</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<p>How would a visitor for <code>XPrecursor&lt;T&gt;</code> look like?</p>
+
+<figure class="code"><figcaption>XPrecursorVisitor.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">interface</span> <span class="nc">XPrecursorVisitor</span><span class="o">&lt;</span><span class="n">T</span><span class="o">,</span><span class="n">U</span><span class="o">&gt;</span> <span class="o">{</span>
+</div><div class="line">    <span class="n">U</span> <span class="nf">visitZ</span><span class="o">();</span>
+</div><div class="line">    <span class="n">U</span> <span class="nf">visitS</span><span class="o">(</span><span class="n">T</span> <span class="n">field1</span><span class="o">);</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<p><em>Note: Since <code>XPrecursor&lt;T&gt;</code> is not recursive, the visitor does not have to know anything about <code>XPrecursor&lt;T&gt;</code>.</em></p>
+
+<p><em>Note: Remember: every <code>XPrecursorVisitor&lt;T,U&gt;</code> defines a homomorphism <code>XPrecursor&lt;T&gt; → U</code>.</em></p>
+
+<p>And finally: can we convert an <code>XPrecursorVisitor&lt;T,T&gt;</code> into an <code>XVisitor&lt;T&gt;</code>? The answer is yes:</p>
+
+<figure class="code"><figcaption>XCata.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div><div data-line="9" class="line-number"></div><div data-line="10" class="line-number"></div><div data-line="11" class="line-number"></div><div data-line="12" class="line-number"></div><div data-line="13" class="line-number"></div><div data-line="14" class="line-number"></div><div data-line="15" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">class</span> <span class="nc">XCata</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kd">implements</span> <span class="n">XVisitor</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+</div><div class="line">    <span class="kd">private</span> <span class="kd">final</span> <span class="n">XPrecursorVisitor</span><span class="o">&lt;</span><span class="n">T</span><span class="o">,</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">underlying</span><span class="o">;</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="nf">XCata</span><span class="o">(</span><span class="n">XPrecursorVisitor</span><span class="o">&lt;</span><span class="n">T</span><span class="o">,</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">u</span><span class="o">){</span>
+</div><div class="line">        <span class="n">underlying</span> <span class="o">=</span> <span class="n">u</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="n">T</span> <span class="nf">visitZ</span><span class="o">(){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">underlying</span><span class="o">.</span><span class="na">visitZ</span><span class="o">();</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="n">T</span> <span class="nf">visitS</span><span class="o">(</span><span class="n">X</span> <span class="n">x</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">underlying</span><span class="o">.</span><span class="na">visitS</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="na">visit</span><span class="o">(</span><span class="k">this</span><span class="o">));</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<p>Now, let’s sum all that we know:</p>
+
+<ul>
+  <li>
+    <p><code>X</code> is an initial algebra</p>
+  </li>
+  <li>
+    <p>for every <code>T</code>, <code>XPrecursor&lt;T&gt;</code> is an initial algebra</p>
+  </li>
+  <li>
+    <p>for every homomorphism <code>f: XPrecursor&lt;T&gt; → T</code> (which means <code>XPrecursorVisitor&lt;T,T&gt;</code>) exist at least one homomorphism <code>g: X → T</code> (which means <code>XVisitor&lt;T&gt;</code>), and only one that doesn’t incorporate any external constants into it</p>
+  </li>
+</ul>
+
+<p>As some of you may have noticed, I called the converter <code>XCata</code>. Indeed, if we think of the <code>XPrecursorVisitor&lt;T,T&gt;</code> as of an algebra over <code>T</code> (where the methods represent the distinguished elements if zero parameters and the operations if not), <code>XCata</code> is the catamorphism from initial algebra <code>X</code> to the <code>T</code> algebra.</p>
+
+<p>Armed with this knowledge, we can add <code>&lt;T&gt; T visit(XPrecursorVisitor&lt;T&gt; visitor)</code> to our X interface and inline the methods of <code>XCata</code> in the implementations of the new method:</p>
+
+<figure class="code"><figcaption>X.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">X</span> <span class="o">{</span>
+</div><div class="line">    <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="n">visit</span><span class="o">(</span><span class="n">XPrecursorVisitor</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">visitor</span><span class="o">);</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<figure class="code"><figcaption>Z.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Z</span> <span class="kd">implements</span> <span class="n">X</span> <span class="o">{</span>
+</div><div class="line">    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">equals</span><span class="o">(</span><span class="n">Object</span> <span class="n">o</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">o</span> <span class="k">instanceof</span> <span class="n">Z</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line">    <span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="n">visit</span><span class="o">(</span><span class="n">XPrecursorVisitor</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">visitor</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">visitor</span><span class="o">.</span><span class="na">visitZ</span><span class="o">();</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<figure class="code"><figcaption>S.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div><div data-line="9" class="line-number"></div><div data-line="10" class="line-number"></div><div data-line="11" class="line-number"></div><div data-line="12" class="line-number"></div><div data-line="13" class="line-number"></div><div data-line="14" class="line-number"></div><div data-line="15" class="line-number"></div><div data-line="16" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">S</span> <span class="kd">implements</span> <span class="n">X</span> <span class="o">{</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="kd">final</span> <span class="n">X</span> <span class="n">field1</span><span class="o">;</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="nf">S</span><span class="o">(</span><span class="n">X</span> <span class="n">param1</span><span class="o">){</span>
+</div><div class="line">        <span class="k">this</span><span class="o">.</span><span class="na">field1</span> <span class="o">=</span> <span class="n">param1</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">equals</span><span class="o">(</span><span class="n">Object</span> <span class="n">o</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">o</span> <span class="k">instanceof</span> <span class="n">S</span> <span class="o">&amp;&amp;</span> <span class="o">((</span><span class="n">S</span><span class="o">)</span><span class="n">o</span><span class="o">).</span><span class="na">field1</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">field1</span><span class="o">);</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="n">visit</span><span class="o">(</span><span class="n">XPrecursorVisitor</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">visitor</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">visitor</span><span class="o">.</span><span class="na">visitS</span><span class="o">(</span><span class="n">field1</span><span class="o">.</span><span class="na">visit</span><span class="o">(</span><span class="n">visitor</span><span class="o">));</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<h2 id="some-more-initial-algebra-examples">Some more initial algebra examples</h2>
+
+<p>Before we continue, we will need some more examples. Here are some unfinished Java snippets:</p>
+
+<figure class="code"><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div><div data-line="9" class="line-number"></div><div data-line="10" class="line-number"></div><div data-line="11" class="line-number"></div><div data-line="12" class="line-number"></div><div data-line="13" class="line-number"></div><div data-line="14" class="line-number"></div><div data-line="15" class="line-number"></div><div data-line="16" class="line-number"></div><div data-line="17" class="line-number"></div><div data-line="18" class="line-number"></div><div data-line="19" class="line-number"></div><div data-line="20" class="line-number"></div><div data-line="21" class="line-number"></div><div data-line="22" class="line-number"></div><div data-line="23" class="line-number"></div><div data-line="24" class="line-number"></div><div data-line="25" class="line-number"></div><div data-line="26" class="line-number"></div><div data-line="27" class="line-number"></div><div data-line="28" class="line-number"></div><div data-line="29" class="line-number"></div><div data-line="30" class="line-number"></div><div data-line="31" class="line-number"></div><div data-line="32" class="line-number"></div><div data-line="33" class="line-number"></div><div data-line="34" class="line-number"></div><div data-line="35" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="c1">// a binary tree with leaves containing values of type T</span>
+</div><div class="line"><span class="kd">interface</span> <span class="nc">Tree</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+</div><div class="line"><span class="o">...</span>
+</div><div class="line"> </div><div class="line"><span class="kd">class</span> <span class="nc">Leaf</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kd">implements</span> <span class="n">Tree</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+</div><div class="line">    <span class="n">Leaf</span><span class="o">(</span><span class="n">T</span> <span class="n">leaf</span><span class="o">){</span>
+</div><div class="line"><span class="o">...</span>
+</div><div class="line"> </div><div class="line"><span class="kd">class</span> <span class="nc">Branch</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kd">implements</span> <span class="n">Tree</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+</div><div class="line">    <span class="n">Branch</span><span class="o">(</span><span class="n">Tree</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">tree</span><span class="o">,</span> <span class="n">Tree</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">right</span><span class="o">)</span> <span class="o">{</span>
+</div><div class="line"><span class="o">...</span>
+</div><div class="line"> </div><div class="line"><span class="c1">// a simple integer arithmetic expression tree with both variables and constants</span>
+</div><div class="line"><span class="kd">interface</span> <span class="nc">Expression</span> <span class="o">{</span>
+</div><div class="line"><span class="o">...</span>
+</div><div class="line"> </div><div class="line"><span class="kd">class</span> <span class="nc">Variable</span> <span class="kd">extends</span> <span class="n">Expression</span> <span class="o">{</span>
+</div><div class="line">    <span class="n">Variable</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+</div><div class="line"><span class="o">...</span>
+</div><div class="line"> </div><div class="line"><span class="kd">class</span> <span class="nc">Constant</span> <span class="kd">extends</span> <span class="n">Expression</span> <span class="o">{</span>
+</div><div class="line">    <span class="n">Constant</span><span class="o">(</span><span class="kt">int</span> <span class="n">value</span><span class="o">){</span>
+</div><div class="line"><span class="o">...</span>
+</div><div class="line"> </div><div class="line"><span class="kd">class</span> <span class="nc">Add</span> <span class="kd">extends</span> <span class="n">Expression</span> <span class="o">{</span>
+</div><div class="line">    <span class="n">Add</span><span class="o">(</span><span class="n">Expression</span> <span class="n">expr1</span><span class="o">,</span> <span class="n">Expression</span> <span class="n">expr2</span><span class="o">)</span> <span class="o">{</span>
+</div><div class="line"><span class="o">...</span>
+</div><div class="line"> </div><div class="line"><span class="kd">class</span> <span class="nc">Multiply</span> <span class="kd">extends</span> <span class="n">Expression</span> <span class="o">{</span>
+</div><div class="line">    <span class="n">Multiply</span><span class="o">(</span><span class="n">Expression</span> <span class="n">expr1</span><span class="o">,</span> <span class="n">Expression</span> <span class="n">expr2</span><span class="o">)</span> <span class="o">{</span>
+</div><div class="line"><span class="o">...</span>
+</div><div class="line"> </div><div class="line"><span class="kd">class</span> <span class="nc">Negate</span> <span class="kd">extends</span> <span class="n">Expression</span> <span class="o">{</span>
+</div><div class="line">    <span class="n">Negate</span><span class="o">(</span><span class="n">Expression</span> <span class="n">expr</span><span class="o">)</span> <span class="o">{</span>
+</div><div class="line"><span class="o">...</span>
+</div></pre></td></tr></table></div></figure>
+
+<p>In fact, trees and expressions are the most common examples discussed in articles on similar topics.</p>
+
+<h2 id="where-the-heck-to-use-all-that-theoretical-mumbo-jumbo">Where the heck to use all that theoretical mumbo-jumbo?</h2>
+
+<p><a href="http://en.wikipedia.org/wiki/Catamorphism">Wikipedia says</a> that functional programmers refer to catamorphisms as <em>folds</em>. Every time you have some recursive datatype, usually tree-like or list-like, <em>folding</em> takes such large value and folds it into some nice, small, single value. It does that by looking only at the nearest neighbourhood: the already folded child nodes and the type and other fields of the current node.</p>
+
+<p>From now on, I’ll call things I called PrecursorVisitors before, Folders.</p>
+
+<p>Given the tree defined above, how would a folder for a <code>Tree&lt;T&gt;</code> look like?</p>
+
+<figure class="code"><figcaption>TreeFolder.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">interface</span> <span class="nc">TreeFolder</span><span class="o">&lt;</span><span class="n">T</span><span class="o">,</span><span class="n">U</span><span class="o">&gt;</span> <span class="o">{</span>
+</div><div class="line"> </div><div class="line">    <span class="n">U</span> <span class="nf">visitLeaf</span><span class="o">(</span><span class="n">T</span> <span class="n">leaf</span><span class="o">);</span>
+</div><div class="line"> </div><div class="line">    <span class="n">U</span> <span class="nf">visitBranch</span><span class="o">(</span><span class="n">U</span> <span class="n">left</span><span class="o">,</span> <span class="n">U</span> <span class="n">right</span><span class="o">);</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<p>And it’s used like this:</p>
+
+<figure class="code"><figcaption>Tree.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">interface</span> <span class="nc">Tree</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+</div><div class="line">    <span class="o">&lt;</span><span class="n">U</span><span class="o">&gt;</span> <span class="n">fold</span><span class="o">(</span><span class="n">TreeFolder</span><span class="o">&lt;</span><span class="n">T</span><span class="o">,</span><span class="n">U</span><span class="o">&gt;</span> <span class="n">folder</span><span class="o">);</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<figure class="code"><figcaption>Leaf.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div><div data-line="9" class="line-number"></div><div data-line="10" class="line-number"></div><div data-line="11" class="line-number"></div><div data-line="12" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">class</span> <span class="nc">Leaf</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kd">implements</span> <span class="n">Tree</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">final</span> <span class="n">T</span> <span class="n">leaf</span><span class="o">;</span>
+</div><div class="line"> </div><div class="line">    <span class="n">Leaf</span><span class="o">(</span><span class="n">T</span> <span class="n">leaf</span><span class="o">)</span> <span class="o">{</span>
+</div><div class="line">        <span class="k">this</span><span class="o">.</span><span class="na">leaf</span> <span class="o">=</span> <span class="n">leaf</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="o">&lt;</span><span class="n">U</span><span class="o">&gt;</span> <span class="n">U</span> <span class="n">fold</span><span class="o">(</span><span class="n">TreeFolder</span><span class="o">&lt;</span><span class="n">T</span><span class="o">,</span><span class="n">U</span><span class="o">&gt;</span> <span class="n">folder</span><span class="o">)</span> <span class="o">{</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">folder</span><span class="o">.</span><span class="na">visitLeaf</span><span class="o">(</span><span class="n">leaf</span><span class="o">);</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<figure class="code"><figcaption>Branch.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div><div data-line="9" class="line-number"></div><div data-line="10" class="line-number"></div><div data-line="11" class="line-number"></div><div data-line="12" class="line-number"></div><div data-line="13" class="line-number"></div><div data-line="14" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">class</span> <span class="nc">Branch</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kd">implements</span> <span class="n">Tree</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">final</span> <span class="n">Tree</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">left</span><span class="o">;</span>
+</div><div class="line">    <span class="kd">final</span> <span class="n">Tree</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">right</span><span class="o">;</span>
+</div><div class="line"> </div><div class="line">    <span class="n">Branch</span><span class="o">(</span><span class="n">Tree</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">left</span><span class="o">,</span> <span class="n">Tree</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">right</span><span class="o">)</span> <span class="o">{</span>
+</div><div class="line">        <span class="k">this</span><span class="o">.</span><span class="na">left</span> <span class="o">=</span> <span class="n">left</span><span class="o">;</span>
+</div><div class="line">        <span class="k">this</span><span class="o">.</span><span class="na">right</span> <span class="o">=</span> <span class="n">right</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="o">&lt;</span><span class="n">U</span><span class="o">&gt;</span> <span class="n">U</span> <span class="n">fold</span><span class="o">(</span><span class="n">TreeFolder</span><span class="o">&lt;</span><span class="n">T</span><span class="o">,</span><span class="n">U</span><span class="o">&gt;</span> <span class="n">folder</span><span class="o">)</span> <span class="o">{</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">folder</span><span class="o">.</span><span class="na">visitBranch</span><span class="o">(</span><span class="n">left</span><span class="o">.</span><span class="na">fold</span><span class="o">(</span><span class="n">folder</span><span class="o">),</span> <span class="n">right</span><span class="o">.</span><span class="na">fold</span><span class="o">(</span><span class="n">folder</span><span class="o">));</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<p>What can you use it for? For example, to get the leftmost element of the tree:</p>
+
+<figure class="code"><figcaption>Leftmost.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div><div data-line="9" class="line-number"></div><div data-line="10" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">class</span> <span class="nc">Leftmost</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kd">extends</span> <span class="n">TreeFolder</span><span class="o">&lt;</span><span class="n">T</span><span class="o">,</span><span class="n">U</span><span class="o">&gt;</span> <span class="o">{</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="n">T</span> <span class="nf">visitLeaf</span><span class="o">(</span><span class="n">T</span> <span class="n">leaf</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">leaf</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="n">T</span> <span class="nf">visitBranch</span><span class="o">(</span><span class="n">T</span> <span class="n">left</span><span class="o">,</span> <span class="n">T</span> <span class="n">right</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">left</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<p>Or count leaves:</p>
+
+<figure class="code"><figcaption>CountLeaves.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div><div data-line="9" class="line-number"></div><div data-line="10" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">class</span> <span class="nc">LeftMost</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kd">extends</span> <span class="n">TreeFolder</span><span class="o">&lt;</span><span class="n">T</span><span class="o">,</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="o">{</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="n">Integer</span> <span class="nf">visitLeaf</span><span class="o">(</span><span class="n">T</span> <span class="n">leaf</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="mi">1</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="n">Integer</span> <span class="nf">visitBranch</span><span class="o">(</span><span class="n">Integer</span> <span class="n">left</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">right</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">left</span> <span class="o">+</span> <span class="n">right</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<p>As for the expressions, evaluating them is one way of folding them:</p>
+
+<figure class="code"><figcaption>ExprFolder.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">interface</span> <span class="nc">ExprFolder</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+</div><div class="line">    <span class="n">T</span> <span class="nf">visitConst</span><span class="o">(</span><span class="kt">int</span> <span class="n">value</span><span class="o">);</span>
+</div><div class="line">    <span class="n">T</span> <span class="nf">visitVariable</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">);</span>
+</div><div class="line">    <span class="n">T</span> <span class="nf">visitAdd</span><span class="o">(</span><span class="n">T</span> <span class="n">expr1</span><span class="o">,</span> <span class="n">T</span> <span class="n">expr2</span><span class="o">);</span>
+</div><div class="line">    <span class="n">T</span> <span class="nf">visitMul</span><span class="o">(</span><span class="n">T</span> <span class="n">expr1</span><span class="o">,</span> <span class="n">T</span> <span class="n">expr2</span><span class="o">);</span>
+</div><div class="line">    <span class="n">T</span> <span class="nf">visitNegate</span><span class="o">(</span><span class="n">T</span> <span class="n">expr</span><span class="o">);</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<figure class="code"><figcaption>Evaluate.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div><div data-line="9" class="line-number"></div><div data-line="10" class="line-number"></div><div data-line="11" class="line-number"></div><div data-line="12" class="line-number"></div><div data-line="13" class="line-number"></div><div data-line="14" class="line-number"></div><div data-line="15" class="line-number"></div><div data-line="16" class="line-number"></div><div data-line="17" class="line-number"></div><div data-line="18" class="line-number"></div><div data-line="19" class="line-number"></div><div data-line="20" class="line-number"></div><div data-line="21" class="line-number"></div><div data-line="22" class="line-number"></div><div data-line="23" class="line-number"></div><div data-line="24" class="line-number"></div><div data-line="25" class="line-number"></div><div data-line="26" class="line-number"></div><div data-line="27" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">class</span> <span class="nc">Evaluate</span> <span class="kd">implements</span> <span class="n">ExprFolder</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="o">{</span>
+</div><div class="line">    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Integer</span><span class="o">&gt;</span> <span class="n">vars</span><span class="o">;</span>
+</div><div class="line"> </div><div class="line">    <span class="n">Evaluate</span><span class="o">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Integer</span><span class="o">&gt;</span> <span class="n">vars</span><span class="o">){</span>
+</div><div class="line">        <span class="k">this</span><span class="o">.</span><span class="na">vars</span> <span class="o">=</span> <span class="n">vars</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="n">Integer</span> <span class="nf">visitConst</span><span class="o">(</span><span class="kt">int</span> <span class="n">value</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">value</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="n">Integer</span> <span class="nf">visitVariable</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">vars</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="n">Integer</span> <span class="nf">visitAdd</span><span class="o">(</span><span class="n">Integer</span> <span class="n">expr1</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">expr2</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">expr1</span> <span class="o">+</span> <span class="n">expr2</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="n">Integer</span> <span class="nf">visitMul</span><span class="o">(</span><span class="n">Integer</span> <span class="n">expr1</span><span class="o">,</span> <span class="n">Integer</span> <span class="n">expr2</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">expr1</span> <span class="o">*</span> <span class="n">expr2</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="n">Integer</span> <span class="nf">visitNegate</span><span class="o">(</span><span class="n">Integer</span> <span class="n">expr</span><span class="o">){</span>
+</div><div class="line">       <span class="k">return</span> <span class="o">-</span><span class="n">expr1</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<p>or convert to a string:</p>
+
+<figure class="code"><figcaption>Stringify.java</figcaption><div class="highlight"><table><tr><td class="line-numbers" aria-hidden="true"><pre><div data-line="1" class="line-number"></div><div data-line="2" class="line-number"></div><div data-line="3" class="line-number"></div><div data-line="4" class="line-number"></div><div data-line="5" class="line-number"></div><div data-line="6" class="line-number"></div><div data-line="7" class="line-number"></div><div data-line="8" class="line-number"></div><div data-line="9" class="line-number"></div><div data-line="10" class="line-number"></div><div data-line="11" class="line-number"></div><div data-line="12" class="line-number"></div><div data-line="13" class="line-number"></div><div data-line="14" class="line-number"></div><div data-line="15" class="line-number"></div><div data-line="16" class="line-number"></div><div data-line="17" class="line-number"></div><div data-line="18" class="line-number"></div><div data-line="19" class="line-number"></div><div data-line="20" class="line-number"></div><div data-line="21" class="line-number"></div><div data-line="22" class="line-number"></div></pre></td><td class="main  java"><pre><div class="line"><span class="kd">class</span> <span class="nc">Stringify</span> <span class="kd">implements</span> <span class="n">ExprFolder</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="o">{</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">visitConst</span><span class="o">(</span><span class="kt">int</span> <span class="n">value</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="s">&quot;&quot;</span> <span class="o">+</span> <span class="n">value</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">visitVariable</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">visitAdd</span><span class="o">(</span><span class="n">String</span> <span class="n">expr1</span><span class="o">,</span> <span class="n">String</span> <span class="n">expr2</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="s">&quot;(&quot;</span> <span class="o">+</span> <span class="n">expr1</span> <span class="o">+</span> <span class="s">&quot; + &quot;</span> <span class="o">+</span> <span class="n">expr2</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">visitMul</span><span class="o">(</span><span class="n">String</span> <span class="n">expr1</span><span class="o">,</span> <span class="n">String</span> <span class="n">expr2</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="n">expr1</span> <span class="o">+</span> <span class="s">&quot;×&quot;</span> <span class="o">+</span> <span class="n">expr2</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"> </div><div class="line">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">visitNegate</span><span class="o">(</span><span class="n">String</span> <span class="n">expr</span><span class="o">){</span>
+</div><div class="line">        <span class="k">return</span> <span class="s">&quot;(-&quot;</span> <span class="o">+</span> <span class="n">expr1</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span><span class="o">;</span>
+</div><div class="line">    <span class="o">}</span>
+</div><div class="line"><span class="o">}</span>
+</div></pre></td></tr></table></div></figure>
+
+<p>And so on.</p>
+
+<h2 id="so-is-everything-a-fold">So, is everything a fold?</h2>
+
+<p>In short, not quite.</p>
+
+<p>Some operations, like for example expression optimisation, are not a fold, unless you pick a weird result type. Folds always progress from leaves to the root and never descend back. Optimisation of expression trees, on the other hand, is usually implemented as a descent from the root to the leaves.</p>
+
+<p>In theory though, everything can be implemented as a fold. Please don’t do that though.</p>
+
+<p>Furthermore, folding shown in this post is strict, which means it always descends to the end of a tree before returning back. If the data structure it was traversing was infinite, it would never yield an result.</p>
+
+<h2 id="final-remarks">Final remarks</h2>
+
+<p>First of all, I’d like to thank Bartosz Milewski for a nice write-up on the same topic: 
+https://www.fpcomplete.com/user/bartosz/understanding-algebras1111</p>
+
+<p>Second of all, Java is not the best suited programming language for working with algebraic data types. Lack of pattern matching, verbose class declaration syntax, defaulting to equality by reference, defaulting to mutable fields, requiring explicit copying from constructor parameters to fields, and few other things make this pattern bothersome. It works better in other languages though, see for example Milewski’s Haskell examples.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[From explicit nested monads to Kleisli arrows over monad transformers]]></title>

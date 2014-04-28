@@ -4,7 +4,7 @@
   <title><![CDATA[Category: programming | Karol Stasiak's Blog]]></title>
   <link href="http://KarolS.github.io/categories/programming/atom.xml" rel="self"/>
   <link href="http://KarolS.github.io/"/>
-  <updated>2014-04-29T01:07:10+02:00</updated>
+  <updated>2014-04-29T01:11:13+02:00</updated>
   <id>http://KarolS.github.io/</id>
   <author>
     <name><![CDATA[Karol Stasiak]]></name>
@@ -12,6 +12,654 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Implementing catamorphisms in Java]]></title>
+    <link href="http://KarolS.github.io/blog/2014/04/29/implementing-catamorphisms-in-java/"/>
+    <updated>2014-04-29T01:20:00+02:00</updated>
+    <id>http://KarolS.github.io/blog/2014/04/29/implementing-catamorphisms-in-java</id>
+    <content type="html"><![CDATA[<p><em>Warning: I’m now going to wake up the ghosts of the past. The past which includes your undergraduate abstract algebra lectures.</em></p>
+
+<p>This post is mostly a result of my boredom and my willingness to show that you can shoehorn almost every abstraction into almost every programming language, but it’s not exactly the best idea to do so.</p>
+
+<p>Also, I simply wanted to say a word or two about several abstract mathematical concepts. It can be a worthwhile intellectual exercise.</p>
+
+<h2 id="algebras">Algebras</h2>
+
+<p>Before I talk about catamorphisms, mentioned in the title, I’d like to have a look at a very abstract and general mathematical structure: an algebra.</p>
+
+<p>An <strong>algebra</strong> is a tuple that contains:</p>
+
+<ul>
+  <li>
+    <p>some sets (called carrier sets), most often one</p>
+  </li>
+  <li>
+    <p>usually some operations, each of them from some Cartesian product of the carrier sets to one of the carrier sets</p>
+  </li>
+  <li>
+    <p>sometimes some distinguished elements from those sets (they’re often superfluous, but they will be required later; you can also think about them as of nullary operations)</p>
+  </li>
+</ul>
+
+<p>Examples: </p>
+
+<ul>
+  <li>
+    <p>a set of strings <code>Str</code> and the operation of concatenation <code>+: Str × Str → Str</code></p>
+  </li>
+  <li>
+    <p>a set of natural numbers <code>Nat</code> and the operation of addition: <code>+: Nat × Nat → Nat</code></p>
+  </li>
+  <li>
+    <p>a set of finite subsets of natural numbers <code>Nat</code> and a set of natural numbers <code>P(Nat)</code>, a distinguished empty set <code>Ø</code> and the operations of union and intersection <code>P(Nat) × P(Nat) → P(Nat)</code> and the largest element operation <code>max: P(Nat) → Nat</code> (with <code>max(Ø) = 0</code>)</p>
+  </li>
+</ul>
+
+<p><em>Note: I’m using the <code>+</code> operator for string concatenation because the article is supposed to end up with creating some Java code, and Java uses <code>+</code> for string concatenation.</em></p>
+
+<!-- more -->
+
+<p>Usually when talking about an algebra, one specifies properties those operations have, for example concatenation is associative, addition is commutative and associative, and so on.</p>
+
+<p>When you look at it, an algebra can be considered equivalent to a program in a statically typed functional language. </p>
+
+<h2 id="homomorphisms">Homomorphisms</h2>
+
+<p>The second important thing we need are algebra homomorphisms. Let’s assume we have two algebras <code>A₁</code> and <code>A₂</code> with the following properties:</p>
+
+<ul>
+  <li>
+    <p>They have the same number of carrier sets, e.g. <code>X₁, Y₁, Z₁</code> and <code>X₂, Y₂, Z₂</code>.</p>
+  </li>
+  <li>
+    <p>They have the same number of distinguished elements from the corresponding carriers sets, e.g. <code>ε₁ ∈ X₁, α₁ ∈ Y₁, β₁ ∈ Y₁</code> and <code>ε₂ ∈ X₂, α₂ ∈ Y₂, β₂ ∈ Y₂</code>.</p>
+  </li>
+  <li>
+    <p>They have the same number of operations from the correspoding carriers sets to the corresponding carrier sets, e.g. <code>f₁: X₁×Y₁→Y₁, g₁: Y₁×Y₁→Y₁, h₁: X₁×X₁→X₁, k₁: Y₁→Z₁</code> and <code>f₂: X₂×Y₂→Y₂, g₂: Y₂×Y₂→Y₂, h₂: X₂×X₂→X₂, k₂: Y₂→Z₂</code>.</p>
+  </li>
+</ul>
+
+<p>I’ll be calling such pairs of algebras <strong>algebras with matching signatures</strong>.</p>
+
+<p>Now if we have a function <code>H</code> from carrier sets of one algebra to carriers sets of another algebra, and that function preserves the algebraic structure, e.g. in the example from above:</p>
+
+<ul>
+  <li>
+    <p><code>H: (X₁ ∪ Y₁ ∪ Z₁) → (X₂ ∪ Y₂ ∪ Z₂)</code></p>
+  </li>
+  <li>
+    <p><code>H(ε₁) = ε₂</code>, <code>H(α₁) = α₂</code>, <code>H(β₁) = β₂</code></p>
+  </li>
+  <li>
+    <p><code>H(f₁(x,y)) = f₂(H(x), H(y))</code>, <code>H(g₁(y,y')) = g₂(H(y), H(y'))</code>, <code>H(h₁(x,x')) = h₂(H(x), H(x'))</code>, <code>H(k₁(y)) = k₂(H(y))</code></p>
+  </li>
+</ul>
+
+<p>then we call <code>H</code> a <strong>homomorphism</strong>.</p>
+
+<p>You probably need an example. I’ll start with a simple one: the two first algebras I mentioned have a homomorphism between them: the length. Indeed, <code>length(str₁ + str2) = length(str₁) + length(str₂)</code>. </p>
+
+<p>There’s also a homomorphism back, let’s call it <code>aaaa</code>, which for a given natural number returns a string made of that number of a’s, e.g. <code>aaaa(3) = "aaa"</code>. You can easy see that <code>aaaa(n₁ + n₂) = aaaa(n₁) + aaaa(n₂)</code>.</p>
+
+<p><em>Note: You have probably noticed, that instead of performing calculations on some operands in one algebra and finally converting the result to another algebra using a homomorphism, we can first convert the result to the second algebra and then perform the calculations. Indeed that is correct and usually it’s useful, especially if the operations in the second algebra are easier to perform. Haskell library <a href="https://github.com/mikeizbicki/HLearn">HLearn</a> converts an algebra of data samples to an algebra of statistics, allowing for instantaneous recalculating of statistics after adding some data to an enormous sample.</em></p>
+
+<p>If the homomorphism is invertible, i.e. there is a homomorphism <code>K</code> from the second algebra back to the first, and <code>K(H(x)) = x</code> and <code>H(K(y)) = y</code>, then we call <code>H</code> an <strong>isomorphism</strong> and the two algebras <strong>isomorphic</strong>. Two isomorphic algebras can be considered equivalent for most purposes.</p>
+
+<p>Since <code>length</code> and <code>aaaa</code> don’t have that property (<code>aaaa(length("b")) = "a" ≠ "b"</code>), nor any other pair of homomorphisms does, the algebra of strings with concatenation and the algebra of natural numbers with addition are not isomorphic.</p>
+
+<h2 id="initial-algebras">Initial algebras</h2>
+
+<p>A special category of algebras are <strong>initial algebras</strong>. Their carrier sets are not given, but are defined from the given distinguished elements and operations. For example, the carrier set <code>X</code> for an initial algebra with distinguished element <code>Z ∈ X</code> and unary operation <code>S: X → X</code> is <code>{Z, S(Z), S(S(Z)), S(S(S(Z))), S(S(S(S(Z))))...}</code>. Operations in initial algebras are not commutative nor associative, but they are always injective. They’re sometimes called <strong>constructors</strong>, and like the constructors in programming languages, they always construct new, distinct values. When initial algebras are implemented, they’re usually called <strong>algebraic data structures</strong>.</p>
+
+<p>Let’s implement the above initial algebra in Java:</p>
+
+<p>```java X.java
+public interface X {</p>
+
+<p>}
+```</p>
+
+<p><code>java Z.java
+public class Z implements X {
+    public boolean equals(Object o){
+        return o instanceof Z;
+    }
+}
+</code></p>
+
+<p>```java S.java
+public class S implements X {</p>
+
+<p>public final X field1;</p>
+
+<p>public S(X param1){
+      this.field1 = param1;
+  }</p>
+
+<p>public boolean equals(Object o){
+      return o instanceof S &amp;&amp; ((S)o).field1.equals(field1);
+  }
+}
+```</p>
+
+<p><em>Note: Implementing <code>hashCode</code>, providing null-safety and adding getters left as an exercise for the reader.</em></p>
+
+<h2 id="catamorphisms">Catamorphisms</h2>
+
+<p>The nice thing about the initial algebras is that for every algebra with a matching signature, there exists exactly one homomorphism from initial algebra to the given algebra. That unique homomorphism is called the <strong>catamorphism</strong>.</p>
+
+<p>For example, given the algebra above, we can uniquely map it onto an algebra with natural numbers, number <code>0</code>, and function <code>x → x + 1</code>: <code>H(Z) → 0</code>, <code>H(S(x)) → H(x) + 1</code>. While it may look tautological, keep in mind that the elements of the carrier set of an initial algebra are uniquely defined by the distinguished elements and operations that were used to create them.</p>
+
+<p>Let’s implement it in Java!</p>
+
+<p><code>java
+public int h(X x){
+    if (x instanceof Z) {
+        return 0;
+    } else if (x instanceof S) {
+        return h(((S)x).field1) + 1;
+    else {
+        throw new IllegalArgumentException();
+    }
+}
+</code></p>
+
+<p>It works, but it’s ugly.</p>
+
+<h2 id="pattern-matching-sort-of">Pattern matching… sort of</h2>
+
+<p>Let’s take another look at our homomorphism in Java. The code has several issues:</p>
+
+<ul>
+  <li>
+    <p>it explicitly checks type and casts the parameter;</p>
+  </li>
+  <li>
+    <p>it calls itself recursively;</p>
+  </li>
+  <li>
+    <p>it has this ugly unreachable code that will suddenly start throwing exceptions when we add another constructor to our <code>X</code> algebra.</p>
+  </li>
+</ul>
+
+<p>Let’s address #1 and #3 first.</p>
+
+<p>If we were using a functional language with first-class support for algebraic data types, we could write our homomorphism using pattern matching:</p>
+
+<p><code>fsharp
+let h x = 
+  match x with
+  | Z -&gt; 0
+  | S field1 -&gt; h field1 + 1
+</code></p>
+
+<p>Java does not support pattern matching, that’s obvious and furthermore, the alternative solution using explicit casts is ugly and prone to bugs. To solve it in Java, the officially preferred way is to use the visitor pattern.</p>
+
+<p><code>java XVisitor.java
+interface XVisitor&lt;T&gt; {
+      T visit(Z z);
+      T visit(S s);
+}
+</code></p>
+
+<p><code>java X.java
+public interface X {
+      &lt;T&gt; T visit(XVisitor&lt;T&gt; visitor);
+}
+</code></p>
+
+<p><code>java Z.java
+public class Z implements X {
+    public boolean equals(Object o){
+        return o instanceof Z;
+    }
+    public &lt;T&gt; T visit(XVisitor&lt;T&gt; visitor){
+        return visitor.visit(this);
+    }
+}
+</code></p>
+
+<p>```java S.java
+public class S implements X {</p>
+
+<pre><code>public final X field1;
+
+public S(X param1){
+    this.field1 = param1;
+}
+
+public boolean equals(Object o){
+    return o instanceof S &amp;&amp; ((S)o).field1.equals(field1);
+}
+
+public &lt;T&gt; T visit(XVisitor&lt;T&gt; visitor){
+    return visitor.visit(this);
+} } ```
+</code></pre>
+
+<p>```java H.java
+class H implements XVisitor<integer> {</integer></p>
+
+<pre><code>public int visitZ(Z z){
+    return 0;
+}
+
+public int visit(S s){
+    return s.field1.visit(this) + 1;
+} } ```
+</code></pre>
+
+<p><em>Note: As you can see, it’s not the typical Visitor pattern as described by the Gang of Four. First, here the <code>visit</code> methods actually return something instead of returning <code>void</code>, second, GoF suggests that the branching classes, like <code>S</code> here, always had the visitor visit their children and express that in the <code>S.visit</code> method.</em></p>
+
+<p>Since the only thing we need from the instances of our classes is values of their fields, we can simplify it further:</p>
+
+<p><code>java XVisitor.java
+interface XVisitor&lt;T&gt; {
+    T visitZ();
+    T visitS(X field1);
+}
+</code></p>
+
+<p><code>java X.java
+public interface X {
+    &lt;T&gt; T visit(XVisitor&lt;T&gt; visitor);
+}
+</code></p>
+
+<p><code>java Z.java
+public class Z implements X {
+    public boolean equals(Object o){
+        return o instanceof Z;
+    }
+    public &lt;T&gt; T visit(XVisitor&lt;T&gt; visitor){
+        return visitor.visitZ();
+    }
+}
+</code></p>
+
+<p>```java S.java
+public class S implements X {</p>
+
+<pre><code>public final X field1;
+
+public S(X param1){
+    this.field1 = param1;
+}
+
+public boolean equals(Object o){
+    return o instanceof S &amp;&amp; ((S)o).field1.equals(field1);
+}
+
+public &lt;T&gt; T visit(XVisitor&lt;T&gt; visitor){
+    return visitor.visitS(field1);
+} } ```
+</code></pre>
+
+<p>```java H.java
+class H implements XVisitor<integer> {</integer></p>
+
+<pre><code>public int visitZ(){
+    return 0;
+}
+
+public int visitS(X field1){
+    return field1.visit(this) + 1;
+} } ```
+</code></pre>
+
+<p>Looks way better. Too enterprisy for my taste, but hey, it’s Java.</p>
+
+<p>The upside of this new approach is that whenever we add a new class implementing our base interface, the compiler will kick and scream until we fix our visitors.</p>
+
+<p>The downside is that we still have to call <code>visit</code> in <code>visitS</code>. The burden of converting <code>field1</code> to <code>T</code> should be on the <code>S</code> class. The visitor interface should be decoupled from the <code>X</code> interface. Let’s try a bit harder.</p>
+
+<h2 id="catamorphisms-and-visitors-take-two">Catamorphisms and visitors, take two</h2>
+
+<p>Let’s have a look at our simple algebra so far:</p>
+
+<p><code>java
+interface X:
+    Z()
+    S(X param1)
+</code></p>
+
+<p>As you can see, it’s recursive. That means it’s also infinite.</p>
+
+<p>Let’s get rid of the recursion somehow. What happens if we replace X with some type parameter T?</p>
+
+<p><code>java
+interface XPrecursor&lt;T&gt;:
+    ZPrecursor&lt;T&gt;()
+    SPrecursor&lt;T&gt;(T param1)
+</code></p>
+
+<p>(Sorry for weird syntax.)</p>
+
+<p>As you can see, our algebra is no longer recursive. (It can still be infinite though, for example if some constructors use another infinite types.) Such family of non-recursive algebras is called the <strong>precursor</strong> of our initial algebra <code>X</code>. All algebras in this family are also initial.</p>
+
+<p><em>Note: <code>XPrecursor&lt;X&gt;</code> is isomorphic to <code>X</code>. Here are the homomorphisms both ways:</em></p>
+
+<p>```java
+X fromPrecursor(XPrecursor<x> p){
+    if (p instanceof ZPrecursor) {
+        return new Z();
+    } else if (p instanceof SPrecursor {
+        return new S(((SPrecursor<x>)p).param1);
+    } else {
+        throw new IllegalArgumentException();
+    }
+}</x></x></p>
+
+<p>XPrecursor toPrecursor(X x){
+    if(x instanceof Z){
+        return new ZPrecursor();
+    } else if (x instanceof X) {
+        return new SPrecursor<x>(((S)x).param1);
+    } else {
+        throw new IllegalArgumentException();
+    }
+}
+```</x></p>
+
+<p>How would a visitor for <code>XPrecursor&lt;T&gt;</code> look like?</p>
+
+<p><code>java XPrecursorVisitor.java
+interface XPrecursorVisitor&lt;T,U&gt; {
+    U visitZ();
+    U visitS(T field1);
+}
+</code></p>
+
+<p><em>Note: Since <code>XPrecursor&lt;T&gt;</code> is not recursive, the visitor does not have to know anything about <code>XPrecursor&lt;T&gt;</code>.</em></p>
+
+<p><em>Note: Remember: every <code>XPrecursorVisitor&lt;T,U&gt;</code> defines a homomorphism <code>XPrecursor&lt;T&gt; → U</code>.</em></p>
+
+<p>And finally: can we convert an <code>XPrecursorVisitor&lt;T,T&gt;</code> into an <code>XVisitor&lt;T&gt;</code>? The answer is yes:</p>
+
+<p>```java XCata.java
+class XCata<t> implements XVisitor<t> {
+    private final XPrecursorVisitor&lt;T,T&gt; underlying;</t></t></p>
+
+<pre><code>public XCata(XPrecursorVisitor&lt;T,T&gt; u){
+    underlying = u;
+}
+
+public T visitZ(){
+    return underlying.visitZ();
+}
+
+public T visitS(X x){
+    return underlying.visitS(x.visit(this));
+} } ```
+</code></pre>
+
+<p>Now, let’s sum all that we know:</p>
+
+<ul>
+  <li>
+    <p><code>X</code> is an initial algebra</p>
+  </li>
+  <li>
+    <p>for every <code>T</code>, <code>XPrecursor&lt;T&gt;</code> is an initial algebra</p>
+  </li>
+  <li>
+    <p>for every homomorphism <code>f: XPrecursor&lt;T&gt; → T</code> (which means <code>XPrecursorVisitor&lt;T,T&gt;</code>) exist at least one homomorphism <code>g: X → T</code> (which means <code>XVisitor&lt;T&gt;</code>), and only one that doesn’t incorporate any external constants into it</p>
+  </li>
+</ul>
+
+<p>As some of you may have noticed, I called the converter <code>XCata</code>. Indeed, if we think of the <code>XPrecursorVisitor&lt;T,T&gt;</code> as of an algebra over <code>T</code> (where the methods represent the distinguished elements if zero parameters and the operations if not), <code>XCata</code> is the catamorphism from initial algebra <code>X</code> to the <code>T</code> algebra.</p>
+
+<p>Armed with this knowledge, we can add <code>&lt;T&gt; T visit(XPrecursorVisitor&lt;T&gt; visitor)</code> to our X interface and inline the methods of <code>XCata</code> in the implementations of the new method:</p>
+
+<p><code>java X.java
+public interface X {
+    &lt;T&gt; T visit(XPrecursorVisitor&lt;T&gt; visitor);
+}
+</code></p>
+
+<p><code>java Z.java
+public class Z implements X {
+    public boolean equals(Object o){
+        return o instanceof Z;
+    }
+    public &lt;T&gt; T visit(XPrecursorVisitor&lt;T&gt; visitor){
+        return visitor.visitZ();
+    }
+}
+</code></p>
+
+<p>```java S.java
+public class S implements X {</p>
+
+<pre><code>public final X field1;
+
+public S(X param1){
+    this.field1 = param1;
+}
+
+public boolean equals(Object o){
+    return o instanceof S &amp;&amp; ((S)o).field1.equals(field1);
+}
+
+public &lt;T&gt; T visit(XPrecursorVisitor&lt;T&gt; visitor){
+    return visitor.visitS(field1.visit(visitor));
+} } ```
+</code></pre>
+
+<h2 id="some-more-initial-algebra-examples">Some more initial algebra examples</h2>
+
+<p>Before we continue, we will need some more examples. Here are some unfinished Java snippets:</p>
+
+<p>```java
+// a binary tree with leaves containing values of type T
+interface Tree<t> { 
+...</t></p>
+
+<p>class Leaf<t> implements Tree<t> {
+    Leaf(T leaf){ 
+...</t></t></p>
+
+<p>class Branch<t> implements Tree<t> {
+    Branch(Tree<t> tree, Tree<t> right) {
+...</t></t></t></t></p>
+
+<p>// a simple integer arithmetic expression tree with both variables and constants
+interface Expression {
+…</p>
+
+<p>class Variable extends Expression {
+    Variable(String name) {
+…</p>
+
+<p>class Constant extends Expression {
+    Constant(int value){
+…</p>
+
+<p>class Add extends Expression {
+    Add(Expression expr1, Expression expr2) {
+…</p>
+
+<p>class Multiply extends Expression {
+    Multiply(Expression expr1, Expression expr2) {
+…</p>
+
+<p>class Negate extends Expression {
+    Negate(Expression expr) {
+…
+```</p>
+
+<p>In fact, trees and expressions are the most common examples discussed in articles on similar topics.</p>
+
+<h2 id="where-the-heck-to-use-all-that-theoretical-mumbo-jumbo">Where the heck to use all that theoretical mumbo-jumbo?</h2>
+
+<p><a href="http://en.wikipedia.org/wiki/Catamorphism">Wikipedia says</a> that functional programmers refer to catamorphisms as <em>folds</em>. Every time you have some recursive datatype, usually tree-like or list-like, <em>folding</em> takes such large value and folds it into some nice, small, single value. It does that by looking only at the nearest neighbourhood: the already folded child nodes and the type and other fields of the current node.</p>
+
+<p>From now on, I’ll call things I called PrecursorVisitors before, Folders.</p>
+
+<p>Given the tree defined above, how would a folder for a <code>Tree&lt;T&gt;</code> look like?</p>
+
+<p>```java TreeFolder.java
+interface TreeFolder&lt;T,U&gt; {</p>
+
+<pre><code>U visitLeaf(T leaf);
+
+U visitBranch(U left, U right); } ```
+</code></pre>
+
+<p>And it’s used like this:</p>
+
+<p><code>java Tree.java
+interface Tree&lt;T&gt; {
+    &lt;U&gt; fold(TreeFolder&lt;T,U&gt; folder);
+}
+</code></p>
+
+<p>```java Leaf.java
+class Leaf<t> implements Tree<t> {</t></t></p>
+
+<pre><code>final T leaf;
+
+Leaf(T leaf) {
+    this.leaf = leaf;
+} 
+
+public &lt;U&gt; U fold(TreeFolder&lt;T,U&gt; folder) {
+    return folder.visitLeaf(leaf);
+} } ```
+</code></pre>
+
+<p>```java Branch.java
+class Branch<t> implements Tree<t> {</t></t></p>
+
+<pre><code>final Tree&lt;T&gt; left;
+final Tree&lt;T&gt; right;
+
+Branch(Tree&lt;T&gt; left, Tree&lt;T&gt; right) {
+    this.left = left;
+    this.right = right;
+} 
+
+public &lt;U&gt; U fold(TreeFolder&lt;T,U&gt; folder) {
+    return folder.visitBranch(left.fold(folder), right.fold(folder));
+} } ```
+</code></pre>
+
+<p>What can you use it for? For example, to get the leftmost element of the tree:</p>
+
+<p>```java Leftmost.java
+class Leftmost<t> extends TreeFolder&lt;T,U&gt; {</t></p>
+
+<pre><code>public T visitLeaf(T leaf){
+    return leaf;
+}
+
+public T visitBranch(T left, T right){
+    return left;
+} } ```
+</code></pre>
+
+<p>Or count leaves:</p>
+
+<p>```java CountLeaves.java
+class LeftMost<t> extends TreeFolder&lt;T,Integer&gt; {</t></p>
+
+<pre><code>public Integer visitLeaf(T leaf){
+    return 1;
+}
+
+public Integer visitBranch(Integer left, Integer right){
+    return left + right;
+} } ```
+</code></pre>
+
+<p>As for the expressions, evaluating them is one way of folding them:</p>
+
+<p><code>java ExprFolder.java
+interface ExprFolder&lt;T&gt; {
+    T visitConst(int value);
+    T visitVariable(String name);
+    T visitAdd(T expr1, T expr2);
+    T visitMul(T expr1, T expr2);
+    T visitNegate(T expr);
+}
+</code></p>
+
+<p>```java Evaluate.java
+class Evaluate implements ExprFolder<integer> {
+    private final Map&lt;String, Integer&gt; vars;</integer></p>
+
+<pre><code>Evaluate(Map&lt;String, Integer&gt; vars){
+    this.vars = vars;
+}
+
+public Integer visitConst(int value){
+    return value;
+}
+
+public Integer visitVariable(String name){
+    return vars.get(name);
+}
+
+public Integer visitAdd(Integer expr1, Integer expr2){
+    return expr1 + expr2;
+}
+
+public Integer visitMul(Integer expr1, Integer expr2){
+    return expr1 * expr2;
+}
+
+public Integer visitNegate(Integer expr){
+   return -expr1;
+} } ```
+</code></pre>
+
+<p>or convert to a string:</p>
+
+<p>```java Stringify.java
+class Stringify implements ExprFolder<string> {</string></p>
+
+<pre><code>public String visitConst(int value){
+    return "" + value;
+}
+
+public String visitVariable(String name){
+    return name;
+}
+
+public String visitAdd(String expr1, String expr2){
+    return "(" + expr1 + " + " + expr2 + ")";
+}
+
+public String visitMul(String expr1, String expr2){
+    return expr1 + "×" + expr2;
+}
+
+public String visitNegate(String expr){
+    return "(-" + expr1 + ")";
+} } ```
+</code></pre>
+
+<p>And so on.</p>
+
+<h2 id="so-is-everything-a-fold">So, is everything a fold?</h2>
+
+<p>In short, not quite.</p>
+
+<p>Some operations, like for example expression optimisation, are not a fold, unless you pick a weird result type. Folds always progress from leaves to the root and never descend back. Optimisation of expression trees, on the other hand, is usually implemented as a descent from the root to the leaves.</p>
+
+<p>In theory though, everything can be implemented as a fold. Please don’t do that though.</p>
+
+<p>Furthermore, folding shown in this post is strict, which means it always descends to the end of a tree before returning back. If the data structure it was traversing was infinite, it would never yield an result.</p>
+
+<h2 id="final-remarks">Final remarks</h2>
+
+<p>First of all, I’d like to thank Bartosz Milewski for a nice write-up on the same topic: 
+https://www.fpcomplete.com/user/bartosz/understanding-algebras1111</p>
+
+<p>Second of all, Java is not the best suited programming language for working with algebraic data types. Lack of pattern matching, verbose class declaration syntax, defaulting to equality by reference, defaulting to mutable fields, requiring explicit copying from constructor parameters to fields, and few other things make this pattern bothersome. It works better in other languages though, see for example Milewski’s Haskell examples.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[From explicit nested monads to Kleisli arrows over monad transformers]]></title>
