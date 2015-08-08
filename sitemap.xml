@@ -2,39 +2,45 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://KarolS.github.io/blog/2013/10/21/test-post-please-ignore/</loc>
-        <lastmod>2014-01-11T22:01:41+01:00</lastmod>
+        <lastmod>2015-02-04T23:20:16+01:00</lastmod>
     </url>
     <url>
         <loc>
             http://KarolS.github.io/blog/2013/11/18/creating-custom-keyboard-layouts-for-linux/
         </loc>
-        <lastmod>2014-01-11T23:49:40+01:00</lastmod>
+        <lastmod>2015-02-04T23:20:16+01:00</lastmod>
     </url>
     <url>
         <loc>http://KarolS.github.io/blog/2014/01/02/units-0-1-released/</loc>
-        <lastmod>2014-01-11T23:49:40+01:00</lastmod>
+        <lastmod>2015-02-04T23:20:16+01:00</lastmod>
     </url>
     <url>
         <loc>http://KarolS.github.io/blog/2014/01/03/hocr4j-0-1-released/</loc>
-        <lastmod>2014-01-11T23:49:40+01:00</lastmod>
+        <lastmod>2015-02-04T23:20:16+01:00</lastmod>
     </url>
     <url>
         <loc>
             http://KarolS.github.io/blog/2014/04/29/from-nested-monads-to-kleisli-arrows-over-monad-transformers/
         </loc>
-        <lastmod>2014-04-29T01:12:13+02:00</lastmod>
+        <lastmod>2015-02-04T23:20:16+01:00</lastmod>
     </url>
     <url>
         <loc>http://KarolS.github.io/blog/2014/04/29/implementing-catamorphisms-in-java/</loc>
-        <lastmod>2014-04-29T01:10:33+02:00</lastmod>
+        <lastmod>2015-02-04T23:20:16+01:00</lastmod>
     </url>
     <url>
         <loc>http://KarolS.github.io/blog/2014/04/29/random-ideas-for-scala-3-0/</loc>
-        <lastmod>2014-04-29T01:20:38+02:00</lastmod>
+        <lastmod>2015-02-04T23:20:16+01:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://KarolS.github.io/blog/2015/08/08/java-8-functional-interfaces-cheatsheet/
+        </loc>
+        <lastmod>2015-08-08T22:42:01+02:00</lastmod>
     </url>
     <url>
         <loc>http://KarolS.github.io/</loc>
-        <lastmod>2014-04-29T01:20:38+02:00</lastmod>
+        <lastmod>2015-08-08T22:42:01+02:00</lastmod>
     </url>
     <url>
         <loc>http://KarolS.github.io/robots.txt</loc>
@@ -42,6 +48,6 @@
     </url>
     <url>
         <loc>http://KarolS.github.io/blog/archives/blog/archives/</loc>
-        <lastmod>2014-04-29T01:20:38+02:00</lastmod>
+        <lastmod>2015-08-08T22:42:01+02:00</lastmod>
     </url>
 </urlset>

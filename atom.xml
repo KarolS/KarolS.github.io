@@ -4,7 +4,7 @@
   <title><![CDATA[Karol Stasiak's Blog]]></title>
   <link href="http://KarolS.github.io/atom.xml" rel="self"/>
   <link href="http://KarolS.github.io/"/>
-  <updated>2014-04-29T01:21:22+02:00</updated>
+  <updated>2015-08-08T22:42:51+02:00</updated>
   <id>http://KarolS.github.io/</id>
   <author>
     <name><![CDATA[Karol Stasiak]]></name>
@@ -12,6 +12,257 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Java 8 Functional Interfaces Cheatsheet]]></title>
+    <link href="http://KarolS.github.io/blog/2015/08/08/java-8-functional-interfaces-cheatsheet/"/>
+    <updated>2015-08-08T22:37:00+02:00</updated>
+    <id>http://KarolS.github.io/blog/2015/08/08/java-8-functional-interfaces-cheatsheet</id>
+    <content type="html"><![CDATA[<p>Java 8 introduced basic support for first-class functions. The functions, unlike in other languages, aren’t represented by only handful of types. Instead, Java 8 uses dozens of various types depending on arity, parameter types and the return type. The standard documentation is pretty unwieldy, so for my and your convenience, I prepared a list of all functional interfaces in a more useful order.</p>
+
+<p>Few things to have in mind:</p>
+
+<ul>
+  <li>
+    <p>All interfaces are in <code>java.util.function</code> package unless otherwise noted.</p>
+  </li>
+  <li>
+    <p>Interfaces are specialized only for <code>boolean</code>, <code>int</code>, <code>long</code> and <code>double</code>, and only sometimes. Other primitive types, and all primitive types in certain situations, will have to be boxed.</p>
+  </li>
+</ul>
+
+<h3 id="nullary-functions">Nullary functions</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>function type</th>
+      <th>Java type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>() → <strong>void</strong></td>
+      <td><code>java.lang.Runnable</code></td>
+    </tr>
+    <tr>
+      <td>() → <strong>boolean</strong></td>
+      <td><code>BooleanSupplier</code></td>
+    </tr>
+    <tr>
+      <td>() → <strong>int</strong></td>
+      <td><code>IntSupplier</code></td>
+    </tr>
+    <tr>
+      <td>() → <strong>long</strong></td>
+      <td><code>LongSupplier</code></td>
+    </tr>
+    <tr>
+      <td>() → <strong>double</strong></td>
+      <td><code>DoubleSupplier</code></td>
+    </tr>
+    <tr>
+      <td>() → <em>A</em></td>
+      <td><code>Supplier&lt;A&gt;</code> or <code>java.lang.Callable&lt;A&gt;</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- more -->
+
+<hr />
+
+<p>Whether to use <code>Supplier</code> or <code>Callable</code>, it’s mostly a matter of taste and semantics. <code>Supplier</code> has a method called <code>get</code>, <code>Callable</code> has <code>call</code>. This suggests that functions with larger side-effects should be <code>Callable</code>, and functions with small side-effects (mostly lazily-initialized values) should be <code>Supplier</code>s. Of course, this is only a suggestion.</p>
+
+<hr />
+
+<h3 id="unary-functions">Unary functions</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>function type</th>
+      <th>Java type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>int</strong> → <strong>void</strong></td>
+      <td><code>IntConsumer</code></td>
+    </tr>
+    <tr>
+      <td><strong>long</strong> → <strong>void</strong></td>
+      <td><code>LongConsumer</code></td>
+    </tr>
+    <tr>
+      <td><strong>double</strong> → <strong>void</strong></td>
+      <td><code>DoubleConsumer</code></td>
+    </tr>
+    <tr>
+      <td><em>A</em> → <strong>void</strong></td>
+      <td><code>Consumer&lt;A&gt;</code></td>
+    </tr>
+    <tr>
+      <td><strong>int</strong> → <strong>boolean</strong></td>
+      <td><code>IntPredicate</code></td>
+    </tr>
+    <tr>
+      <td><strong>long</strong> → <strong>boolean</strong></td>
+      <td><code>LongPredicate</code></td>
+    </tr>
+    <tr>
+      <td><strong>double</strong> → <strong>boolean</strong></td>
+      <td><code>DoublePredicate</code></td>
+    </tr>
+    <tr>
+      <td><em>A</em> → <strong>boolean</strong></td>
+      <td><code>Predicate&lt;A&gt;</code></td>
+    </tr>
+    <tr>
+      <td><strong>int</strong> → <strong>int</strong></td>
+      <td><code>IntUnaryOperator</code></td>
+    </tr>
+    <tr>
+      <td><strong>long</strong> → <strong>int</strong></td>
+      <td><code>LongToIntFunction</code></td>
+    </tr>
+    <tr>
+      <td><strong>double</strong> → <strong>int</strong></td>
+      <td><code>DoubleToIntFunction</code></td>
+    </tr>
+    <tr>
+      <td><em>A</em> → <strong>int</strong></td>
+      <td><code>ToIntFunction&lt;A&gt;</code></td>
+    </tr>
+    <tr>
+      <td><strong>int</strong> → <strong>long</strong></td>
+      <td><code>IntToLongFunction</code></td>
+    </tr>
+    <tr>
+      <td><strong>long</strong> → <strong>long</strong></td>
+      <td><code>LongUnaryOperator</code></td>
+    </tr>
+    <tr>
+      <td><strong>double</strong> → <strong>long</strong></td>
+      <td><code>DoubleToLongFunction</code></td>
+    </tr>
+    <tr>
+      <td><em>A</em> → <strong>long</strong></td>
+      <td><code>ToLongFunction&lt;A&gt;</code></td>
+    </tr>
+    <tr>
+      <td><strong>int</strong> → <strong>double</strong></td>
+      <td><code>IntToDoubleFunction</code></td>
+    </tr>
+    <tr>
+      <td><strong>long</strong> → <strong>double</strong></td>
+      <td><code>LongToDoubleFunction</code></td>
+    </tr>
+    <tr>
+      <td><strong>double</strong> → <strong>double</strong></td>
+      <td><code>DoubleUnaryOperator</code></td>
+    </tr>
+    <tr>
+      <td><em>A</em> → <strong>double</strong></td>
+      <td><code>ToDoubleFunction&lt;A&gt;</code></td>
+    </tr>
+    <tr>
+      <td><em>A</em> → <em>A</em></td>
+      <td><code>UnaryOperator&lt;A&gt;</code></td>
+    </tr>
+    <tr>
+      <td><em>A</em> → <em>B</em></td>
+      <td><code>Function&lt;A, B&gt;</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<p>Note the following:</p>
+
+<ul>
+  <li>The primitive type of the argument is attached directly, the primitive type of the result uses the prefix <code>To</code>.</li>
+  <li>If the result is <code>boolean</code>, then the function is called a predicate. It’ it’s <code>void</code>, then a consumer.</li>
+  <li>If the parameter type and the result type are the same, the function is called a unary operator.</li>
+  <li>There are no specialized interfaces from a primitive to a reference.</li>
+</ul>
+
+<hr />
+
+<h3 id="binary-functions">Binary functions</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>function type</th>
+      <th>Java type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>(<em>A</em>, <strong>int</strong>) → <strong>void</strong></td>
+      <td><code>ObjIntConsumer&lt;A&gt;</code></td>
+    </tr>
+    <tr>
+      <td>(<em>A</em>, <strong>long</strong>) → <strong>void</strong></td>
+      <td><code>ObjLongConsumer&lt;A&gt;</code></td>
+    </tr>
+    <tr>
+      <td>(<em>A</em>, <strong>double</strong>) → <strong>void</strong></td>
+      <td><code>ObjDoubleConsumer&lt;A&gt;</code></td>
+    </tr>
+    <tr>
+      <td>(<em>A</em>, <em>B</em>) → <strong>void</strong></td>
+      <td><code>BiConsumer&lt;A, B&gt;</code></td>
+    </tr>
+    <tr>
+      <td>(<em>A</em>, <em>B</em>) → <strong>boolean</strong></td>
+      <td><code>BiPredicate&lt;A, B&gt;</code></td>
+    </tr>
+    <tr>
+      <td>(<strong>int</strong>, <strong>int</strong>) → <strong>int</strong></td>
+      <td><code>IntBinaryOperator</code></td>
+    </tr>
+    <tr>
+      <td>(<strong>long</strong>, <strong>long</strong>) → <strong>long</strong></td>
+      <td><code>LongBinaryOperator</code></td>
+    </tr>
+    <tr>
+      <td>(<strong>double</strong>, <strong>double</strong>) → <strong>double</strong></td>
+      <td><code>DoubleBinaryOperator</code></td>
+    </tr>
+    <tr>
+      <td>(<em>A</em>, <em>A</em>) → <em>A</em></td>
+      <td><code>BinaryOperator&lt;A&gt;</code></td>
+    </tr>
+    <tr>
+      <td>(<em>A</em>, <em>B</em>) → <strong>int</strong></td>
+      <td><code>ToIntFunction&lt;A, B&gt;</code></td>
+    </tr>
+    <tr>
+      <td>(<em>A</em>, <em>B</em>) → <strong>long</strong></td>
+      <td><code>ToLongBiFunction&lt;A, B&gt;</code></td>
+    </tr>
+    <tr>
+      <td>(<em>A</em>, <em>B</em>) → <strong>double</strong></td>
+      <td><code>ToDoubleBiFunction&lt;A, B&gt;</code></td>
+    </tr>
+    <tr>
+      <td>(<em>A</em>, <em>B</em>) → <em>C</em></td>
+      <td><code>BiFunction&lt;A, B, C&gt;</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h3 id="ternary-functions-and-above">Ternary functions and above</h3>
+
+<p>None.</p>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Random ideas for Scala 3.0]]></title>
