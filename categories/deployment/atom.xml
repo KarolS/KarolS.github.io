@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: deployment | Karol Stasiak's Blog]]></title>
+  <link href="http://KarolS.github.io/categories/deployment/atom.xml" rel="self"/>
+  <link href="http://KarolS.github.io/"/>
+  <updated>2015-09-13T21:01:52+02:00</updated>
+  <id>http://KarolS.github.io/</id>
+  <author>
+    <name><![CDATA[Karol Stasiak]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Incremental synchronization of ZIP files in bandwidth-constrained environments]]></title>
+    <link href="http://KarolS.github.io/blog/2015/09/13/incremental-synchronization-of-zip-files-in-bandwidth-constrained-environments/"/>
+    <updated>2015-09-13T18:57:00+02:00</updated>
+    <id>http://KarolS.github.io/blog/2015/09/13/incremental-synchronization-of-zip-files-in-bandwidth-constrained-environments</id>
+    <content type="html"><![CDATA[<p>Suppose you have two ZIP archives on two different machines and you want to synchronize their contents with minimal network traffic, without much regard for the CPU usage, and you know that the target machine already contains the older version of the archive, which is mostly identical to the new version. For example, you have to upload a fat JAR with the new build over a metered connection, and the server literally sits in a garage at the other end of the country.</p>
+
+<p>If the archive is small, uploading it in its entirety looks simple enough, but if it grows into dozens of megabytes, of which 90% is non-changing 3rd party code, it quickly becomes a waste of both time and bandwidth.</p>
+
+<p>Time is money. And depending on your ISP, bandwidth can be money too.</p>
+
+<p>Long story short, I’m going to assume that the target machine runs Linux, and the source machine runs either Windows or Linux. I am going to use <code>rsync</code> and <code>fuse-zip</code>.</p>
+
+<p>Why those two? Because <code>fuse-zip</code> can convert a ZIP archive into a writeable filesystem, and <code>rsync</code> can sync a writeable filesystem with another. Details below.</p>
+
+<!-- more -->
+
+<h3 id="task-1--mount-the-archives">Task 1 – Mount the archives</h3>
+
+<p>Create a mountpoint on the target machine, I’ll use <code>/tmp/z</code>. Then mount your archive using <code>fuse-zip</code>:</p>
+
+<p><code>bash
+$ sudo fuse-zip -o allow_other,rw,uid=`id -u`,gid=`id -g` /stuff/target.zip /tmp/z
+</code></p>
+
+<p>To test if it works, you create a file in the mounted filesystem. It would appear in the ZIP file after you unmount it.</p>
+
+<p><code>bash
+$ echo TEST &gt; /tmp/z/TEST_FILE_PLEASE_IGNORE
+$ sudo umount /tmp/z
+$ unzip -l /stuff/target.zip | grep TEST_FILE_PLEASE_IGNORE
+</code></p>
+
+<p><p class='info warning' data-title='Warning'>Do not modify the ZIP archive while it’s being mounted and do not interrupt the unmounting process if the archive was mounted for writing, as this can corrupt it.</p></p>
+
+<p>If your source machine runs Linux, you can do the same, but mount the archive read-only:</p>
+
+<p><code>bash
+$ sudo fuse-zip -o allow_other,ro,uid=`id -u`,gid=`id -g` /stuff/source.zip /tmp/z
+</code></p>
+
+<p>You should experiment a bit if <code>sudo</code> and <code>usd</code>/<code>gid</code> are necessary.</p>
+
+<p>If your souce machine runs Windows, you can use <a href="http://www.pismotechnic.com/pfm/">Pismo File Mount</a> to mount the archive as a drive and assign it a letter. It’s a GUI program, I haven’t found a scriptable alternative yet.</p>
+
+<h3 id="task-2--synchronize-the-mounted-filesystems">Task 2 – Synchronize the mounted filesystems</h3>
+
+<p>On the source machine:</p>
+
+<p><code>
+$ rsync --delete -zrucv -e ssh /tmp/z/ remoteuser@targethost:/tmp/z/
+</code></p>
+
+<p>Explanation for the parameters:</p>
+
+<ul>
+  <li>
+    <p><code>-c</code> so that the files will be compared using checksums instead of modification dates. We do not care about nor trust  the dates here, what matters is content.</p>
+  </li>
+  <li>
+    <p><code>-z</code> for the compression. Do not use the flag if the files themselves won’t compress well.</p>
+  </li>
+  <li>
+    <p><code>-r</code> for recursive synchronization.</p>
+  </li>
+  <li>
+    <p><code>-u</code> so only modified files are uploaded.</p>
+  </li>
+  <li>
+    <p><code>--delete</code> so the files that are absent in the source archive will be deleted from the target archive. We want the target archive to have the same content as the source one, not more.</p>
+  </li>
+  <li>
+    <p><code>-v</code> stands for verbose. Used once, makes <code>rsync</code> list all the files as they are being sent. You can skip this option, or repeat it several times, depending on your preference.</p>
+  </li>
+  <li>
+    <p><code>-e ssh</code> picks the shell used to synchronize the files. SSH is the recommended one for most cases.</p>
+  </li>
+</ul>
+
+<p>Note that the paths end with slashes, so <code>rsync</code> synchronizes the contents of the directories, not the directories themselves.</p>
+
+<p>If the source mashine is running Windows, you can use <a href="">Cygwin</a>https://www.cygwin.com/, just install appropriate packages (you’ll need <code>rsync</code> and most likely also <code>openssh</code>). If you used Pismo File Mount to mount the ZIP to e.g. J: drive, use <code>/cygdrive/j/</code> as your source directory.</p>
+
+<h3 id="task-3--unmount-the-filesystems">Task 3 – Unmount the filesystems</h3>
+
+<p>On Linux (both source and target machine), do</p>
+
+<p><code>bash
+$ sudo umount /tmp/z
+</code></p>
+
+<p>You have to unmount the target archive so the changes take place, and the source archive so the next time you mount it, it would be current again.</p>
+
+<h3 id="putting-it-all-together">Putting it all together</h3>
+
+<p>Here is a small script that can be used to synchronize two ZIP archives:</p>
+
+<p>```bash
+#!/bin/bash</p>
+
+<h1 id="put-all-the-necessary-values-here">put all the necessary values here</h1>
+<p>REMOTEUSER=…
+REMOTEHOST=…
+SOURCEZIP=…
+TARGETZIP=…</p>
+
+<p>OS=<code>uname -o</code>
+if [ “$OS” = Cygwin ] ; then
+	# depends on where you mount it; assuming here the J: drive
+	P=/cygdrive/j
+else
+	P=/tmp/z
+	mkdir -p “$P”
+	sudo umount “$P”
+	sudo fuse-zip -o allow_other,uid=<code>id -u</code>,gid=<code>id -g</code>,ro “$SOURCEZIP” “$P”
+fi</p>
+
+<p>ssh $REMOTEUSER@$REMOTEHOST sudo jar_mount_rw
+rsync –delete -zrucv -e “ssh” “$P/” $REMOTEUSER@$REMOTEHOST:/tmp/z/
+ssh $REMOTEUSER@$REMOTEHOST sudo umount /tmp/z</p>
+
+<p>if [ “$OS” = Cygwin ] ; then
+	echo ‘Finished. Unmount the J: drive.’
+else
+	PID=”<code>pgrep fuse-zip</code>”
+	if [ -z “$PID” ] ; then
+		exit
+	else
+		sudo umount “$P”
+	fi
+fi
+```</p>
+
+<p>It requires this script to be present as <code>jar_mount_rw</code> on the target machine:</p>
+
+<p>```bash jar_mount_rw
+#!/bin/bash</p>
+
+<h1 id="put-all-the-necessary-values-here-1">put all the necessary values here</h1>
+<p>TARGETZIP=…</p>
+
+<p>umount /tmp/z
+mkdir -p /tmp/z
+fuse-zip -o allow_other,rw,uid=<code>id -u</code>,gid=<code>id -g</code> “$TARGETZIP” /tmp/z
+```</p>
+
+<h3 id="results">Results</h3>
+
+<p>I don’t have any hard data, but the overall effect is that a 40 MB JAR archive with only few files modified in it gets synchronized in few seconds, while it could take several minutes on slower connections to upload it whole.</p>
+]]></content>
+  </entry>
+  
+</feed>

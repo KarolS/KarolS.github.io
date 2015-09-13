@@ -9,7 +9,7 @@
   <meta name="author" content="Karol Stasiak">
 
   
-  <meta name="description" content="Java 8 introduced basic support for first-class functions. The functions, unlike in other languages, aren’t represented by only handful of types. &hellip;">
+  <meta name="description" content="Suppose you have two ZIP archives on two different machines and you want to synchronize their contents with minimal network traffic, without much &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,55 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/09/13/incremental-synchronization-of-zip-files-in-bandwidth-constrained-environments/">Incremental Synchronization of ZIP Files in Bandwidth-constrained Environments</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-13T18:57:00+02:00" pubdate data-updated="true">2015-09-13</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Suppose you have two ZIP archives on two different machines and you want to synchronize their contents with minimal network traffic, without much regard for the CPU usage, and you know that the target machine already contains the older version of the archive, which is mostly identical to the new version. For example, you have to upload a fat JAR with the new build over a metered connection, and the server literally sits in a garage at the other end of the country.</p>
+
+<p>If the archive is small, uploading it in its entirety looks simple enough, but if it grows into dozens of megabytes, of which 90% is non-changing 3rd party code, it quickly becomes a waste of both time and bandwidth.</p>
+
+<p>Time is money. And depending on your ISP, bandwidth can be money too.</p>
+
+<p>Long story short, I’m going to assume that the target machine runs Linux, and the source machine runs either Windows or Linux. I am going to use <code>rsync</code> and <code>fuse-zip</code>.</p>
+
+<p>Why those two? Because <code>fuse-zip</code> can convert a ZIP archive into a writeable filesystem, and <code>rsync</code> can sync a writeable filesystem with another. Details below.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/09/13/incremental-synchronization-of-zip-files-in-bandwidth-constrained-environments/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -635,6 +684,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/09/13/incremental-synchronization-of-zip-files-in-bandwidth-constrained-environments/">Incremental Synchronization of ZIP Files in Bandwidth-constrained Environments</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/08/08/java-8-functional-interfaces-cheatsheet/">Java 8 Functional Interfaces Cheatsheet</a>
       </li>
     
@@ -650,15 +703,11 @@
         <a href="/blog/2014/04/29/from-nested-monads-to-kleisli-arrows-over-monad-transformers/">From Explicit Nested Monads to Kleisli Arrows Over Monad Transformers</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2014/01/03/hocr4j-0-1-released/">hOCR4J 0.1 Released</a>
-      </li>
-    
   </ul>
 </section>
 <section>
   <h1>Category Cloud</h1>
-    <span id="tag-cloud"><a href='/categories/haskell' style='font-size: 110.0%'>haskell(1)</a> <a href='/categories/hocr4j' style='font-size: 110.0%'>hocr4j(1)</a> <a href='/categories/java' style='font-size: 130.0%'>java(3)</a> <a href='/categories/keyboard' style='font-size: 110.0%'>keyboard(1)</a> <a href='/categories/linux' style='font-size: 110.0%'>linux(1)</a> <a href='/categories/maths' style='font-size: 110.0%'>maths(1)</a> <a href='/categories/ocr' style='font-size: 110.0%'>ocr(1)</a> <a href='/categories/personal-project' style='font-size: 120.0%'>personal project(2)</a> <a href='/categories/programming' style='font-size: 160.0%'>programming(6)</a> <a href='/categories/scala' style='font-size: 120.0%'>scala(2)</a> <a href='/categories/unicode' style='font-size: 110.0%'>unicode(1)</a> <a href='/categories/units' style='font-size: 110.0%'>units(1)</a> <a href='/categories/units-of-measurement' style='font-size: 110.0%'>units of measurement(1)</a> </span>
+    <span id="tag-cloud"><a href='/categories/command-line' style='font-size: 110.0%'>command line(1)</a> <a href='/categories/deployment' style='font-size: 110.0%'>deployment(1)</a> <a href='/categories/haskell' style='font-size: 110.0%'>haskell(1)</a> <a href='/categories/hocr4j' style='font-size: 110.0%'>hocr4j(1)</a> <a href='/categories/java' style='font-size: 130.0%'>java(3)</a> <a href='/categories/keyboard' style='font-size: 110.0%'>keyboard(1)</a> <a href='/categories/linux' style='font-size: 120.0%'>linux(2)</a> <a href='/categories/maths' style='font-size: 110.0%'>maths(1)</a> <a href='/categories/ocr' style='font-size: 110.0%'>ocr(1)</a> <a href='/categories/personal-project' style='font-size: 120.0%'>personal project(2)</a> <a href='/categories/programming' style='font-size: 160.0%'>programming(6)</a> <a href='/categories/scala' style='font-size: 120.0%'>scala(2)</a> <a href='/categories/unicode' style='font-size: 110.0%'>unicode(1)</a> <a href='/categories/units' style='font-size: 110.0%'>units(1)</a> <a href='/categories/units-of-measurement' style='font-size: 110.0%'>units of measurement(1)</a> </span>
 </section>
 
   
