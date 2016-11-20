@@ -2,7 +2,6 @@
 layout: post
 title: "Incremental synchronization of ZIP files in bandwidth-constrained environments"
 date: 2015-09-13 18:57
-comments: true
 categories: ["command-line", linux, deployment]
 ---
 

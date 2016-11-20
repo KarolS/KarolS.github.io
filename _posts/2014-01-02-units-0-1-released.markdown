@@ -2,8 +2,6 @@
 layout: post
 title: "Units 0.1 released"
 date: 2014-01-02 20:26
-comments: true
-published: true
 categories: [scala, "units-of-measurement", units, "personal-project", programming]
 ---
 

@@ -2,7 +2,6 @@
 layout: post
 title: "From explicit nested monads to Kleisli arrows over monad transformers"
 date: 2014-04-29 01:15
-comments: true
 categories: [programming, haskell]
 ---
 

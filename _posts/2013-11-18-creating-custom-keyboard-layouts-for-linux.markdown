@@ -2,8 +2,6 @@
 layout: post
 title: "Creating custom keyboard layouts for Linux"
 date: 2013-11-18 21:05
-comments: true
-published: true
 categories: [linux, keyboard, unicode]
 ---
 

@@ -2,8 +2,6 @@
 layout: post
 title: "hOCR4J 0.1 released"
 date: 2014-01-03 00:11
-comments: true
-published: true
 categories: [programming, ocr, java, "personal-project", "hocr4j"]
 ---
 

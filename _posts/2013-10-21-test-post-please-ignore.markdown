@@ -2,8 +2,6 @@
 layout: post
 title: "Test post please ignore"
 date: 2013-10-21 17:03
-comments: true
-published: true
 categories: 
 ---
 

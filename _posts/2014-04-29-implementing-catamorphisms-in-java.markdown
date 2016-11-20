@@ -2,7 +2,6 @@
 layout: post
 title: "Implementing catamorphisms in Java"
 date: 2014-04-29 01:20
-comments: true
 categories: [programming, java, maths]
 ---
 

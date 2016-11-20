@@ -2,7 +2,6 @@
 layout: post
 title: "Move from Octopress to Github-side Jekyll"
 date: 2016-11-20 15:00
-comments: true
 categories: []
 ---
 
