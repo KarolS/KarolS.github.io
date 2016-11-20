@@ -2,8 +2,6 @@
 layout: post
 title: "Java 8 Functional Interfaces Cheatsheet"
 date: 2015-08-08 22:37
-comments: true
-published: true
 categories: [java, programming]
 ---
 

@@ -2,7 +2,6 @@
 layout: post
 title: "Random ideas for Scala 3.0"
 date: 2014-04-29 01:22
-comments: true
 categories: [scala, programming]
 ---
 
