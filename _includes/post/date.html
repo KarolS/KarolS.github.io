@@ -1,0 +1,15 @@
+{% if post.date != null %}
+  {% capture time %}<time datetime="{{ post.date | date_to_xmlschema}}" pubdate{% if updated %} data-updated="true"{% endif %}>{{ post.date | date: '%Y-%m-%d' }}</time>{% endcapture %}
+{% endif %}
+{% if page.date != null %}
+  {% capture time %}<time datetime="{{ page.date | date_to_xmlschema}}" pubdate{% if updated %} data-updated="true"{% endif %}>{{ page.date | date: '%Y-%m-%d' }}</time>{% endcapture %}
+{% endif %}
+
+{% assign updated = false %}
+
+{% if page.updated != null %}
+  {% capture updated %}<time datetime="{{ page.updated | date_to_xmlschema}}" class="updated">Updated {{ page.updated | date: '%Y-%m-%d' }}</time>{% endcapture %}
+{% endif %}
+{% if post.updated != null %}
+  {% capture updated %}<time datetime="{{ post.updated | date_to_xmlschema}}" class="updated">Updated {{ post.updated | date: '%Y-%m-%d' }}</time>{% endcapture %}
+{% endif %}

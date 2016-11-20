@@ -1,0 +1,16 @@
+<section>
+  <h1>Category Cloud</h1>
+    <span class="tag-cloud">
+{% assign categories = (site.my_categories | sort: 'slug') %}
+{% for category in categories %}
+    {% assign size = (site.posts | where_exp: "post", "post.categories contains category.slug" | size) %} 
+    {% if size > 0 %}
+        <a class="tag-cloud-item"
+            href="/categories/{{ category.slug }}/"
+            style="font-size: {{ size | times: 10 | plus: 90 }}%">
+            {{ category.title }} ({{ size }})
+        </a> &nbsp;
+    {% endif %}
+{% endfor %}
+    </span>
+</section>

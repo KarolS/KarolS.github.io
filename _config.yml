@@ -1,0 +1,61 @@
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog, values
+# which you are expected to set up once and rarely edit after that. If you find
+# yourself editing this file very often, consider using Jekyll's data files
+# feature for the data you need to update frequently.
+#
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
+
+# Site settings
+# These are used to personalize your new site. If you look in the HTML files,
+# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
+# You can create any custom variable you would like, and they will be accessible
+# in the templates via {{ site.myvariable }}.
+url: http://KarolS.github.io
+title: Karol Stasiak's Blog
+subtitle: Coding from an elevator.
+author: Karol Stasiak
+titlecase: false
+
+paginate: 10
+paginate_path: page/:num
+recent_posts: 5 
+excerpt_link: "Read on &rarr;"
+excerpt_separator: <!-- more -->
+
+github_username:  KarolS
+github_repo_count: 0
+github_show_profile_link: true
+github_skip_forks: true
+
+facebook_like: false
+
+disqus_short_name: codingfromanelevator
+disqus_show_comment_count: true
+google_analytics_tracking_id: "UA-45876308-1"
+simple_search: http://google.co.uk/search
+simple_search_domain: karols.github.io
+subscribe_rss: /atom.xml
+
+permalink: /blog/:year/:month/:day/:title/
+
+collections:
+  my_categories:
+    output: true
+    permalink: /categories/:slug/
+
+
+
+# Build settings
+markdown: kramdown
+gems:
+  - jekyll-feed
+  - jekyll-paginate
+  - jekyll-sitemap
+  - rouge
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - config.rb

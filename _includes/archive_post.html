@@ -1,0 +1,14 @@
+<h1><a href="{{ root_url }}{{ post.url }}">{{post.title}}</a></h1>
+<time datetime="{{ post.date | datetime | date_to_xmlschema }}" pubdate>{{ post.date | date: "<span class='month'>%b</span> <span class='day'>%d</span> <span class='year'>%Y</span>"}}</time>
+<footer>
+    {% assign categories = (site.my_categories | where_exp: "category", "post.categories contains category.slug" | sort: 'slug') %}
+    {% assign category_content = '' %}
+    {% for category in categories %}
+        {% capture category_content %}{% if category_content != '' %}{{category_content}}, {% endif %}<a class="label" href="{{root_url}}/categories/{{ category.slug }}">{{ category.title }}</a>{% endcapture %}
+    {% endfor %}
+    {% if category_content != '' %}
+    <span class="categories">posted in {{ category_content }}</span>
+    {% else %} 
+    <span class="categories">uncategorised</span>
+    {% endif %}
+</footer>
