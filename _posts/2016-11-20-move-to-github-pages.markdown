@@ -21,9 +21,9 @@ Of course, migration was not trivial. I had to make multiple changes:
 
 * I used Compass for compiling SCSS. Since Github doesn't provide Compass integration, I just run it on my own computer and then upload compiled CSS.
 
-* The plugin I missed the most was category pages plugin, which I emulated following the guide at http://www.minddust.com/post/alternative-tags-and-categories-on-github-pages/ 
+* The plugin I missed the most was category pages plugin, which I emulated following the guide at [http://www.minddust.com/post/alternative-tags-and-categories-on-github-pages/](http://www.minddust.com/post/alternative-tags-and-categories-on-github-pages/)
 
-* I rewrote the category cloud based on https://superdevresources.com/tag-cloud-jekyll/ but I adapted it to use categories as defined in the previous step. I also used the same method to inject category lists in other places.
+* I rewrote the category cloud based on [https://superdevresources.com/tag-cloud-jekyll/](https://superdevresources.com/tag-cloud-jekyll/) but I adapted it to use categories as defined in the previous step. I also used the same method to inject category lists in other places.
 
 * I also fixed the Google search box, because if I make a query qith two `q` parameters and then get redirected from `google.com` to `google.com.pl`, then one of the parameters is ignored. I solved it by hardcoding the box to use `google.co.uk`.
 
