@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Getting your Java 8 application to run on Java 11 – in 9 easy steps"
-date: 2018-09-19 00:40
+date: 2018-09-20 00:40
 categories: [programming, Java]
 ---
 
