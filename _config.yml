@@ -54,6 +54,7 @@ gems:
   - jekyll-feed
   - jekyll-paginate
   - jekyll-sitemap
+  - jekyll-compass
   - rouge
 exclude:
   - Gemfile
