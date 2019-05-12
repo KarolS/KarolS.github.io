@@ -1,11 +1,11 @@
 ---
 layout: post
 title: "Adding support for page fragments to Google Analytics the quick and easy way"
-date: 2017-11-02 23:40
+date: 2017-12-02 23:40
 categories: [programming, JavaScript]
 ---
 
-By default, Google Analytics fires once per page load and therefore it only adds entries when the user navigates between different documents. But today, in the era of frequent aingle-page applications, this might not be enough. A web app might have multiple different sections, displayed conceptually from within the same document, and Google Analytics won't track where the use is navigating.
+By default, Google Analytics fires once per page load and therefore it only adds entries when the user navigates between different documents. But today, in the era of frequent single-page applications, this might not be enough. A web app might have multiple different sections, displayed conceptually from within the same document, and Google Analytics won't track where the use is navigating.
 
 In search of a solution for tracking user behaviour accross the document, I found several guides that required to set up the Google Tag Manager. But I couldn't be bothered figuring yet another tool, so I decided to look for a more hacky and a simpler solution.
 
