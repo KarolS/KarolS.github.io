@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 ruby RUBY_VERSION
 
-gem "jekyll", "3.3.1"
+gem "jekyll", "3.6.3"
 # gem 'wdm', '>= 0.1.0' if Gem.win_platform?
 
 # gem "github-pages", group: :jekyll_plugins
