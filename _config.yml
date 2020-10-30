@@ -37,7 +37,7 @@ disqus_show_comment_count: true
 google_analytics_tracking_id: "UA-45876308-1"
 simple_search: http://google.co.uk/search
 simple_search_domain: karols.github.io
-subscribe_rss: /atom.xml
+subscribe_rss: /feed
 
 permalink: /blog/:year/:month/:day/:title/
 
